@@ -761,7 +761,6 @@ export class Visual implements IVisual {
                 this.settings.endMarkerType = "arrow";
                 this.settings.endMarkerSize = 8;
                 this.settings.useCustomMarkerColors = false;
-                this.settings.showHeader = true;
                 this.settings.showControls = true;
                 this.settings.showValues = true;
                 break;
@@ -792,7 +791,6 @@ export class Visual implements IVisual {
                 this.settings.endMarkerType = "arrow";
                 this.settings.endMarkerSize = 8;
                 this.settings.useCustomMarkerColors = false;
-                this.settings.showHeader = true;
                 this.settings.showControls = true;
                 this.settings.showValues = true;
                 break;
@@ -824,7 +822,6 @@ export class Visual implements IVisual {
                 this.settings.endMarkerType = "circle";
                 this.settings.endMarkerSize = 6;
                 this.settings.useCustomMarkerColors = false;
-                this.settings.showHeader = true;
                 this.settings.showControls = true;
                 this.settings.showValues = true;
                 break;
@@ -856,7 +853,6 @@ export class Visual implements IVisual {
                 this.settings.endMarkerType = "arrow";
                 this.settings.endMarkerSize = 10;
                 this.settings.useCustomMarkerColors = false;
-                this.settings.showHeader = true;
                 this.settings.showControls = true;
                 this.settings.showValues = true;
                 break;
@@ -888,7 +884,6 @@ export class Visual implements IVisual {
                 this.settings.endMarkerType = "diamond";
                 this.settings.endMarkerSize = 7;
                 this.settings.useCustomMarkerColors = false;
-                this.settings.showHeader = true;
                 this.settings.showControls = true;
                 this.settings.showValues = true;
                 break;
@@ -922,7 +917,6 @@ export class Visual implements IVisual {
                 this.settings.endMarkerSize = 12;
                 this.settings.useCustomMarkerColors = true;
                 this.settings.endMarkerColor = "#000000";
-                this.settings.showHeader = true;
                 this.settings.showControls = true;
                 this.settings.showValues = true;
                 break;
@@ -955,7 +949,6 @@ export class Visual implements IVisual {
                 this.settings.endMarkerType = "circle";
                 this.settings.endMarkerSize = 4;
                 this.settings.useCustomMarkerColors = false;
-                this.settings.showHeader = true;
                 this.settings.showControls = true;
                 this.settings.showValues = true;
                 break;
@@ -989,7 +982,6 @@ export class Visual implements IVisual {
                 this.settings.endMarkerType = "square";
                 this.settings.endMarkerSize = 6;
                 this.settings.useCustomMarkerColors = false;
-                this.settings.showHeader = true;
                 this.settings.showControls = true;
                 this.settings.showValues = true;
                 break;
@@ -1019,7 +1011,6 @@ export class Visual implements IVisual {
                 this.settings.endMarkerType = "arrow";
                 this.settings.endMarkerSize = 8;
                 this.settings.useCustomMarkerColors = false;
-                this.settings.showHeader = true;
                 this.settings.showControls = true;
                 this.settings.showValues = true;
                 break;
@@ -1051,7 +1042,6 @@ export class Visual implements IVisual {
                 this.settings.endMarkerType = "arrowOutline";
                 this.settings.endMarkerSize = 6;
                 this.settings.useCustomMarkerColors = false;
-                this.settings.showHeader = true;
                 this.settings.showControls = true;
                 this.settings.showValues = true;
                 break;
