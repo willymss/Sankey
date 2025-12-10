@@ -1081,6 +1081,9 @@ export class Visual implements IVisual {
                 // Clear persisted overrides by requesting full reset
                 this.requestPresetResetInPowerBI(currentPreset);
 
+                // Keep formatting model in sync with the new preset so pane shows correct defaults
+                this.syncFormattingModelWithSettings();
+
                 // Set flag to prevent reading individual settings on next update
                 this.justSwitchedPreset = true;
 
@@ -1095,98 +1098,90 @@ export class Visual implements IVisual {
             }
         }
 
-        // INDIVIDUAL SETTINGS: Only update settings that exist in the dataView
-        // This prevents default values from overwriting preset-applied settings
-        const nodeObjects = objects?.["nodeSettings"];
-        const linkObjects = objects?.["linkSettings"];
-        const colorObjects = objects?.["colorSettings"];
-        const displayObjects = objects?.["displaySettings"];
+        // INDIVIDUAL SETTINGS: Sync from formatting model (defaults or persisted values)
 
         const ns = this.formattingSettings?.nodeSettings;
         const ls = this.formattingSettings?.linkSettings;
         const cs = this.formattingSettings?.colorSettings;
         const ds = this.formattingSettings?.displaySettings;
+        const defaults = this.getDefaultSettings();
 
-        // Node settings - only update if explicitly set in dataView
-        if (ns && nodeObjects) {
-            if (nodeObjects["nodeWidth"] !== undefined) this.settings.nodeWidth = ns.sizeAndSpacing?.nodeWidth?.value ?? this.settings.nodeWidth;
-            if (nodeObjects["nodeHeight"] !== undefined) this.settings.nodeHeight = ns.sizeAndSpacing?.nodeHeight?.value ?? this.settings.nodeHeight;
-            if (nodeObjects["nodeShape"] !== undefined) this.settings.nodeShape = (ns.shape as any)?.nodeShape?.value?.value ?? (ns.shape as any)?.nodeShape?.value ?? this.settings.nodeShape;
-            if (nodeObjects["cornerRadius"] !== undefined) this.settings.cornerRadius = ns.shape?.cornerRadius?.value ?? this.settings.cornerRadius;
-            if (nodeObjects["nodeFillOpacity"] !== undefined) this.settings.nodeFillOpacity = ns.shape?.nodeFillOpacity?.value ?? this.settings.nodeFillOpacity;
-            if (nodeObjects["nodeBorderStyle"] !== undefined) this.settings.nodeBorderStyle = (ns.border as any)?.nodeBorderStyle?.value?.value ?? (ns.border as any)?.nodeBorderStyle?.value ?? this.settings.nodeBorderStyle;
-            if (nodeObjects["nodeBorderWidth"] !== undefined) this.settings.nodeBorderWidth = ns.border?.nodeBorderWidth?.value ?? this.settings.nodeBorderWidth;
-            if (nodeObjects["useCustomBorderColor"] !== undefined) this.settings.useCustomBorderColor = ns.border?.useCustomBorderColor?.value ?? this.settings.useCustomBorderColor;
-            if (nodeObjects["nodeBorderColor"] !== undefined) this.settings.nodeBorderColor = ns.border?.nodeBorderColor?.value?.value ?? this.settings.nodeBorderColor;
-            if (nodeObjects["levelSpacing"] !== undefined) this.settings.levelSpacing = ns.sizeAndSpacing?.levelSpacing?.value ?? this.settings.levelSpacing;
-            if (nodeObjects["nodeSpacing"] !== undefined) this.settings.nodeSpacing = ns.sizeAndSpacing?.nodeSpacing?.value ?? this.settings.nodeSpacing;
-            if (nodeObjects["fontSize"] !== undefined) this.settings.fontSize = ns.text?.fontSize?.value ?? this.settings.fontSize;
-            if (nodeObjects["fontFamily"] !== undefined) this.settings.fontFamily = (ns.text as any)?.fontFamily?.value?.value ?? (ns.text as any)?.fontFamily?.value ?? this.settings.fontFamily;
-            if (nodeObjects["textColor"] !== undefined) this.settings.textColor = ns.text?.textColor?.value?.value ?? this.settings.textColor;
-            if (nodeObjects["wrapText"] !== undefined) this.settings.wrapText = ns.text?.wrapText?.value ?? this.settings.wrapText;
-            if (nodeObjects["maxCharsPerLine"] !== undefined) this.settings.maxCharsPerLine = ns.text?.maxCharsPerLine?.value ?? this.settings.maxCharsPerLine;
-            if (nodeObjects["showValues"] !== undefined) this.settings.showValues = ns.connectionCounts?.showValues?.value ?? this.settings.showValues;
-            if (nodeObjects["badgeTextSize"] !== undefined) this.settings.badgeTextSize = ns.connectionCounts?.badgeTextSize?.value ?? this.settings.badgeTextSize;
-            if (nodeObjects["badgePosition"] !== undefined) this.settings.badgePosition = (ns.connectionCounts as any)?.badgePosition?.value?.value ?? (ns.connectionCounts as any)?.badgePosition?.value ?? this.settings.badgePosition;
-            if (nodeObjects["badgePaddingTop"] !== undefined) this.settings.badgePaddingTop = ns.connectionCounts?.badgePaddingTop?.value ?? this.settings.badgePaddingTop;
-            if (nodeObjects["badgePaddingRight"] !== undefined) this.settings.badgePaddingRight = ns.connectionCounts?.badgePaddingRight?.value ?? this.settings.badgePaddingRight;
-            if (nodeObjects["badgePaddingBottom"] !== undefined) this.settings.badgePaddingBottom = ns.connectionCounts?.badgePaddingBottom?.value ?? this.settings.badgePaddingBottom;
-            if (nodeObjects["badgePaddingLeft"] !== undefined) this.settings.badgePaddingLeft = ns.connectionCounts?.badgePaddingLeft?.value ?? this.settings.badgePaddingLeft;
-            if (nodeObjects["countMode"] !== undefined) this.settings.countMode = (ns.connectionCounts as any)?.countMode?.value?.value ?? (ns.connectionCounts as any)?.countMode?.value ?? this.settings.countMode;
+        // Node settings - always sync from formatting model (defaults or persisted values)
+        if (ns) {
+            this.settings.nodeWidth = ns.sizeAndSpacing?.nodeWidth?.value ?? defaults.nodeWidth;
+            this.settings.nodeHeight = ns.sizeAndSpacing?.nodeHeight?.value ?? defaults.nodeHeight;
+            this.settings.levelSpacing = ns.sizeAndSpacing?.levelSpacing?.value ?? defaults.levelSpacing;
+            this.settings.nodeSpacing = ns.sizeAndSpacing?.nodeSpacing?.value ?? defaults.nodeSpacing;
+
+            this.settings.nodeShape = (ns.shape as any)?.nodeShape?.value?.value ?? (ns.shape as any)?.nodeShape?.value ?? defaults.nodeShape;
+            this.settings.cornerRadius = ns.shape?.cornerRadius?.value ?? defaults.cornerRadius;
+            this.settings.nodeFillOpacity = ns.shape?.nodeFillOpacity?.value ?? defaults.nodeFillOpacity;
+
+            this.settings.nodeBorderStyle = (ns.border as any)?.nodeBorderStyle?.value?.value ?? (ns.border as any)?.nodeBorderStyle?.value ?? defaults.nodeBorderStyle;
+            this.settings.nodeBorderWidth = ns.border?.nodeBorderWidth?.value ?? defaults.nodeBorderWidth;
+            this.settings.useCustomBorderColor = ns.border?.useCustomBorderColor?.value ?? defaults.useCustomBorderColor;
+            this.settings.nodeBorderColor = ns.border?.nodeBorderColor?.value?.value ?? defaults.nodeBorderColor;
+
+            this.settings.fontSize = ns.text?.fontSize?.value ?? defaults.fontSize;
+            this.settings.fontFamily = (ns.text as any)?.fontFamily?.value?.value ?? (ns.text as any)?.fontFamily?.value ?? defaults.fontFamily;
+            this.settings.textColor = ns.text?.textColor?.value?.value ?? defaults.textColor;
+            this.settings.wrapText = ns.text?.wrapText?.value ?? defaults.wrapText;
+            this.settings.maxCharsPerLine = ns.text?.maxCharsPerLine?.value ?? defaults.maxCharsPerLine;
+
+            this.settings.showValues = ns.connectionCounts?.showValues?.value ?? defaults.showValues;
+            this.settings.badgeTextSize = ns.connectionCounts?.badgeTextSize?.value ?? defaults.badgeTextSize;
+            this.settings.badgePosition = (ns.connectionCounts as any)?.badgePosition?.value?.value ?? (ns.connectionCounts as any)?.badgePosition?.value ?? defaults.badgePosition;
+            this.settings.badgePaddingTop = ns.connectionCounts?.badgePaddingTop?.value ?? defaults.badgePaddingTop;
+            this.settings.badgePaddingRight = ns.connectionCounts?.badgePaddingRight?.value ?? defaults.badgePaddingRight;
+            this.settings.badgePaddingBottom = ns.connectionCounts?.badgePaddingBottom?.value ?? defaults.badgePaddingBottom;
+            this.settings.badgePaddingLeft = ns.connectionCounts?.badgePaddingLeft?.value ?? defaults.badgePaddingLeft;
+            this.settings.countMode = (ns.connectionCounts as any)?.countMode?.value?.value ?? (ns.connectionCounts as any)?.countMode?.value ?? defaults.countMode;
         }
 
-        // Link settings - only update if explicitly set in dataView
-        if (ls && linkObjects) {
-            if (linkObjects["lineOpacity"] !== undefined) this.settings.lineOpacity = ls.opacity?.lineOpacity?.value ?? this.settings.lineOpacity;
-            if (linkObjects["linkWidth"] !== undefined) this.settings.linkWidth = ls.style?.linkWidth?.value ?? this.settings.linkWidth;
-            if (linkObjects["highlightOpacity"] !== undefined) this.settings.highlightOpacity = ls.opacity?.highlightOpacity?.value ?? this.settings.highlightOpacity;
-            if (linkObjects["linkStyle"] !== undefined) this.settings.linkStyle = (ls.style as any)?.linkStyle?.value?.value ?? (ls.style as any)?.linkStyle?.value ?? this.settings.linkStyle;
-            if (linkObjects["linkColorMode"] !== undefined) this.settings.linkColorMode = (ls.color as any)?.linkColorMode?.value?.value ?? (ls.color as any)?.linkColorMode?.value ?? this.settings.linkColorMode;
-            if (linkObjects["customLinkColor"] !== undefined) this.settings.customLinkColor = ls.color?.customLinkColor?.value?.value ?? this.settings.customLinkColor;
-            if (linkObjects["linkCurveStyle"] !== undefined) this.settings.linkCurveStyle = (ls.style as any)?.linkCurveStyle?.value?.value ?? (ls.style as any)?.linkCurveStyle?.value ?? this.settings.linkCurveStyle;
-            if (linkObjects["showStartMarker"] !== undefined) this.settings.showStartMarker = ls.startMarker?.showStartMarker?.value ?? this.settings.showStartMarker;
-            if (linkObjects["startMarkerType"] !== undefined) this.settings.startMarkerType = (ls.startMarker as any)?.startMarkerType?.value?.value ?? (ls.startMarker as any)?.startMarkerType?.value ?? this.settings.startMarkerType;
-            if (linkObjects["startMarkerSize"] !== undefined) this.settings.startMarkerSize = ls.startMarker?.startMarkerSize?.value ?? this.settings.startMarkerSize;
-            if (linkObjects["showEndMarker"] !== undefined) this.settings.showEndMarker = ls.endMarker?.showEndMarker?.value ?? this.settings.showEndMarker;
-            if (linkObjects["endMarkerType"] !== undefined) this.settings.endMarkerType = (ls.endMarker as any)?.endMarkerType?.value?.value ?? (ls.endMarker as any)?.endMarkerType?.value ?? this.settings.endMarkerType;
-            if (linkObjects["endMarkerSize"] !== undefined) this.settings.endMarkerSize = ls.endMarker?.endMarkerSize?.value ?? this.settings.endMarkerSize;
-            if (linkObjects["useCustomMarkerColors"] !== undefined) this.settings.useCustomMarkerColors = ls.markerColors?.useCustomMarkerColors?.value ?? this.settings.useCustomMarkerColors;
-            if (linkObjects["startMarkerColor"] !== undefined) this.settings.startMarkerColor = ls.markerColors?.startMarkerColor?.value?.value ?? this.settings.startMarkerColor;
-            if (linkObjects["endMarkerColor"] !== undefined) this.settings.endMarkerColor = ls.markerColors?.endMarkerColor?.value?.value ?? this.settings.endMarkerColor;
+        // Link settings - always sync from formatting model
+        if (ls) {
+            this.settings.lineOpacity = ls.opacity?.lineOpacity?.value ?? defaults.lineOpacity;
+            this.settings.linkWidth = ls.style?.linkWidth?.value ?? defaults.linkWidth;
+            this.settings.highlightOpacity = ls.opacity?.highlightOpacity?.value ?? defaults.highlightOpacity;
+            this.settings.linkStyle = (ls.style as any)?.linkStyle?.value?.value ?? (ls.style as any)?.linkStyle?.value ?? defaults.linkStyle;
+            this.settings.linkColorMode = (ls.color as any)?.linkColorMode?.value?.value ?? (ls.color as any)?.linkColorMode?.value ?? defaults.linkColorMode;
+            this.settings.customLinkColor = ls.color?.customLinkColor?.value?.value ?? defaults.customLinkColor;
+            this.settings.linkCurveStyle = (ls.style as any)?.linkCurveStyle?.value?.value ?? (ls.style as any)?.linkCurveStyle?.value ?? defaults.linkCurveStyle;
+            this.settings.showStartMarker = ls.startMarker?.showStartMarker?.value ?? defaults.showStartMarker;
+            this.settings.startMarkerType = (ls.startMarker as any)?.startMarkerType?.value?.value ?? (ls.startMarker as any)?.startMarkerType?.value ?? defaults.startMarkerType;
+            this.settings.startMarkerSize = ls.startMarker?.startMarkerSize?.value ?? defaults.startMarkerSize;
+            this.settings.showEndMarker = ls.endMarker?.showEndMarker?.value ?? defaults.showEndMarker;
+            this.settings.endMarkerType = (ls.endMarker as any)?.endMarkerType?.value?.value ?? (ls.endMarker as any)?.endMarkerType?.value ?? defaults.endMarkerType;
+            this.settings.endMarkerSize = ls.endMarker?.endMarkerSize?.value ?? defaults.endMarkerSize;
+            this.settings.useCustomMarkerColors = ls.markerColors?.useCustomMarkerColors?.value ?? defaults.useCustomMarkerColors;
+            this.settings.startMarkerColor = ls.markerColors?.startMarkerColor?.value?.value ?? defaults.startMarkerColor;
+            this.settings.endMarkerColor = ls.markerColors?.endMarkerColor?.value?.value ?? defaults.endMarkerColor;
         }
 
-        // Color settings - only update if explicitly set in dataView
-        if (cs && colorObjects) {
-            // Read individual color settings (these override preset colors)
-            if (colorObjects["level0Color"] !== undefined) this.settings.colors[0] = cs.level0Color?.value?.value ?? this.settings.colors[0];
-            if (colorObjects["level1Color"] !== undefined) this.settings.colors[1] = cs.level1Color?.value?.value ?? this.settings.colors[1];
-            if (colorObjects["level2Color"] !== undefined) this.settings.colors[2] = cs.level2Color?.value?.value ?? this.settings.colors[2];
-            if (colorObjects["level3Color"] !== undefined) this.settings.colors[3] = cs.level3Color?.value?.value ?? this.settings.colors[3];
-            if (colorObjects["level4Color"] !== undefined) this.settings.colors[4] = cs.level4Color?.value?.value ?? this.settings.colors[4];
-            if (colorObjects["level5Color"] !== undefined) this.settings.colors[5] = cs.level5Color?.value?.value ?? this.settings.colors[5];
-            if (colorObjects["level6Color"] !== undefined) this.settings.colors[6] = cs.level6Color?.value?.value ?? this.settings.colors[6];
-            if (colorObjects["level7Color"] !== undefined) this.settings.colors[7] = cs.level7Color?.value?.value ?? this.settings.colors[7];
-
-            // Read useAutoColors toggle - allows user to switch back to auto colors
-            if (colorObjects["useAutoColors"] !== undefined) {
-                const useAutoFromPane = cs.useAutoColors?.value;
-                if (useAutoFromPane !== undefined) {
-                    this.settings.useAutoColors = useAutoFromPane;
-                    if (useAutoFromPane) {
-                        // User explicitly wants auto colors
-                        this.settings.colors = this.getDefaultColors();
-                    }
-                }
+        // Color settings - always sync from formatting model
+        if (cs) {
+            this.settings.useAutoColors = cs.useAutoColors?.value ?? defaults.useAutoColors;
+            if (this.settings.useAutoColors) {
+                this.settings.colors = this.getDefaultColors();
+            } else {
+                this.settings.colors[0] = cs.level0Color?.value?.value ?? defaults.colors[0];
+                this.settings.colors[1] = cs.level1Color?.value?.value ?? defaults.colors[1];
+                this.settings.colors[2] = cs.level2Color?.value?.value ?? defaults.colors[2];
+                this.settings.colors[3] = cs.level3Color?.value?.value ?? defaults.colors[3];
+                this.settings.colors[4] = cs.level4Color?.value?.value ?? defaults.colors[4];
+                this.settings.colors[5] = cs.level5Color?.value?.value ?? defaults.colors[5];
+                this.settings.colors[6] = cs.level6Color?.value?.value ?? defaults.colors[6];
+                this.settings.colors[7] = cs.level7Color?.value?.value ?? defaults.colors[7];
             }
         }
 
-        // Display settings - only update if explicitly set in dataView
-        if (ds && displayObjects) {
-            if (displayObjects["showEmptyPlaceholder"] !== undefined) this.settings.showEmptyPlaceholder = ds.showEmptyPlaceholder?.value ?? this.settings.showEmptyPlaceholder;
-            if (displayObjects["showHeader"] !== undefined) this.settings.showHeader = ds.showHeader?.value ?? this.settings.showHeader;
-            if (displayObjects["headerColor"] !== undefined) this.settings.headerColor = ds.headerColor?.value?.value ?? this.settings.headerColor;
-            if (displayObjects["headerTextColor"] !== undefined) this.settings.headerTextColor = ds.headerTextColor?.value?.value ?? this.settings.headerTextColor;
-            if (displayObjects["showControls"] !== undefined) this.settings.showControls = ds.showControls?.value ?? this.settings.showControls;
+        // Display settings - always sync from formatting model
+        if (ds) {
+            this.settings.showEmptyPlaceholder = ds.showEmptyPlaceholder?.value ?? defaults.showEmptyPlaceholder;
+            this.settings.showHeader = ds.showHeader?.value ?? defaults.showHeader;
+            this.settings.headerColor = ds.headerColor?.value?.value ?? defaults.headerColor;
+            this.settings.headerTextColor = ds.headerTextColor?.value?.value ?? defaults.headerTextColor;
+            this.settings.showControls = ds.showControls?.value ?? defaults.showControls;
         }
 
         if (this.isHighContrastMode && this.highContrastColors) {
