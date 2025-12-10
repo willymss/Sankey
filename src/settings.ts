@@ -11,7 +11,6 @@ class StylePresetsCard extends formattingSettings.SimpleCard {
         items: [
             { displayName: "Professional Blue", value: "professionalBlue" },
             { displayName: "Vibrant Spectrum", value: "vibrantSpectrum" },
-            { displayName: "Monochrome", value: "monochrome" },
             { displayName: "Neon", value: "neon" },
             { displayName: "Earth Tones", value: "earthTones" },
             { displayName: "High Contrast", value: "highContrast" },
