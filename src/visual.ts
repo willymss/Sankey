@@ -75,15 +75,12 @@ interface SankeySettings {
 
     // Display settings
     showEmptyPlaceholder: boolean;
-    showHeader: boolean;
     showCounters: boolean;
     headerCounterFontSize: number;
     headerCounterFontFamily: string;
     headerCounterFontWeight: string;
     headerCounterColor: string;
     headerCounterSeparator: string;
-    headerColor: string;
-    headerTextColor: string;
     showControls: boolean;
 }
 
@@ -370,15 +367,12 @@ export class Visual implements IVisual {
             useAutoColors: true,
             colors: defaultColors,
             showEmptyPlaceholder: true,
-            showHeader: true,
             showCounters: true,
             headerCounterFontSize: 11,
             headerCounterFontFamily: "Segoe UI, -apple-system, BlinkMacSystemFont, sans-serif",
             headerCounterFontWeight: "bold",
             headerCounterColor: "#4b5563",
             headerCounterSeparator: "|",
-            headerColor: this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.background : "#faf9f8",
-            headerTextColor: this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.foreground : "#201F1E",
             showControls: true
         };
     }
@@ -1190,22 +1184,17 @@ export class Visual implements IVisual {
         // Display settings - always sync from formatting model
         if (ds) {
             this.settings.showEmptyPlaceholder = ds.showEmptyPlaceholder?.value ?? defaults.showEmptyPlaceholder;
-            this.settings.showHeader = ds.showHeader?.value ?? defaults.showHeader;
             this.settings.showCounters = ds.showCounters?.value ?? defaults.showCounters;
             this.settings.headerCounterFontSize = ds.counterFontSize?.value ?? defaults.headerCounterFontSize;
             this.settings.headerCounterFontFamily = (ds.counterFontFamily as any)?.value?.value ?? (ds.counterFontFamily as any)?.value ?? defaults.headerCounterFontFamily;
             this.settings.headerCounterFontWeight = (ds.counterFontWeight as any)?.value?.value ?? (ds.counterFontWeight as any)?.value ?? defaults.headerCounterFontWeight;
             this.settings.headerCounterColor = ds.counterColor?.value?.value ?? defaults.headerCounterColor;
             this.settings.headerCounterSeparator = (ds.counterSeparator?.value ?? defaults.headerCounterSeparator) || defaults.headerCounterSeparator;
-            this.settings.headerColor = ds.headerColor?.value?.value ?? defaults.headerColor;
-            this.settings.headerTextColor = ds.headerTextColor?.value?.value ?? defaults.headerTextColor;
             this.settings.showControls = ds.showControls?.value ?? defaults.showControls;
         }
 
         if (this.isHighContrastMode && this.highContrastColors) {
             this.settings.textColor = this.highContrastColors.background;
-            this.settings.headerColor = this.highContrastColors.background;
-            this.settings.headerTextColor = this.highContrastColors.foreground;
             this.settings.headerCounterColor = this.highContrastColors.foreground;
         }
     }
@@ -1347,15 +1336,12 @@ export class Visual implements IVisual {
         // Sync display settings
         if (ds) {
             ds.showEmptyPlaceholder.value = this.settings.showEmptyPlaceholder;
-            ds.showHeader.value = this.settings.showHeader;
             ds.showCounters.value = this.settings.showCounters;
             ds.counterFontSize.value = this.settings.headerCounterFontSize;
             ds.counterFontFamily.value = { displayName: this.settings.headerCounterFontFamily, value: this.settings.headerCounterFontFamily } as any;
             ds.counterFontWeight.value = { displayName: this.settings.headerCounterFontWeight, value: this.settings.headerCounterFontWeight } as any;
             ds.counterColor.value = { value: this.settings.headerCounterColor };
             ds.counterSeparator.value = this.settings.headerCounterSeparator;
-            ds.headerColor.value = { value: this.settings.headerColor };
-            ds.headerTextColor.value = { value: this.settings.headerTextColor };
             ds.showControls.value = this.settings.showControls;
         }
     }
@@ -1700,15 +1686,12 @@ export class Visual implements IVisual {
             case "displaySettings":
                 // Reset all display settings
                 this.settings.showEmptyPlaceholder = defaults.showEmptyPlaceholder;
-                this.settings.showHeader = defaults.showHeader;
                 this.settings.showCounters = defaults.showCounters;
                 this.settings.headerCounterFontSize = defaults.headerCounterFontSize;
                 this.settings.headerCounterFontFamily = defaults.headerCounterFontFamily;
                 this.settings.headerCounterFontWeight = defaults.headerCounterFontWeight;
                 this.settings.headerCounterColor = defaults.headerCounterColor;
                 this.settings.headerCounterSeparator = defaults.headerCounterSeparator;
-                this.settings.headerColor = defaults.headerColor;
-                this.settings.headerTextColor = defaults.headerTextColor;
                 this.settings.showControls = defaults.showControls;
                 break;
         }
@@ -1772,15 +1755,12 @@ export class Visual implements IVisual {
     private getDisplaySettingsProperties(): string[] {
         return [
             "showEmptyPlaceholder",
-            "showHeader",
             "showCounters",
             "counterFontSize",
             "counterFontFamily",
             "counterFontWeight",
             "counterColor",
             "counterSeparator",
-            "headerColor",
-            "headerTextColor",
             "showControls"
         ];
     }
@@ -2042,7 +2022,7 @@ export class Visual implements IVisual {
         this.renderLinks();
         this.renderLevelHeaders();
         this.renderNodes();
-        if (this.settings.showHeader) this.renderHeader(width);
+        this.renderHeader(width);
         if (this.settings.showControls) this.renderControls(width);
     }
 
@@ -2653,7 +2633,9 @@ export class Visual implements IVisual {
     private renderHeader(width: number): void {
         if (!this.currentData || !this.settings.showCounters) return;
 
-        const separator = (this.settings.headerCounterSeparator || "|").trim() || "|";
+        const rawSeparator = this.settings.headerCounterSeparator;
+        const separator = rawSeparator === undefined || rawSeparator === null ? "|" : rawSeparator;
+        const joiner = separator === "" ? " " : ` ${separator} `;
         const counterColor = this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.foreground : this.settings.headerCounterColor;
 
         const stats: string[] = [];
@@ -2673,7 +2655,7 @@ export class Visual implements IVisual {
         statsText.setAttribute("font-weight", this.settings.headerCounterFontWeight);
         statsText.setAttribute("font-family", this.settings.headerCounterFontFamily || this.settings.fontFamily);
         statsText.setAttribute("fill", counterColor);
-        statsText.textContent = allCounters.join(` ${separator} `);
+        statsText.textContent = allCounters.join(joiner);
         this.fixedHeader.appendChild(statsText);
     }
 

@@ -576,6 +576,12 @@ class ColorSettingsCard extends formattingSettings.SimpleCard {
 
 /** ---------- DISPLAY ---------- */
 class DisplaySettingsCard extends formattingSettings.SimpleCard {
+    showControls = new formattingSettings.ToggleSwitch({
+        name: "showControls",
+        displayName: "Show zoom controls",
+        value: true
+    });
+
     showEmptyPlaceholder = new formattingSettings.ToggleSwitch({
         name: "showEmptyPlaceholder",
         displayName: "Show empty placeholder",
@@ -642,38 +648,17 @@ class DisplaySettingsCard extends formattingSettings.SimpleCard {
         value: "|"
     });
 
-    headerColor = new formattingSettings.ColorPicker({
-        name: "headerColor",
-        displayName: "Header background",
-        value: { value: "#faf9f8" }
-    });
-
-    headerTextColor = new formattingSettings.ColorPicker({
-        name: "headerTextColor",
-        displayName: "Header text",
-        value: { value: "#201F1E" }
-    });
-
-    showControls = new formattingSettings.ToggleSwitch({
-        name: "showControls",
-        displayName: "Show zoom controls",
-        value: true
-    });
-
     name = "displaySettings";
     displayName = "Display";
     slices = [
+        this.showControls,
         this.showEmptyPlaceholder,
-        this.showHeader,
         this.showCounters,
         this.counterFontSize,
         this.counterFontFamily,
         this.counterFontWeight,
         this.counterColor,
-        this.counterSeparator,
-        this.headerColor,
-        this.headerTextColor,
-        this.showControls
+        this.counterSeparator
     ];
 }
 
