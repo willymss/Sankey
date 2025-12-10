@@ -588,6 +588,60 @@ class DisplaySettingsCard extends formattingSettings.SimpleCard {
         value: true
     });
 
+    showCounters = new formattingSettings.ToggleSwitch({
+        name: "showCounters",
+        displayName: "Show header counters",
+        value: true
+    });
+
+    counterFontSize = new formattingSettings.NumUpDown({
+        name: "counterFontSize",
+        displayName: "Counter font size",
+        value: 11
+    });
+
+    counterFontFamily = new formattingSettings.ItemDropdown({
+        name: "counterFontFamily",
+        displayName: "Counter font family",
+        items: [
+            { displayName: "Segoe UI", value: "Segoe UI, -apple-system, BlinkMacSystemFont, sans-serif" },
+            { displayName: "Arial", value: "Arial, Helvetica, sans-serif" },
+            { displayName: "Calibri", value: "Calibri, sans-serif" },
+            { displayName: "Cambria", value: "Cambria, serif" },
+            { displayName: "Consolas", value: "Consolas, monospace" },
+            { displayName: "Georgia", value: "Georgia, serif" },
+            { displayName: "Roboto", value: "Roboto, sans-serif" },
+            { displayName: "Open Sans", value: "'Open Sans', sans-serif" },
+            { displayName: "Tahoma", value: "Tahoma, sans-serif" },
+            { displayName: "Verdana", value: "Verdana, sans-serif" }
+        ],
+        value: { displayName: "Segoe UI", value: "Segoe UI, -apple-system, BlinkMacSystemFont, sans-serif" }
+    });
+
+    counterFontWeight = new formattingSettings.ItemDropdown({
+        name: "counterFontWeight",
+        displayName: "Counter weight",
+        items: [
+            { displayName: "Regular", value: "normal" },
+            { displayName: "Semibold", value: "600" },
+            { displayName: "Bold", value: "bold" }
+        ],
+        value: { displayName: "Bold", value: "bold" }
+    });
+
+    counterColor = new formattingSettings.ColorPicker({
+        name: "counterColor",
+        displayName: "Counter color",
+        value: { value: "#4b5563" }
+    });
+
+    counterSeparator = new formattingSettings.TextInput({
+        name: "counterSeparator",
+        displayName: "Counter separator",
+        placeholder: "|",
+        value: "|"
+    });
+
     headerColor = new formattingSettings.ColorPicker({
         name: "headerColor",
         displayName: "Header background",
@@ -608,7 +662,19 @@ class DisplaySettingsCard extends formattingSettings.SimpleCard {
 
     name = "displaySettings";
     displayName = "Display";
-    slices = [this.showEmptyPlaceholder, this.showHeader, this.headerColor, this.headerTextColor, this.showControls];
+    slices = [
+        this.showEmptyPlaceholder,
+        this.showHeader,
+        this.showCounters,
+        this.counterFontSize,
+        this.counterFontFamily,
+        this.counterFontWeight,
+        this.counterColor,
+        this.counterSeparator,
+        this.headerColor,
+        this.headerTextColor,
+        this.showControls
+    ];
 }
 
 /** ---------- MODEL ---------- */

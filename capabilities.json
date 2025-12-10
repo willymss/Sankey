@@ -345,6 +345,36 @@
           "displayNameKey": "DisplaySettings_ShowHeader",
           "type": { "bool": true }
         },
+        "showCounters": {
+          "displayName": "Show Header Counters",
+          "displayNameKey": "DisplaySettings_ShowCounters",
+          "type": { "bool": true }
+        },
+        "counterFontSize": {
+          "displayName": "Counter Font Size",
+          "displayNameKey": "DisplaySettings_CounterFontSize",
+          "type": { "numeric": true }
+        },
+        "counterFontFamily": {
+          "displayName": "Counter Font Family",
+          "displayNameKey": "DisplaySettings_CounterFontFamily",
+          "type": { "text": true }
+        },
+        "counterFontWeight": {
+          "displayName": "Counter Weight",
+          "displayNameKey": "DisplaySettings_CounterFontWeight",
+          "type": { "text": true }
+        },
+        "counterColor": {
+          "displayName": "Counter Color",
+          "displayNameKey": "DisplaySettings_CounterColor",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "counterSeparator": {
+          "displayName": "Counter Separator",
+          "displayNameKey": "DisplaySettings_CounterSeparator",
+          "type": { "text": true }
+        },
         "headerColor": {
           "displayName": "Header Color",
           "displayNameKey": "DisplaySettings_HeaderColor",

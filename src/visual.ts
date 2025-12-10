@@ -76,6 +76,12 @@ interface SankeySettings {
     // Display settings
     showEmptyPlaceholder: boolean;
     showHeader: boolean;
+    showCounters: boolean;
+    headerCounterFontSize: number;
+    headerCounterFontFamily: string;
+    headerCounterFontWeight: string;
+    headerCounterColor: string;
+    headerCounterSeparator: string;
     headerColor: string;
     headerTextColor: string;
     showControls: boolean;
@@ -365,6 +371,12 @@ export class Visual implements IVisual {
             colors: defaultColors,
             showEmptyPlaceholder: true,
             showHeader: true,
+            showCounters: true,
+            headerCounterFontSize: 11,
+            headerCounterFontFamily: "Segoe UI, -apple-system, BlinkMacSystemFont, sans-serif",
+            headerCounterFontWeight: "bold",
+            headerCounterColor: "#4b5563",
+            headerCounterSeparator: "|",
             headerColor: this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.background : "#faf9f8",
             headerTextColor: this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.foreground : "#201F1E",
             showControls: true
@@ -1179,6 +1191,12 @@ export class Visual implements IVisual {
         if (ds) {
             this.settings.showEmptyPlaceholder = ds.showEmptyPlaceholder?.value ?? defaults.showEmptyPlaceholder;
             this.settings.showHeader = ds.showHeader?.value ?? defaults.showHeader;
+            this.settings.showCounters = ds.showCounters?.value ?? defaults.showCounters;
+            this.settings.headerCounterFontSize = ds.counterFontSize?.value ?? defaults.headerCounterFontSize;
+            this.settings.headerCounterFontFamily = (ds.counterFontFamily as any)?.value?.value ?? (ds.counterFontFamily as any)?.value ?? defaults.headerCounterFontFamily;
+            this.settings.headerCounterFontWeight = (ds.counterFontWeight as any)?.value?.value ?? (ds.counterFontWeight as any)?.value ?? defaults.headerCounterFontWeight;
+            this.settings.headerCounterColor = ds.counterColor?.value?.value ?? defaults.headerCounterColor;
+            this.settings.headerCounterSeparator = (ds.counterSeparator?.value ?? defaults.headerCounterSeparator) || defaults.headerCounterSeparator;
             this.settings.headerColor = ds.headerColor?.value?.value ?? defaults.headerColor;
             this.settings.headerTextColor = ds.headerTextColor?.value?.value ?? defaults.headerTextColor;
             this.settings.showControls = ds.showControls?.value ?? defaults.showControls;
@@ -1188,6 +1206,7 @@ export class Visual implements IVisual {
             this.settings.textColor = this.highContrastColors.background;
             this.settings.headerColor = this.highContrastColors.background;
             this.settings.headerTextColor = this.highContrastColors.foreground;
+            this.settings.headerCounterColor = this.highContrastColors.foreground;
         }
     }
 
@@ -1329,6 +1348,12 @@ export class Visual implements IVisual {
         if (ds) {
             ds.showEmptyPlaceholder.value = this.settings.showEmptyPlaceholder;
             ds.showHeader.value = this.settings.showHeader;
+            ds.showCounters.value = this.settings.showCounters;
+            ds.counterFontSize.value = this.settings.headerCounterFontSize;
+            ds.counterFontFamily.value = { displayName: this.settings.headerCounterFontFamily, value: this.settings.headerCounterFontFamily } as any;
+            ds.counterFontWeight.value = { displayName: this.settings.headerCounterFontWeight, value: this.settings.headerCounterFontWeight } as any;
+            ds.counterColor.value = { value: this.settings.headerCounterColor };
+            ds.counterSeparator.value = this.settings.headerCounterSeparator;
             ds.headerColor.value = { value: this.settings.headerColor };
             ds.headerTextColor.value = { value: this.settings.headerTextColor };
             ds.showControls.value = this.settings.showControls;
@@ -1676,6 +1701,12 @@ export class Visual implements IVisual {
                 // Reset all display settings
                 this.settings.showEmptyPlaceholder = defaults.showEmptyPlaceholder;
                 this.settings.showHeader = defaults.showHeader;
+                this.settings.showCounters = defaults.showCounters;
+                this.settings.headerCounterFontSize = defaults.headerCounterFontSize;
+                this.settings.headerCounterFontFamily = defaults.headerCounterFontFamily;
+                this.settings.headerCounterFontWeight = defaults.headerCounterFontWeight;
+                this.settings.headerCounterColor = defaults.headerCounterColor;
+                this.settings.headerCounterSeparator = defaults.headerCounterSeparator;
                 this.settings.headerColor = defaults.headerColor;
                 this.settings.headerTextColor = defaults.headerTextColor;
                 this.settings.showControls = defaults.showControls;
@@ -1740,7 +1771,17 @@ export class Visual implements IVisual {
 
     private getDisplaySettingsProperties(): string[] {
         return [
-            "showEmptyPlaceholder", "showHeader", "headerColor", "headerTextColor", "showControls"
+            "showEmptyPlaceholder",
+            "showHeader",
+            "showCounters",
+            "counterFontSize",
+            "counterFontFamily",
+            "counterFontWeight",
+            "counterColor",
+            "counterSeparator",
+            "headerColor",
+            "headerTextColor",
+            "showControls"
         ];
     }
 
@@ -2610,42 +2651,30 @@ export class Visual implements IVisual {
     }
 
     private renderHeader(width: number): void {
-        if (!this.currentData) return;
-        const headerTextColor = this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.foreground : this.settings.headerTextColor;
-        const title = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        title.setAttribute("x", "20");
-        title.setAttribute("y", "25");
-        title.setAttribute("font-size", "18px");
-        title.setAttribute("font-weight", "bold");
-        title.setAttribute("font-family", this.settings.fontFamily);
-        title.setAttribute("fill", headerTextColor);
-        title.textContent = "Power BI Data Lineage";
-        this.fixedHeader.appendChild(title);
+        if (!this.currentData || !this.settings.showCounters) return;
+
+        const separator = (this.settings.headerCounterSeparator || "|").trim() || "|";
+        const counterColor = this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.foreground : this.settings.headerCounterColor;
 
         const stats: string[] = [];
         const nodesByLevel = new Map<number, number>();
         this.nodes.forEach(node => nodesByLevel.set(node.levelIndex, (nodesByLevel.get(node.levelIndex) || 0) + 1));
         this.currentData.columns.forEach((col, i) => stats.push(`${nodesByLevel.get(i) || 0} ${this.titleCase(col)}`));
 
+        const totals = [`Nodes ${this.nodes.size}`, `Links ${this.links.length}`];
+        const allCounters = [...totals, ...stats].filter(Boolean);
+
+        if (!allCounters.length) return;
+
         const statsText = document.createElementNS("http://www.w3.org/2000/svg", "text");
         statsText.setAttribute("x", "20");
-        statsText.setAttribute("y", "45");
-        statsText.setAttribute("font-size", "11px");
-        statsText.setAttribute("font-weight", "bold");
-        statsText.setAttribute("font-family", this.settings.fontFamily);
-        statsText.setAttribute("fill", "#666");
-        statsText.textContent = `📊 ${stats.join(" | ")} | ${this.nodes.size} Total Nodes | ${this.links.length} Links`;
+        statsText.setAttribute("y", "30");
+        statsText.setAttribute("font-size", `${this.settings.headerCounterFontSize}px`);
+        statsText.setAttribute("font-weight", this.settings.headerCounterFontWeight);
+        statsText.setAttribute("font-family", this.settings.headerCounterFontFamily || this.settings.fontFamily);
+        statsText.setAttribute("fill", counterColor);
+        statsText.textContent = allCounters.join(` ${separator} `);
         this.fixedHeader.appendChild(statsText);
-
-        const hint = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        hint.setAttribute("x", "20");
-        hint.setAttribute("y", "62");
-        hint.setAttribute("font-size", "10px");
-        hint.setAttribute("font-style", "italic");
-        hint.setAttribute("font-family", this.settings.fontFamily);
-        hint.setAttribute("fill", "#999");
-        hint.textContent = "💡 Click node to highlight | Ctrl+Click for multi-select | Arrow keys to navigate | Double-click background to reset";
-        this.fixedHeader.appendChild(hint);
     }
 
     private renderControls(width: number): void {
@@ -2987,3 +3016,4 @@ export class Visual implements IVisual {
 
 export class AdvancedSankeyChart extends Visual { }
 export default AdvancedSankeyChart;
+
