@@ -1,0 +1,27 @@
+# Build artifacts
+/.tmp/
+/dist/
+*.pbiviz
+
+# Dependencies
+/node_modules/
+
+# Local development
+/pbiviz-certs/
+/.vscode/
+coverage/
+npm-debug.log*
+yarn-error.log*
+*.log
+
+# OS-generated
+.DS_Store
+Thumbs.db
+
+# Project documents (keep local only)
+/power-bi-developer-visuals_part1.pdf
+/power-bi-developer-visuals_part2.pdf
+/power-bi-developer-visuals_part3.pdf
+/power-bi-developer-visuals_part4.pdf
+/webpack.statistics.dev.html
+/webpack.statistics.prod.html
