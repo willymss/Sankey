@@ -25,3 +25,4 @@ Thumbs.db
 /power-bi-developer-visuals_part4.pdf
 /webpack.statistics.dev.html
 /webpack.statistics.prod.html
+\n# Local AI/workbench config\n/.claude/

@@ -1,0 +1,380 @@
+{
+  "privileges": [],
+  "supportsEmptyDataView": true,
+  "supportsHighlight": true,
+  "supportsKeyboardFocus": true,
+  "supportsLandingPage": true,
+  "supportsMultiVisualSelection": true,
+  "dataRoles": [
+    {
+      "name": "group",
+      "kind": "Grouping",
+      "displayName": "Hierarchy Levels",
+      "displayNameKey": "Role_HierarchyLevels"
+    },
+    {
+      "name": "tooltips",
+      "kind": "Measure",
+      "displayName": "Tooltips (Last Level Only)",
+      "displayNameKey": "Role_Tooltips"
+    }
+  ],
+  "dataViewMappings": [
+    {
+      "conditions": [
+        {
+          "group": { "max": 10 },
+          "tooltips": { "max": 5 }
+        }
+      ],
+      "table": {
+        "rows": {
+          "select": [
+            { "for": { "in": "group" } },
+            { "for": { "in": "tooltips" } }
+          ],
+          "dataReductionAlgorithm": {
+            "top": { "count": 30000 }
+          }
+        }
+      }
+    }
+  ],
+  "objects": {
+    "stylePresets": {
+      "displayName": "Layout and style presets",
+      "displayNameKey": "Objects_StylePresets",
+      "properties": {
+        "stylePreset": {
+          "displayName": "Style",
+          "displayNameKey": "StylePresets_Style",
+          "type": { "text": true }
+        },
+        "activePresetId": {
+          "displayName": "Active Preset ID",
+          "displayNameKey": "StylePresets_ActivePresetId",
+          "type": { "text": true }
+        }
+      }
+    },
+    "nodeSettings": {
+      "displayName": "Nodes",
+      "displayNameKey": "Objects_Nodes",
+      "properties": {
+        "nodeWidth": {
+          "displayName": "Node Width",
+          "displayNameKey": "NodeSettings_NodeWidth",
+          "type": { "numeric": true }
+        },
+        "nodeHeight": {
+          "displayName": "Node Height",
+          "displayNameKey": "NodeSettings_NodeHeight",
+          "type": { "numeric": true }
+        },
+        "nodeShape": {
+          "displayName": "Node Shape",
+          "displayNameKey": "NodeSettings_NodeShape",
+          "type": { "text": true }
+        },
+        "cornerRadius": {
+          "displayName": "Corner Radius",
+          "displayNameKey": "NodeSettings_CornerRadius",
+          "type": { "numeric": true }
+        },
+        "nodeFillOpacity": {
+          "displayName": "Fill Opacity",
+          "displayNameKey": "NodeSettings_FillOpacity",
+          "type": { "numeric": true }
+        },
+        "nodeBorderStyle": {
+          "displayName": "Border Style",
+          "displayNameKey": "NodeSettings_BorderStyle",
+          "type": { "text": true }
+        },
+        "nodeBorderWidth": {
+          "displayName": "Border Width",
+          "displayNameKey": "NodeSettings_BorderWidth",
+          "type": { "numeric": true }
+        },
+        "useCustomBorderColor": {
+          "displayName": "Custom Border Color",
+          "displayNameKey": "NodeSettings_UseCustomBorderColor",
+          "type": { "bool": true }
+        },
+        "nodeBorderColor": {
+          "displayName": "Border Color",
+          "displayNameKey": "NodeSettings_BorderColor",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "levelSpacing": {
+          "displayName": "Level Spacing",
+          "displayNameKey": "NodeSettings_LevelSpacing",
+          "type": { "numeric": true }
+        },
+        "nodeSpacing": {
+          "displayName": "Node Spacing",
+          "displayNameKey": "NodeSettings_NodeSpacing",
+          "type": { "numeric": true }
+        },
+        "fontSize": {
+          "displayName": "Font Size",
+          "displayNameKey": "NodeSettings_FontSize",
+          "type": { "numeric": true }
+        },
+        "fontFamily": {
+          "displayName": "Font Family",
+          "displayNameKey": "NodeSettings_FontFamily",
+          "type": { "text": true }
+        },
+        "textColor": {
+          "displayName": "Text Color",
+          "displayNameKey": "NodeSettings_TextColor",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "wrapText": {
+          "displayName": "Wrap Text",
+          "displayNameKey": "NodeSettings_WrapText",
+          "type": { "bool": true }
+        },
+        "maxCharsPerLine": {
+          "displayName": "Max Chars Per Line",
+          "displayNameKey": "NodeSettings_MaxChars",
+          "type": { "numeric": true }
+        },
+        "showValues": {
+          "displayName": "Show Values",
+          "displayNameKey": "NodeSettings_ShowValues",
+          "description": "Display measure values on nodes",
+          "type": { "bool": true }
+        },
+        "badgeTextSize": {
+          "displayName": "Badge Text Size",
+          "displayNameKey": "NodeSettings_BadgeTextSize",
+          "type": { "numeric": true }
+        },
+        "badgeTextColor": {
+          "displayName": "Badge Text Color",
+          "displayNameKey": "NodeSettings_BadgeTextColor",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "badgeFontFamily": {
+          "displayName": "Badge Font Family",
+          "displayNameKey": "NodeSettings_BadgeFontFamily",
+          "type": { "text": true }
+        },
+        "badgePosition": {
+          "displayName": "Badge Position",
+          "displayNameKey": "NodeSettings_BadgePosition",
+          "type": { "text": true }
+        },
+        "badgePaddingTop": {
+          "displayName": "Badge Padding Top",
+          "displayNameKey": "NodeSettings_BadgePaddingTop",
+          "type": { "numeric": true }
+        },
+        "badgePaddingRight": {
+          "displayName": "Badge Padding Right",
+          "displayNameKey": "NodeSettings_BadgePaddingRight",
+          "type": { "numeric": true }
+        },
+        "badgePaddingBottom": {
+          "displayName": "Badge Padding Bottom",
+          "displayNameKey": "NodeSettings_BadgePaddingBottom",
+          "type": { "numeric": true }
+        },
+        "badgePaddingLeft": {
+          "displayName": "Badge Padding Left",
+          "displayNameKey": "NodeSettings_BadgePaddingLeft",
+          "type": { "numeric": true }
+        },
+        "countMode": {
+          "displayName": "Count Mode",
+          "displayNameKey": "NodeSettings_CountMode",
+          "type": { "text": true }
+        }
+      }
+    },
+    "linkSettings": {
+      "displayName": "Links",
+      "displayNameKey": "Objects_Links",
+      "properties": {
+        "lineOpacity": {
+          "displayName": "Link Opacity",
+          "displayNameKey": "LinkSettings_Opacity",
+          "type": { "numeric": true }
+        },
+        "linkWidth": {
+          "displayName": "Link Width",
+          "displayNameKey": "LinkSettings_Width",
+          "type": { "numeric": true }
+        },
+        "highlightOpacity": {
+          "displayName": "Highlight Opacity",
+          "displayNameKey": "LinkSettings_HighlightOpacity",
+          "type": { "numeric": true }
+        },
+        "linkStyle": {
+          "displayName": "Link Style",
+          "displayNameKey": "LinkSettings_LinkStyle",
+          "type": { "text": true }
+        },
+        "linkColorMode": {
+          "displayName": "Link Color Mode",
+          "displayNameKey": "LinkSettings_ColorMode",
+          "type": { "text": true }
+        },
+        "customLinkColor": {
+          "displayName": "Custom Link Color",
+          "displayNameKey": "LinkSettings_CustomColor",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "linkCurveStyle": {
+          "displayName": "Curve Style",
+          "displayNameKey": "LinkSettings_CurveStyle",
+          "type": { "text": true }
+        },
+        "showStartMarker": {
+          "displayName": "Show Start Marker",
+          "displayNameKey": "LinkSettings_ShowStartMarker",
+          "type": { "bool": true }
+        },
+        "startMarkerType": {
+          "displayName": "Start Marker Type",
+          "displayNameKey": "LinkSettings_StartMarkerType",
+          "type": { "text": true }
+        },
+        "startMarkerSize": {
+          "displayName": "Start Marker Size",
+          "displayNameKey": "LinkSettings_StartMarkerSize",
+          "type": { "numeric": true }
+        },
+        "showEndMarker": {
+          "displayName": "Show End Marker",
+          "displayNameKey": "LinkSettings_ShowEndMarker",
+          "type": { "bool": true }
+        },
+        "endMarkerType": {
+          "displayName": "End Marker Type",
+          "displayNameKey": "LinkSettings_EndMarkerType",
+          "type": { "text": true }
+        },
+        "endMarkerSize": {
+          "displayName": "End Marker Size",
+          "displayNameKey": "LinkSettings_EndMarkerSize",
+          "type": { "numeric": true }
+        },
+        "useCustomMarkerColors": {
+          "displayName": "Custom Marker Colors",
+          "displayNameKey": "LinkSettings_UseCustomMarkerColors",
+          "type": { "bool": true }
+        },
+        "startMarkerColor": {
+          "displayName": "Start Marker Color",
+          "displayNameKey": "LinkSettings_StartMarkerColor",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "endMarkerColor": {
+          "displayName": "End Marker Color",
+          "displayNameKey": "LinkSettings_EndMarkerColor",
+          "type": { "fill": { "solid": { "color": true } } }
+        }
+      }
+    },
+    "colorSettings": {
+      "displayName": "Colors",
+      "displayNameKey": "Objects_Colors",
+      "properties": {
+        "useAutoColors": {
+          "displayName": "Use Auto Colors",
+          "displayNameKey": "ColorSettings_AutoColors",
+          "type": { "bool": true }
+        },
+        "level0Color": {
+          "displayName": "Level 0 Color",
+          "displayNameKey": "ColorSettings_Level0",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "level1Color": {
+          "displayName": "Level 1 Color",
+          "displayNameKey": "ColorSettings_Level1",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "level2Color": {
+          "displayName": "Level 2 Color",
+          "displayNameKey": "ColorSettings_Level2",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "level3Color": {
+          "displayName": "Level 3 Color",
+          "displayNameKey": "ColorSettings_Level3",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "level4Color": {
+          "displayName": "Level 4 Color",
+          "displayNameKey": "ColorSettings_Level4",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "level5Color": {
+          "displayName": "Level 5 Color",
+          "displayNameKey": "ColorSettings_Level5",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "level6Color": {
+          "displayName": "Level 6 Color",
+          "displayNameKey": "ColorSettings_Level6",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "level7Color": {
+          "displayName": "Level 7 Color",
+          "displayNameKey": "ColorSettings_Level7",
+          "type": { "fill": { "solid": { "color": true } } }
+        }
+      }
+    },
+    "displaySettings": {
+      "displayName": "Display",
+      "displayNameKey": "Objects_Display",
+      "properties": {
+        "showEmptyPlaceholder": {
+          "displayName": "Show Empty Placeholder",
+          "displayNameKey": "DisplaySettings_EmptyPlaceholder",
+          "type": { "bool": true }
+        },
+        "showHeader": {
+          "displayName": "Show Header",
+          "displayNameKey": "DisplaySettings_ShowHeader",
+          "type": { "bool": true }
+        },
+        "headerColor": {
+          "displayName": "Header Color",
+          "displayNameKey": "DisplaySettings_HeaderColor",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "headerTextColor": {
+          "displayName": "Header Text Color",
+          "displayNameKey": "DisplaySettings_HeaderTextColor",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "showControls": {
+          "displayName": "Show Controls",
+          "displayNameKey": "DisplaySettings_ShowControls",
+          "type": { "bool": true }
+        }
+      }
+    }
+  },
+  "tooltips": {
+    "supportedTypes": {
+      "default": true,
+      "canvas": true
+    },
+    "roles": ["tooltips"],
+    "supportEnhancedTooltips": true
+  },
+  "sorting": {
+    "default": {}
+  },
+  "drilldown": {
+    "roles": ["group"]
+  }
+}

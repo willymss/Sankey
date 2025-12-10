@@ -1,0 +1,55 @@
+name: Bug report
+description: Report a reproducible problem in the Advanced Sankey Chart visual.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing an issue! Fill out all required fields so we can reproduce.
+  - type: input
+    id: version
+    attributes:
+      label: Visual version
+      description: PBIVIZ package version (e.g., 1.1.0.0)
+      placeholder: 1.1.0.0
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Briefly describe the bug.
+      placeholder: Nodes disappear when the value field is empty.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: List exact steps and attach a sample PBIX or dataset if possible.
+      placeholder: |
+        1. Add Category to Source and Destination
+        2. Add Value
+        3. Enable high contrast
+        4. Observe missing labels
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      placeholder: Labels render in high contrast mode.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      placeholder: Labels disappear when high contrast is enabled.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Additional context
+      description: Screenshots, logs from Developer Mode, or video.

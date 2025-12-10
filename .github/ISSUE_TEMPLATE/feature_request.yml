@@ -1,0 +1,30 @@
+name: Feature request
+description: Suggest an enhancement for the Advanced Sankey Chart visual.
+labels: [enhancement]
+body:
+  - type: input
+    id: problem
+    attributes:
+      label: Problem statement
+      description: What user problem are you trying to solve?
+      placeholder: Need to limit node count when dataset is large.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the change and any UI/UX expectations.
+      placeholder: Add a max nodes setting with default 200.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      placeholder: Increase performance budget; pre-aggregate data.
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Mockups, prior art, or related visuals.
