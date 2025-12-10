@@ -1187,6 +1187,16 @@ export class Visual implements IVisual {
         this.previousPreset = resolvedPreset;
     }
 
+    private getLevelColor(levelIndex: number): string {
+        if (this.isHighContrastMode && this.highContrastColors) {
+            return this.highContrastColors.foreground;
+        }
+        if (this.settings.colors && this.settings.colors.length > 0) {
+            return this.settings.colors[levelIndex % this.settings.colors.length];
+        }
+        return "#888888";
+    }
+
     private updateSettingsFromModel(dataView: powerbi.DataView): void {
         // Check if the preset was explicitly changed
         const sp = this.formattingSettings?.stylePresets;
@@ -2102,7 +2112,7 @@ export class Visual implements IVisual {
 
         columns.forEach((level, levelIndex) => {
             const valueMap = nodesByLevel.get(level)!;
-            const color = this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.foreground : this.settings.colors[levelIndex % this.settings.colors.length];
+            const color = this.getLevelColor(levelIndex);
             valueMap.forEach((count, value) => {
                 const id = this.makeId(levelIndex, value);
                 const isHighlighted = highlights ? highlightedValues.has(`${levelIndex}_${value}`) : true;
@@ -2125,8 +2135,8 @@ export class Visual implements IVisual {
                 const [source, target] = pair.split('->');
                 const sourceNode = this.nodes.get(source);
                 const targetNode = this.nodes.get(target);
-                const sourceColor = sourceNode?.color || this.settings.colors[i % this.settings.colors.length];
-                const targetColor = targetNode?.color || this.settings.colors[(i + 1) % this.settings.colors.length];
+                const sourceColor = sourceNode?.color || this.getLevelColor(i);
+                const targetColor = targetNode?.color || this.getLevelColor(i + 1);
                 this.links.push({ source, target, count: 1, color: sourceColor, sourceColor, targetColor });
             });
         }
@@ -2344,7 +2354,9 @@ export class Visual implements IVisual {
             const x2 = target.x;
             const y2 = target.y + this.settings.nodeHeight / 2;
 
-            const linkColor = this.getLinkColor(link);
+            const sourceColor = link.sourceColor || this.getLevelColor(source?.levelIndex ?? 0);
+            const targetColor = link.targetColor || this.getLevelColor(target?.levelIndex ?? 0);
+            const linkColor = this.getLinkColor({ ...link, sourceColor, targetColor });
 
             if (this.settings.linkColorMode === "gradient") {
                 const gradientId = `gradient-${index}`;
@@ -2356,10 +2368,10 @@ export class Visual implements IVisual {
                 gradient.setAttribute("y2", "0%");
                 const stop1 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
                 stop1.setAttribute("offset", "0%");
-                stop1.setAttribute("stop-color", link.sourceColor || link.color);
+                stop1.setAttribute("stop-color", sourceColor);
                 const stop2 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
                 stop2.setAttribute("offset", "100%");
-                stop2.setAttribute("stop-color", link.targetColor || link.color);
+                stop2.setAttribute("stop-color", targetColor);
                 gradient.appendChild(stop1);
                 gradient.appendChild(stop2);
                 this.defs.appendChild(gradient);
@@ -2383,13 +2395,13 @@ export class Visual implements IVisual {
             if (this.settings.showStartMarker) {
                 const markerColor = this.settings.useCustomMarkerColors 
                     ? this.settings.startMarkerColor 
-                    : (this.settings.linkColorMode === "gradient" ? (link.sourceColor || link.color) : linkColor);
+                    : (this.settings.linkColorMode === "gradient" ? sourceColor : linkColor);
                 path.setAttribute("marker-start", `url(#${this.getMarkerId(markerColor, this.settings.startMarkerType, "start")})`);
             }
             if (this.settings.showEndMarker) {
                 const markerColor = this.settings.useCustomMarkerColors 
                     ? this.settings.endMarkerColor 
-                    : (this.settings.linkColorMode === "gradient" ? (link.targetColor || link.color) : linkColor);
+                    : (this.settings.linkColorMode === "gradient" ? targetColor : linkColor);
                 path.setAttribute("marker-end", `url(#${this.getMarkerId(markerColor, this.settings.endMarkerType, "end")})`);
             }
 
