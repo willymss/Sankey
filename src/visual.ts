@@ -142,7 +142,6 @@ export class Visual implements IVisual {
         "gradientFlow",
         "midnightPro",
         "popArt",
-        "cyberDeck",
         "nordicMinimal",
         "softGlass",
         "monoBrutal",
@@ -833,11 +832,11 @@ export class Visual implements IVisual {
                 break;
 
             case "earthTones":
-                // Earth Tones - Warm, nature-inspired, earthy palette
-                this.settings.colors = ["#8B4513", "#D2691E", "#CD853F", "#DEB887", "#6B8E23", "#8FBC8F", "#BC8F8F", "#F4A460"];
+                // Earth Tones - Warm, distinct earthy palette (less gradient-like)
+                this.settings.colors = ["#5D3A00", "#A05A2C", "#C68A47", "#D9B382", "#4F6B2A", "#7DA45A", "#A26A5E", "#8C5319"];
                 this.settings.nodeShape = "roundedRect";
                 this.settings.cornerRadius = 6;
-                this.settings.nodeFillOpacity = 88;
+                this.settings.nodeFillOpacity = 92;
                 this.settings.nodeBorderStyle = "solid";
                 this.settings.nodeBorderWidth = 2;
                 this.settings.useCustomBorderColor = true;
@@ -850,8 +849,8 @@ export class Visual implements IVisual {
                 this.settings.levelSpacing = 280;
                 this.settings.linkCurveStyle = "bezier";
                 this.settings.linkColorMode = "source";
-                this.settings.lineOpacity = 0.28;
-                this.settings.linkWidth = 1.8;
+                this.settings.lineOpacity = 0.35;
+                this.settings.linkWidth = 2.0;
                 this.settings.linkStyle = "solid";
                 this.settings.showStartMarker = false;
                 this.settings.showEndMarker = true;
@@ -879,8 +878,8 @@ export class Visual implements IVisual {
                 this.settings.levelSpacing = 280;
                 this.settings.linkCurveStyle = "bezier";
                 this.settings.linkColorMode = "gradient";
-                this.settings.lineOpacity = 0.2;
-                this.settings.linkWidth = 1.5;
+                this.settings.lineOpacity = 0.35;
+                this.settings.linkWidth = 2.0;
                 this.settings.linkStyle = "solid";
                 this.settings.showStartMarker = true;
                 this.settings.startMarkerType = "circle";
@@ -915,11 +914,11 @@ export class Visual implements IVisual {
                 this.settings.linkWidth = 2;
                 this.settings.linkStyle = "solid";
                 this.settings.showStartMarker = true;
-                this.settings.startMarkerType = "square";
+                this.settings.startMarkerType = "circle";
                 this.settings.startMarkerSize = 6;
                 this.settings.showEndMarker = true;
-                this.settings.endMarkerType = "square";
-                this.settings.endMarkerSize = 6;
+                this.settings.endMarkerType = "arrow";
+                this.settings.endMarkerSize = 8;
                 this.settings.useCustomMarkerColors = false;
                 this.settings.showControls = true;
                 this.settings.showValues = true;
@@ -990,7 +989,7 @@ export class Visual implements IVisual {
                 this.settings.cornerRadius = 12;
                 this.settings.nodeFillOpacity = 100;
                 this.settings.nodeBorderStyle = "solid";
-                this.settings.nodeBorderWidth = 2;
+                this.settings.nodeBorderWidth = 1;
                 this.settings.useCustomBorderColor = true;
                 this.settings.nodeBorderColor = "#000000";
                 this.settings.textColor = "#FFFFFF";
@@ -1107,8 +1106,8 @@ export class Visual implements IVisual {
                 break;
 
             case "monoBrutal":
-                // Mono Brutal - Stark contrast, heavy strokes
-                this.settings.colors = ["#000000", "#FFFFFF", "#333333", "#111111", "#666666", "#999999", "#AAAAAA", "#CCCCCC"];
+                // Mono Brutal - Stark contrast, heavy strokes (avoid white fill/text clash)
+                this.settings.colors = ["#0A0A0A", "#1A1A1A", "#2B2B2B", "#3C3C3C", "#4D4D4D", "#5E5E5E", "#777777", "#8F8F8F"];
                 this.settings.nodeShape = "roundedRect";
                 this.settings.cornerRadius = 0;
                 this.settings.nodeFillOpacity = 100;

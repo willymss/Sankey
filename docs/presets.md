@@ -36,7 +36,7 @@ Snapshot of each preset’s baseline settings as applied in `applyStylePreset` (
 - Colors: `#00BCD4`, `#009688`, `#4CAF50`, `#8BC34A`, `#CDDC39`, `#FFC107`, `#FF9800`, `#FF5722`
 - Nodes: roundedRect, cornerRadius 2, fillOpacity 92%, border solid 2px `#263238`, text `#FFFFFF`, font 10px Consolas, height 48, spacing 55, levelSpacing 270
 - Links: curve `step`, colorMode `target`, lineOpacity 0.4, width 2, style solid
-- Markers: start on (`square`, size 6), end on (`square`, size 6), custom marker colors off
+- Markers: start on (`circle`, size 6), end on (`arrow`, size 8), custom marker colors off
 
 ## gradientFlow
 - Colors: `#667EEA`, `#764BA2`, `#F093FB`, `#4FACFE`, `#00F2FE`, `#43E97B`, `#38F9D7`, `#FA709A`
@@ -56,12 +56,6 @@ Snapshot of each preset’s baseline settings as applied in `applyStylePreset` (
 - Links: curve `bezier`, colorMode `source`, lineOpacity 1.0, width 2.5, style solid
 - Markers: start off, end on (`arrow`, size 8), custom marker colors off
 
-## cyberDeck
-- Colors: `#00FF94`, `#FF0055`, `#00E5FF`, `#BD00FF`, `#F7DF1E`, `#FF5F1F`, `#00FF00`, `#FF0099`
-- Nodes: roundedRect, cornerRadius 0, fillOpacity 10%, border solid 1px `#00FF94`, text `#00FF94`, font 10px JetBrains Mono, height 44, spacing 80, levelSpacing 320
-- Links: curve `step`, colorMode `target`, lineOpacity 0.6, width 1.0, style solid
-- Markers: start on (`square`, size 4), end on (`square`, size 4), custom marker colors on
-
 ## nordicMinimal
 - Colors: `#4C566A`, `#5E81AC`, `#81A1C1`, `#88C0D0`, `#A3BE8C`, `#EBCB8B`, `#D08770`, `#BF616A`
 - Nodes: roundedRect, cornerRadius 4, fillOpacity 90%, border none, text `#ECEFF4`, font 11px Roboto Slab, height 48, spacing 60, levelSpacing 280
@@ -75,7 +69,7 @@ Snapshot of each preset’s baseline settings as applied in `applyStylePreset` (
 - Markers: start off, end on (`arrow`, size 7), custom marker colors off
 
 ## monoBrutal
-- Colors: `#000000`, `#FFFFFF`, `#333333`, `#111111`, `#666666`, `#999999`, `#AAAAAA`, `#CCCCCC`
+- Colors: `#0A0A0A`, `#1A1A1A`, `#2B2B2B`, `#3C3C3C`, `#4D4D4D`, `#5E5E5E`, `#777777`, `#8F8F8F`
 - Nodes: roundedRect, cornerRadius 0, fillOpacity 100%, border solid 3px `#000000`, text `#FFFFFF`, font 11px Courier Prime, height 50, spacing 60, levelSpacing 270
 - Links: curve `step`, colorMode `target`, lineOpacity 1.0, width 3, style solid
 - Markers: start on (`square`, size 8), end on (`arrow`, size 10), custom marker colors off
