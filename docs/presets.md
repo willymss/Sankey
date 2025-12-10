@@ -43,3 +43,45 @@ Snapshot of each preset’s baseline settings as applied in `applyStylePreset` (
 - Nodes: pill, fillOpacity 88%, border none, text `#FFFFFF`, font 10px Segoe UI, height 52, spacing 70, levelSpacing 300
 - Links: curve `bezier`, colorMode `gradient`, lineOpacity 0.5, width 2.5, style solid
 - Markers: start off, end on (`arrow`, size 8), custom marker colors off
+
+## midnightPro
+- Colors: `#5E6AD2`, `#8B5CF6`, `#3B82F6`, `#6366F1`, `#2563EB`, `#1D4ED8`, `#1E40AF`, `#1E3A8A`
+- Nodes: roundedRect, cornerRadius 6, fillOpacity 100%, border solid 1px `#4338CA`, text `#FFFFFF`, font 11px Inter, height 46, spacing 60, levelSpacing 280
+- Links: curve `bezier`, colorMode `gradient`, lineOpacity 0.4, width 1.5, style solid
+- Markers: start off, end on (`arrow`, size 6), custom marker colors off
+
+## popArt
+- Colors: `#FF4785`, `#1EA7FD`, `#00C6BA`, `#FFA600`, `#6F2CAC`, `#2D2D2D`, `#FF005C`, `#F9C80E`
+- Nodes: roundedRect, cornerRadius 12, fillOpacity 100%, border solid 2px `#000000`, text `#FFFFFF`, font 12px Quicksand, height 54, spacing 65, levelSpacing 280
+- Links: curve `bezier`, colorMode `source`, lineOpacity 1.0, width 2.5, style solid
+- Markers: start off, end on (`arrow`, size 8), custom marker colors off
+
+## cyberDeck
+- Colors: `#00FF94`, `#FF0055`, `#00E5FF`, `#BD00FF`, `#F7DF1E`, `#FF5F1F`, `#00FF00`, `#FF0099`
+- Nodes: roundedRect, cornerRadius 0, fillOpacity 10%, border solid 1px `#00FF94`, text `#00FF94`, font 10px JetBrains Mono, height 44, spacing 80, levelSpacing 320
+- Links: curve `step`, colorMode `target`, lineOpacity 0.6, width 1.0, style solid
+- Markers: start on (`square`, size 4), end on (`square`, size 4), custom marker colors on
+
+## nordicMinimal
+- Colors: `#4C566A`, `#5E81AC`, `#81A1C1`, `#88C0D0`, `#A3BE8C`, `#EBCB8B`, `#D08770`, `#BF616A`
+- Nodes: roundedRect, cornerRadius 4, fillOpacity 90%, border none, text `#ECEFF4`, font 11px Roboto Slab, height 48, spacing 60, levelSpacing 280
+- Links: curve `bezier`, colorMode `source`, lineOpacity 0.25, width 2, style solid
+- Markers: start off, end on (`circle`, size 5), custom marker colors off
+
+## softGlass
+- Colors: `#93C5FD`, `#C4B5FD`, `#FCA5A5`, `#6EE7B7`, `#FDBA74`, `#D8B4FE`, `#FCD34D`, `#86EFAC`
+- Nodes: pill, cornerRadius 20, fillOpacity 40%, border solid 1px `rgba(0,0,0,0.1)`, text `#334155`, font 10px SF Pro Text, height 44, spacing 55, levelSpacing 280
+- Links: curve `bezier`, colorMode `gradient`, lineOpacity 0.3, width 2, style solid
+- Markers: start off, end on (`arrow`, size 7), custom marker colors off
+
+## monoBrutal
+- Colors: `#000000`, `#FFFFFF`, `#333333`, `#111111`, `#666666`, `#999999`, `#AAAAAA`, `#CCCCCC`
+- Nodes: roundedRect, cornerRadius 0, fillOpacity 100%, border solid 3px `#000000`, text `#FFFFFF`, font 11px Courier Prime, height 50, spacing 60, levelSpacing 270
+- Links: curve `step`, colorMode `target`, lineOpacity 1.0, width 3, style solid
+- Markers: start on (`square`, size 8), end on (`arrow`, size 10), custom marker colors off
+
+## auroraFlow
+- Colors: `#845EC2`, `#D65DB1`, `#FF6F91`, `#FF9671`, `#FFC75F`, `#F9F871`, `#0081CF`, `#00C9A7`
+- Nodes: pill, cornerRadius 20, fillOpacity 100%, border none, text `#FFFFFF`, font 11px Montserrat, height 52, spacing 70, levelSpacing 300
+- Links: curve `bezier`, colorMode `gradient`, lineOpacity 0.5, width 4, style solid
+- Markers: start off, end off, custom marker colors off

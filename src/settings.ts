@@ -15,7 +15,14 @@ class StylePresetsCard extends formattingSettings.SimpleCard {
             { displayName: "Earth Tones", value: "earthTones" },
             { displayName: "Pastel", value: "pastel" },
             { displayName: "Angular Tech", value: "angularTech" },
-            { displayName: "Gradient Flow", value: "gradientFlow" }
+            { displayName: "Gradient Flow", value: "gradientFlow" },
+            { displayName: "Midnight Pro", value: "midnightPro" },
+            { displayName: "Pop Art", value: "popArt" },
+            { displayName: "Cyber Deck", value: "cyberDeck" },
+            { displayName: "Nordic Minimal", value: "nordicMinimal" },
+            { displayName: "Soft Glass", value: "softGlass" },
+            { displayName: "Mono Brutal", value: "monoBrutal" },
+            { displayName: "Aurora Flow", value: "auroraFlow" }
         ],
         value: { displayName: "Professional Blue", value: "professionalBlue" }
     });

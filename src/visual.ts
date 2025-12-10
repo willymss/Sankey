@@ -139,7 +139,14 @@ export class Visual implements IVisual {
         "earthTones",
         "pastel",
         "angularTech",
-        "gradientFlow"
+        "gradientFlow",
+        "midnightPro",
+        "popArt",
+        "cyberDeck",
+        "nordicMinimal",
+        "softGlass",
+        "monoBrutal",
+        "auroraFlow"
     ];
     private lastClickedNode: string | null = null;
     private zoomScale: number = 1;
@@ -941,6 +948,218 @@ export class Visual implements IVisual {
                 this.settings.showEndMarker = true;
                 this.settings.endMarkerType = "arrow";
                 this.settings.endMarkerSize = 8;
+                this.settings.useCustomMarkerColors = false;
+                this.settings.showControls = true;
+                this.settings.showValues = true;
+                break;
+
+            case "midnightPro":
+                // Midnight Pro - Deep indigos, SaaS dark-mode inspired
+                this.settings.colors = ["#5E6AD2", "#8B5CF6", "#3B82F6", "#6366F1", "#2563EB", "#1D4ED8", "#1E40AF", "#1E3A8A"];
+                this.settings.nodeShape = "roundedRect";
+                this.settings.cornerRadius = 6;
+                this.settings.nodeFillOpacity = 100;
+                this.settings.nodeBorderStyle = "solid";
+                this.settings.nodeBorderWidth = 1;
+                this.settings.useCustomBorderColor = true;
+                this.settings.nodeBorderColor = "#4338CA";
+                this.settings.textColor = "#FFFFFF";
+                this.settings.fontSize = 11;
+                this.settings.fontFamily = "Inter, sans-serif";
+                this.settings.nodeHeight = 46;
+                this.settings.nodeSpacing = 60;
+                this.settings.levelSpacing = 280;
+                this.settings.linkCurveStyle = "bezier";
+                this.settings.linkColorMode = "gradient";
+                this.settings.lineOpacity = 0.4;
+                this.settings.linkWidth = 1.5;
+                this.settings.linkStyle = "solid";
+                this.settings.showStartMarker = false;
+                this.settings.showEndMarker = true;
+                this.settings.endMarkerType = "arrow";
+                this.settings.endMarkerSize = 6;
+                this.settings.useCustomMarkerColors = false;
+                this.settings.showControls = true;
+                this.settings.showValues = true;
+                break;
+
+            case "popArt":
+                // Pop Art - Bold, playful colors and heavy outlines
+                this.settings.colors = ["#FF4785", "#1EA7FD", "#00C6BA", "#FFA600", "#6F2CAC", "#2D2D2D", "#FF005C", "#F9C80E"];
+                this.settings.nodeShape = "roundedRect";
+                this.settings.cornerRadius = 12;
+                this.settings.nodeFillOpacity = 100;
+                this.settings.nodeBorderStyle = "solid";
+                this.settings.nodeBorderWidth = 2;
+                this.settings.useCustomBorderColor = true;
+                this.settings.nodeBorderColor = "#000000";
+                this.settings.textColor = "#FFFFFF";
+                this.settings.fontSize = 12;
+                this.settings.fontFamily = "Quicksand, sans-serif";
+                this.settings.nodeHeight = 54;
+                this.settings.nodeSpacing = 65;
+                this.settings.levelSpacing = 280;
+                this.settings.linkCurveStyle = "bezier";
+                this.settings.linkColorMode = "source";
+                this.settings.lineOpacity = 1.0;
+                this.settings.linkWidth = 2.5;
+                this.settings.linkStyle = "solid";
+                this.settings.showStartMarker = false;
+                this.settings.showEndMarker = true;
+                this.settings.endMarkerType = "arrow";
+                this.settings.endMarkerSize = 8;
+                this.settings.useCustomMarkerColors = false;
+                this.settings.showControls = true;
+                this.settings.showValues = true;
+                break;
+
+            case "cyberDeck":
+                // Cyber Deck - Neon wireframe, techy edges
+                this.settings.colors = ["#00FF94", "#FF0055", "#00E5FF", "#BD00FF", "#F7DF1E", "#FF5F1F", "#00FF00", "#FF0099"];
+                this.settings.nodeShape = "roundedRect";
+                this.settings.cornerRadius = 0;
+                this.settings.nodeFillOpacity = 10;
+                this.settings.nodeBorderStyle = "solid";
+                this.settings.nodeBorderWidth = 1;
+                this.settings.useCustomBorderColor = true;
+                this.settings.nodeBorderColor = "#00FF94";
+                this.settings.textColor = "#00FF94";
+                this.settings.fontSize = 10;
+                this.settings.fontFamily = "JetBrains Mono, monospace";
+                this.settings.nodeHeight = 44;
+                this.settings.nodeSpacing = 80;
+                this.settings.levelSpacing = 320;
+                this.settings.linkCurveStyle = "step";
+                this.settings.linkColorMode = "target";
+                this.settings.lineOpacity = 0.6;
+                this.settings.linkWidth = 1.0;
+                this.settings.linkStyle = "solid";
+                this.settings.showStartMarker = true;
+                this.settings.startMarkerType = "square";
+                this.settings.startMarkerSize = 4;
+                this.settings.showEndMarker = true;
+                this.settings.endMarkerType = "square";
+                this.settings.endMarkerSize = 4;
+                this.settings.useCustomMarkerColors = true;
+                this.settings.startMarkerColor = this.settings.nodeBorderColor;
+                this.settings.endMarkerColor = this.settings.nodeBorderColor;
+                this.settings.showControls = true;
+                this.settings.showValues = true;
+                break;
+
+            case "nordicMinimal":
+                // Nordic Minimal - Muted earthy tones, matte finish
+                this.settings.colors = ["#4C566A", "#5E81AC", "#81A1C1", "#88C0D0", "#A3BE8C", "#EBCB8B", "#D08770", "#BF616A"];
+                this.settings.nodeShape = "roundedRect";
+                this.settings.cornerRadius = 4;
+                this.settings.nodeFillOpacity = 90;
+                this.settings.nodeBorderStyle = "none";
+                this.settings.nodeBorderWidth = 0;
+                this.settings.useCustomBorderColor = false;
+                this.settings.textColor = "#ECEFF4";
+                this.settings.fontSize = 11;
+                this.settings.fontFamily = "Roboto Slab, serif";
+                this.settings.nodeHeight = 48;
+                this.settings.nodeSpacing = 60;
+                this.settings.levelSpacing = 280;
+                this.settings.linkCurveStyle = "bezier";
+                this.settings.linkColorMode = "source";
+                this.settings.lineOpacity = 0.25;
+                this.settings.linkWidth = 2;
+                this.settings.linkStyle = "solid";
+                this.settings.showStartMarker = false;
+                this.settings.showEndMarker = true;
+                this.settings.endMarkerType = "circle";
+                this.settings.endMarkerSize = 5;
+                this.settings.useCustomMarkerColors = false;
+                this.settings.showControls = true;
+                this.settings.showValues = true;
+                break;
+
+            case "softGlass":
+                // Soft Glass - Glassmorphic pastel pills
+                this.settings.colors = ["#93C5FD", "#C4B5FD", "#FCA5A5", "#6EE7B7", "#FDBA74", "#D8B4FE", "#FCD34D", "#86EFAC"];
+                this.settings.nodeShape = "pill";
+                this.settings.cornerRadius = 20;
+                this.settings.nodeFillOpacity = 40;
+                this.settings.nodeBorderStyle = "solid";
+                this.settings.nodeBorderWidth = 1;
+                this.settings.useCustomBorderColor = true;
+                this.settings.nodeBorderColor = "rgba(0,0,0,0.1)";
+                this.settings.textColor = "#334155";
+                this.settings.fontSize = 10;
+                this.settings.fontFamily = "SF Pro Text, sans-serif";
+                this.settings.nodeHeight = 44;
+                this.settings.nodeSpacing = 55;
+                this.settings.levelSpacing = 280;
+                this.settings.linkCurveStyle = "bezier";
+                this.settings.linkColorMode = "gradient";
+                this.settings.lineOpacity = 0.3;
+                this.settings.linkWidth = 2;
+                this.settings.linkStyle = "solid";
+                this.settings.showStartMarker = false;
+                this.settings.showEndMarker = true;
+                this.settings.endMarkerType = "arrow";
+                this.settings.endMarkerSize = 7;
+                this.settings.useCustomMarkerColors = false;
+                this.settings.showControls = true;
+                this.settings.showValues = true;
+                break;
+
+            case "monoBrutal":
+                // Mono Brutal - Stark contrast, heavy strokes
+                this.settings.colors = ["#000000", "#FFFFFF", "#333333", "#111111", "#666666", "#999999", "#AAAAAA", "#CCCCCC"];
+                this.settings.nodeShape = "roundedRect";
+                this.settings.cornerRadius = 0;
+                this.settings.nodeFillOpacity = 100;
+                this.settings.nodeBorderStyle = "solid";
+                this.settings.nodeBorderWidth = 3;
+                this.settings.useCustomBorderColor = true;
+                this.settings.nodeBorderColor = "#000000";
+                this.settings.textColor = "#FFFFFF";
+                this.settings.fontSize = 11;
+                this.settings.fontFamily = "Courier Prime, monospace";
+                this.settings.nodeHeight = 50;
+                this.settings.nodeSpacing = 60;
+                this.settings.levelSpacing = 270;
+                this.settings.linkCurveStyle = "step";
+                this.settings.linkColorMode = "target";
+                this.settings.lineOpacity = 1.0;
+                this.settings.linkWidth = 3;
+                this.settings.linkStyle = "solid";
+                this.settings.showStartMarker = true;
+                this.settings.startMarkerType = "square";
+                this.settings.startMarkerSize = 8;
+                this.settings.showEndMarker = true;
+                this.settings.endMarkerType = "arrow";
+                this.settings.endMarkerSize = 10;
+                this.settings.useCustomMarkerColors = false;
+                this.settings.showControls = true;
+                this.settings.showValues = true;
+                break;
+
+            case "auroraFlow":
+                // Aurora Flow - Vibrant gradients, smooth flow
+                this.settings.colors = ["#845EC2", "#D65DB1", "#FF6F91", "#FF9671", "#FFC75F", "#F9F871", "#0081CF", "#00C9A7"];
+                this.settings.nodeShape = "pill";
+                this.settings.cornerRadius = 20;
+                this.settings.nodeFillOpacity = 100;
+                this.settings.nodeBorderStyle = "none";
+                this.settings.nodeBorderWidth = 0;
+                this.settings.useCustomBorderColor = false;
+                this.settings.textColor = "#FFFFFF";
+                this.settings.fontSize = 11;
+                this.settings.fontFamily = "Montserrat, sans-serif";
+                this.settings.nodeHeight = 52;
+                this.settings.nodeSpacing = 70;
+                this.settings.levelSpacing = 300;
+                this.settings.linkCurveStyle = "bezier";
+                this.settings.linkColorMode = "gradient";
+                this.settings.lineOpacity = 0.5;
+                this.settings.linkWidth = 4;
+                this.settings.linkStyle = "solid";
+                this.settings.showStartMarker = false;
+                this.settings.showEndMarker = false;
                 this.settings.useCustomMarkerColors = false;
                 this.settings.showControls = true;
                 this.settings.showValues = true;
