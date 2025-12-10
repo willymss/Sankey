@@ -70,7 +70,6 @@ interface SankeySettings {
     endMarkerColor: string;
 
     // Color settings
-    useAutoColors: boolean;
     colors: string[];
 
     // Display settings
@@ -138,11 +137,9 @@ export class Visual implements IVisual {
         "vibrantSpectrum",
         "neon",
         "earthTones",
-        "highContrast",
         "pastel",
         "angularTech",
-        "gradientFlow",
-        "corporate"
+        "gradientFlow"
     ];
     private lastClickedNode: string | null = null;
     private zoomScale: number = 1;
@@ -325,21 +322,20 @@ export class Visual implements IVisual {
     }
 
     private getDefaultSettings(): SankeySettings {
-        const defaultColors = this.getDefaultColors();
         return {
             nodeWidth: 200,
             nodeHeight: 50,
             nodeShape: "roundedRect",
-            cornerRadius: 5,
-            nodeFillOpacity: 85,
+            cornerRadius: 8,
+            nodeFillOpacity: 90,
             nodeBorderStyle: "solid",
             nodeBorderWidth: 2,
-            useCustomBorderColor: false,
-            nodeBorderColor: "#333333",
+            useCustomBorderColor: true,
+            nodeBorderColor: "#003B5C",
             levelSpacing: 280,
             nodeSpacing: 60,
             fontSize: 10,
-            fontFamily: "Segoe UI, -apple-system, BlinkMacSystemFont, sans-serif",
+            fontFamily: "Segoe UI",
             textColor: this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.foreground : "#ffffff",
             wrapText: true,
             maxCharsPerLine: 28,
@@ -359,24 +355,23 @@ export class Visual implements IVisual {
             labelPaddingRight: 0,
             labelPaddingBottom: 0,
             labelPaddingLeft: 0,
-            lineOpacity: 0.25,
-            linkWidth: 1.5,
+            lineOpacity: 0.3,
+            linkWidth: 2,
             highlightOpacity: 0.8,
             linkStyle: "solid",
-            linkColorMode: "source",
+            linkColorMode: "gradient",
             customLinkColor: "#888888",
             linkCurveStyle: "bezier",
             showStartMarker: false,
             startMarkerType: "circle",
             startMarkerSize: 6,
-            showEndMarker: false,
+            showEndMarker: true,
             endMarkerType: "arrow",
             endMarkerSize: 8,
             useCustomMarkerColors: false,
             startMarkerColor: "#0078D4",
             endMarkerColor: "#0078D4",
-            useAutoColors: true,
-            colors: defaultColors,
+            colors: ["#0078D4", "#50E6FF", "#106EBE", "#005A9E", "#74B4E7", "#004578", "#96C9F4", "#003B5C"],
             showEmptyPlaceholder: true,
             showCounters: true,
             headerCounterFontSize: 11,
@@ -388,24 +383,19 @@ export class Visual implements IVisual {
         };
     }
 
-    private getDefaultColors(): string[] {
-        const colors: string[] = [];
-        if (this.isHighContrastMode && this.highContrastColors) {
-            for (let i = 0; i < 8; i++) {
-                colors.push(this.highContrastColors.foreground);
-            }
-        } else {
-            for (let i = 0; i < 8; i++) {
-                const color = this.colorPalette.getColor(`level${i}`);
-                colors.push(color?.value || this.getFallbackColor(i));
-            }
-        }
-        return colors;
-    }
+    private getPresetDefaults(presetId?: string): SankeySettings {
+        // Build a fresh settings object for the given preset without mutating current state
+        const originalSettings = this.settings;
+        const baseDefaults = this.getDefaultSettings();
+        const targetPreset = this.resolvePresetId(presetId ?? this.getCurrentStylePresetId());
 
-    private getFallbackColor(index: number): string {
-        const fallbackColors = ['#0078D4', '#50E6FF', '#00B294', '#FFB900', '#E74856', '#8764B8', '#00CC6A', '#FF8C00'];
-        return fallbackColors[index % fallbackColors.length];
+        this.settings = { ...baseDefaults, colors: [...baseDefaults.colors] };
+        this.applyStylePreset(targetPreset);
+
+        const presetDefaults = { ...this.settings, colors: [...this.settings.colors] };
+        this.settings = originalSettings;
+
+        return presetDefaults;
     }
 
     private initializeDOM(): void {
@@ -747,7 +737,6 @@ export class Visual implements IVisual {
         switch (presetValue) {
             case "professionalBlue":
                 // Professional Blue - Clean, corporate, Microsoft-inspired
-                this.settings.useAutoColors = false;
                 this.settings.colors = ["#0078D4", "#50E6FF", "#106EBE", "#005A9E", "#74B4E7", "#004578", "#96C9F4", "#003B5C"];
                 this.settings.nodeShape = "roundedRect";
                 this.settings.cornerRadius = 8;
@@ -778,7 +767,6 @@ export class Visual implements IVisual {
 
             case "vibrantSpectrum":
                 // Vibrant Spectrum - Eye-catching, diverse, rainbow progression
-                this.settings.useAutoColors = false;
                 this.settings.colors = ["#E74856", "#FF8C00", "#FFB900", "#00CC6A", "#00B7C3", "#0078D4", "#8764B8", "#E3008C"];
                 this.settings.nodeShape = "pill";
                 this.settings.nodeFillOpacity = 95;
@@ -808,7 +796,6 @@ export class Visual implements IVisual {
 
             case "neon":
                 // Neon Dark Mode - Dark background-friendly, glowing effect
-                this.settings.useAutoColors = false;
                 this.settings.colors = ["#00F5FF", "#39FF14", "#FF10F0", "#FFFF00", "#FF006E", "#8A2BE2", "#FF4500", "#00FFFF"];
                 this.settings.nodeShape = "pill";
                 this.settings.nodeFillOpacity = 90;
@@ -840,7 +827,6 @@ export class Visual implements IVisual {
 
             case "earthTones":
                 // Earth Tones - Warm, nature-inspired, earthy palette
-                this.settings.useAutoColors = false;
                 this.settings.colors = ["#8B4513", "#D2691E", "#CD853F", "#DEB887", "#6B8E23", "#8FBC8F", "#BC8F8F", "#F4A460"];
                 this.settings.nodeShape = "roundedRect";
                 this.settings.cornerRadius = 6;
@@ -869,42 +855,8 @@ export class Visual implements IVisual {
                 this.settings.showValues = true;
                 break;
 
-            case "highContrast":
-                // High Contrast Accessibility - Maximum contrast, WCAG AAA compliant
-                this.settings.useAutoColors = false;
-                this.settings.colors = ["#000000", "#FFFFFF", "#0000FF", "#FFFF00", "#FF0000", "#00FF00", "#FF00FF", "#00FFFF"];
-                this.settings.nodeShape = "roundedRect";
-                this.settings.cornerRadius = 4;
-                this.settings.nodeFillOpacity = 100;
-                this.settings.nodeBorderStyle = "solid";
-                this.settings.nodeBorderWidth = 3;
-                this.settings.useCustomBorderColor = true;
-                this.settings.nodeBorderColor = "#000000";
-                this.settings.textColor = "#FFFFFF";
-                this.settings.fontSize = 12;
-                this.settings.fontFamily = "Arial";
-                this.settings.nodeHeight = 55;
-                this.settings.nodeSpacing = 80;
-                this.settings.levelSpacing = 300;
-                this.settings.linkCurveStyle = "straight";
-                this.settings.linkColorMode = "custom";
-                this.settings.customLinkColor = "#000000";
-                this.settings.lineOpacity = 0.8;
-                this.settings.linkWidth = 3;
-                this.settings.linkStyle = "solid";
-                this.settings.showStartMarker = false;
-                this.settings.showEndMarker = true;
-                this.settings.endMarkerType = "arrow";
-                this.settings.endMarkerSize = 12;
-                this.settings.useCustomMarkerColors = true;
-                this.settings.endMarkerColor = "#000000";
-                this.settings.showControls = true;
-                this.settings.showValues = true;
-                break;
-
             case "pastel":
                 // Pastel Soft - Gentle, easy on eyes, dashboard-friendly
-                this.settings.useAutoColors = false;
                 this.settings.colors = ["#B39DDB", "#90CAF9", "#80CBC4", "#A5D6A7", "#FFF59D", "#FFAB91", "#F48FB1", "#CE93D8"];
                 this.settings.nodeShape = "pill";
                 this.settings.nodeFillOpacity = 75;
@@ -936,7 +888,6 @@ export class Visual implements IVisual {
 
             case "angularTech":
                 // Angular Tech - Sharp, geometric, tech-forward
-                this.settings.useAutoColors = false;
                 this.settings.colors = ["#00BCD4", "#009688", "#4CAF50", "#8BC34A", "#CDDC39", "#FFC107", "#FF9800", "#FF5722"];
                 this.settings.nodeShape = "roundedRect";
                 this.settings.cornerRadius = 2;
@@ -969,7 +920,6 @@ export class Visual implements IVisual {
 
             case "gradientFlow":
                 // Gradient Flow - Smooth color transitions, modern aesthetic
-                this.settings.useAutoColors = false;
                 this.settings.colors = ["#667EEA", "#764BA2", "#F093FB", "#4FACFE", "#00F2FE", "#43E97B", "#38F9D7", "#FA709A"];
                 this.settings.nodeShape = "pill";
                 this.settings.nodeFillOpacity = 88;
@@ -996,37 +946,6 @@ export class Visual implements IVisual {
                 this.settings.showValues = true;
                 break;
 
-            case "corporate":
-                // Corporate Formal - Conservative, trustworthy, business-oriented
-                this.settings.useAutoColors = false;
-                this.settings.colors = ["#1E3A8A", "#1E40AF", "#3B82F6", "#60A5FA", "#475569", "#64748B", "#94A3B8", "#CBD5E1"];
-                this.settings.nodeShape = "roundedRect";
-                this.settings.cornerRadius = 4;
-                this.settings.nodeFillOpacity = 95;
-                this.settings.nodeBorderStyle = "solid";
-                this.settings.nodeBorderWidth = 2;
-                this.settings.useCustomBorderColor = true;
-                this.settings.nodeBorderColor = "#1E293B";
-                this.settings.textColor = "#FFFFFF";
-                this.settings.fontSize = 10;
-                this.settings.fontFamily = "Calibri";
-                this.settings.nodeHeight = 48;
-                this.settings.nodeSpacing = 52;
-                this.settings.levelSpacing = 260;
-                this.settings.linkCurveStyle = "bezier";
-                this.settings.linkColorMode = "source";
-                this.settings.lineOpacity = 0.25;
-                this.settings.linkWidth = 1.5;
-                this.settings.linkStyle = "solid";
-                this.settings.showStartMarker = false;
-                this.settings.showEndMarker = true;
-                this.settings.endMarkerType = "arrowOutline";
-                this.settings.endMarkerSize = 6;
-                this.settings.useCustomMarkerColors = false;
-                this.settings.showControls = true;
-                this.settings.showValues = true;
-                break;
-
             default:
                 // If unknown preset, use professionalBlue
                 this.applyStylePreset("professionalBlue");
@@ -1046,8 +965,7 @@ export class Visual implements IVisual {
 
     private resetSettingsToPreset(presetId: string): void {
         const resolvedPreset = this.resolvePresetId(presetId);
-        this.settings = this.getDefaultSettings();
-        this.applyStylePreset(resolvedPreset);
+        this.settings = this.getPresetDefaults(resolvedPreset);
         this.previousPreset = resolvedPreset;
     }
 
@@ -1085,13 +1003,16 @@ export class Visual implements IVisual {
             }
         }
 
-        // INDIVIDUAL SETTINGS: only apply properties that exist in the dataView metadata
+        const defaults = this.getPresetDefaults();
+        // Start from preset defaults each cycle to ensure resets work even when objects are cleared
+        this.settings = { ...defaults, colors: [...defaults.colors] };
+
+        // Use metadata objects (persisted props) to decide what to override
         const objects = dataView?.metadata?.objects;
         const nodeObjects = objects?.["nodeSettings"] as any;
         const linkObjects = objects?.["linkSettings"] as any;
         const colorObjects = objects?.["colorSettings"] as any;
         const displayObjects = objects?.["displaySettings"] as any;
-
         const ns = this.formattingSettings?.nodeSettings;
         const ls = this.formattingSettings?.linkSettings;
         const cs = this.formattingSettings?.colorSettings;
@@ -1100,85 +1021,73 @@ export class Visual implements IVisual {
         // Node settings
         if (ns && nodeObjects) {
             const size = ns.sizeAndSpacing;
-            if (nodeObjects["nodeWidth"] !== undefined) this.settings.nodeWidth = size?.nodeWidth?.value ?? this.settings.nodeWidth;
-            if (nodeObjects["nodeHeight"] !== undefined) this.settings.nodeHeight = size?.nodeHeight?.value ?? this.settings.nodeHeight;
-            if (nodeObjects["levelSpacing"] !== undefined) this.settings.levelSpacing = size?.levelSpacing?.value ?? this.settings.levelSpacing;
-            if (nodeObjects["nodeSpacing"] !== undefined) this.settings.nodeSpacing = size?.nodeSpacing?.value ?? this.settings.nodeSpacing;
+            if (nodeObjects["nodeWidth"] !== undefined) this.settings.nodeWidth = size?.nodeWidth?.value ?? defaults.nodeWidth;
+            if (nodeObjects["nodeHeight"] !== undefined) this.settings.nodeHeight = size?.nodeHeight?.value ?? defaults.nodeHeight;
+            if (nodeObjects["levelSpacing"] !== undefined) this.settings.levelSpacing = size?.levelSpacing?.value ?? defaults.levelSpacing;
+            if (nodeObjects["nodeSpacing"] !== undefined) this.settings.nodeSpacing = size?.nodeSpacing?.value ?? defaults.nodeSpacing;
 
             const shape = ns.shape as any;
-            if (nodeObjects["nodeShape"] !== undefined) this.settings.nodeShape = shape?.nodeShape?.value?.value ?? shape?.nodeShape?.value ?? this.settings.nodeShape;
-            if (nodeObjects["cornerRadius"] !== undefined) this.settings.cornerRadius = shape?.cornerRadius?.value ?? this.settings.cornerRadius;
-            if (nodeObjects["nodeFillOpacity"] !== undefined) this.settings.nodeFillOpacity = shape?.nodeFillOpacity?.value ?? this.settings.nodeFillOpacity;
+            if (nodeObjects["nodeShape"] !== undefined) this.settings.nodeShape = shape?.nodeShape?.value?.value ?? shape?.nodeShape?.value ?? defaults.nodeShape;
+            if (nodeObjects["cornerRadius"] !== undefined) this.settings.cornerRadius = shape?.cornerRadius?.value ?? defaults.cornerRadius;
+            if (nodeObjects["nodeFillOpacity"] !== undefined) this.settings.nodeFillOpacity = shape?.nodeFillOpacity?.value ?? defaults.nodeFillOpacity;
 
             const border = ns.border as any;
-            if (nodeObjects["nodeBorderStyle"] !== undefined) this.settings.nodeBorderStyle = border?.nodeBorderStyle?.value?.value ?? border?.nodeBorderStyle?.value ?? this.settings.nodeBorderStyle;
-            if (nodeObjects["nodeBorderWidth"] !== undefined) this.settings.nodeBorderWidth = border?.nodeBorderWidth?.value ?? this.settings.nodeBorderWidth;
-            if (nodeObjects["useCustomBorderColor"] !== undefined) this.settings.useCustomBorderColor = border?.useCustomBorderColor?.value ?? this.settings.useCustomBorderColor;
-            if (nodeObjects["nodeBorderColor"] !== undefined) this.settings.nodeBorderColor = border?.nodeBorderColor?.value?.value ?? this.settings.nodeBorderColor;
+            if (nodeObjects["nodeBorderStyle"] !== undefined) this.settings.nodeBorderStyle = border?.nodeBorderStyle?.value?.value ?? border?.nodeBorderStyle?.value ?? defaults.nodeBorderStyle;
+            if (nodeObjects["nodeBorderWidth"] !== undefined) this.settings.nodeBorderWidth = border?.nodeBorderWidth?.value ?? defaults.nodeBorderWidth;
+            if (nodeObjects["useCustomBorderColor"] !== undefined) this.settings.useCustomBorderColor = border?.useCustomBorderColor?.value ?? defaults.useCustomBorderColor;
+            if (nodeObjects["nodeBorderColor"] !== undefined) this.settings.nodeBorderColor = border?.nodeBorderColor?.value?.value ?? defaults.nodeBorderColor;
 
             const text = ns.text as any;
-            if (nodeObjects["fontSize"] !== undefined) this.settings.fontSize = text?.fontSize?.value ?? this.settings.fontSize;
-            if (nodeObjects["fontFamily"] !== undefined) this.settings.fontFamily = text?.fontFamily?.value?.value ?? text?.fontFamily?.value ?? this.settings.fontFamily;
-            if (nodeObjects["textColor"] !== undefined) this.settings.textColor = text?.textColor?.value?.value ?? this.settings.textColor;
-            if (nodeObjects["wrapText"] !== undefined) this.settings.wrapText = text?.wrapText?.value ?? this.settings.wrapText;
-            if (nodeObjects["maxCharsPerLine"] !== undefined) this.settings.maxCharsPerLine = text?.maxCharsPerLine?.value ?? this.settings.maxCharsPerLine;
+            if (nodeObjects["fontSize"] !== undefined) this.settings.fontSize = text?.fontSize?.value ?? defaults.fontSize;
+            if (nodeObjects["fontFamily"] !== undefined) this.settings.fontFamily = text?.fontFamily?.value?.value ?? text?.fontFamily?.value ?? defaults.fontFamily;
+            if (nodeObjects["textColor"] !== undefined) this.settings.textColor = text?.textColor?.value?.value ?? defaults.textColor;
+            if (nodeObjects["wrapText"] !== undefined) this.settings.wrapText = text?.wrapText?.value ?? defaults.wrapText;
+            if (nodeObjects["maxCharsPerLine"] !== undefined) this.settings.maxCharsPerLine = text?.maxCharsPerLine?.value ?? defaults.maxCharsPerLine;
 
             const counts = ns.connectionCounts as any;
-            if (nodeObjects["showValues"] !== undefined) this.settings.showValues = counts?.showValues?.value ?? this.settings.showValues;
-            if (nodeObjects["badgeTextSize"] !== undefined) this.settings.badgeTextSize = counts?.badgeTextSize?.value ?? this.settings.badgeTextSize;
-            if (nodeObjects["badgePosition"] !== undefined) this.settings.badgePosition = counts?.badgePosition?.value?.value ?? counts?.badgePosition?.value ?? this.settings.badgePosition;
-            if (nodeObjects["countMode"] !== undefined) this.settings.countMode = counts?.countMode?.value?.value ?? counts?.countMode?.value ?? this.settings.countMode;
-            if (nodeObjects["badgePaddingTop"] !== undefined) this.settings.badgePaddingTop = counts?.badgePaddingTop?.value ?? this.settings.badgePaddingTop;
-            if (nodeObjects["badgePaddingRight"] !== undefined) this.settings.badgePaddingRight = counts?.badgePaddingRight?.value ?? this.settings.badgePaddingRight;
-            if (nodeObjects["badgePaddingBottom"] !== undefined) this.settings.badgePaddingBottom = counts?.badgePaddingBottom?.value ?? this.settings.badgePaddingBottom;
-            if (nodeObjects["badgePaddingLeft"] !== undefined) this.settings.badgePaddingLeft = counts?.badgePaddingLeft?.value ?? this.settings.badgePaddingLeft;
+            if (nodeObjects["showValues"] !== undefined) this.settings.showValues = counts?.showValues?.value ?? defaults.showValues;
+            if (nodeObjects["badgeTextSize"] !== undefined) this.settings.badgeTextSize = counts?.badgeTextSize?.value ?? defaults.badgeTextSize;
+            if (nodeObjects["badgePosition"] !== undefined) this.settings.badgePosition = counts?.badgePosition?.value?.value ?? counts?.badgePosition?.value ?? defaults.badgePosition;
+            if (nodeObjects["countMode"] !== undefined) this.settings.countMode = counts?.countMode?.value?.value ?? counts?.countMode?.value ?? defaults.countMode;
+            if (nodeObjects["badgePaddingTop"] !== undefined) this.settings.badgePaddingTop = counts?.badgePaddingTop?.value ?? defaults.badgePaddingTop;
+            if (nodeObjects["badgePaddingRight"] !== undefined) this.settings.badgePaddingRight = counts?.badgePaddingRight?.value ?? defaults.badgePaddingRight;
+            if (nodeObjects["badgePaddingBottom"] !== undefined) this.settings.badgePaddingBottom = counts?.badgePaddingBottom?.value ?? defaults.badgePaddingBottom;
+            if (nodeObjects["badgePaddingLeft"] !== undefined) this.settings.badgePaddingLeft = counts?.badgePaddingLeft?.value ?? defaults.badgePaddingLeft;
         }
 
         // Link settings
         if (ls && linkObjects) {
             const opacity = ls.opacity;
-            if (linkObjects["lineOpacity"] !== undefined) this.settings.lineOpacity = opacity?.lineOpacity?.value ?? this.settings.lineOpacity;
-            if (linkObjects["highlightOpacity"] !== undefined) this.settings.highlightOpacity = opacity?.highlightOpacity?.value ?? this.settings.highlightOpacity;
+            if (linkObjects["lineOpacity"] !== undefined) this.settings.lineOpacity = opacity?.lineOpacity?.value ?? defaults.lineOpacity;
+            if (linkObjects["highlightOpacity"] !== undefined) this.settings.highlightOpacity = opacity?.highlightOpacity?.value ?? defaults.highlightOpacity;
 
             const style = ls.style as any;
-            if (linkObjects["linkWidth"] !== undefined) this.settings.linkWidth = style?.linkWidth?.value ?? this.settings.linkWidth;
-            if (linkObjects["linkStyle"] !== undefined) this.settings.linkStyle = style?.linkStyle?.value?.value ?? style?.linkStyle?.value ?? this.settings.linkStyle;
-            if (linkObjects["linkCurveStyle"] !== undefined) this.settings.linkCurveStyle = style?.linkCurveStyle?.value?.value ?? style?.linkCurveStyle?.value ?? this.settings.linkCurveStyle;
+            if (linkObjects["linkWidth"] !== undefined) this.settings.linkWidth = style?.linkWidth?.value ?? defaults.linkWidth;
+            if (linkObjects["linkStyle"] !== undefined) this.settings.linkStyle = style?.linkStyle?.value?.value ?? style?.linkStyle?.value ?? defaults.linkStyle;
+            if (linkObjects["linkCurveStyle"] !== undefined) this.settings.linkCurveStyle = style?.linkCurveStyle?.value?.value ?? style?.linkCurveStyle?.value ?? defaults.linkCurveStyle;
 
             const color = ls.color as any;
-            if (linkObjects["linkColorMode"] !== undefined) this.settings.linkColorMode = color?.linkColorMode?.value?.value ?? color?.linkColorMode?.value ?? this.settings.linkColorMode;
-            if (linkObjects["customLinkColor"] !== undefined) this.settings.customLinkColor = color?.customLinkColor?.value?.value ?? this.settings.customLinkColor;
+            if (linkObjects["linkColorMode"] !== undefined) this.settings.linkColorMode = color?.linkColorMode?.value?.value ?? color?.linkColorMode?.value ?? defaults.linkColorMode;
+            if (linkObjects["customLinkColor"] !== undefined) this.settings.customLinkColor = color?.customLinkColor?.value?.value ?? defaults.customLinkColor;
 
             const start = ls.startMarker as any;
-            if (linkObjects["showStartMarker"] !== undefined) this.settings.showStartMarker = start?.showStartMarker?.value ?? this.settings.showStartMarker;
-            if (linkObjects["startMarkerType"] !== undefined) this.settings.startMarkerType = start?.startMarkerType?.value?.value ?? start?.startMarkerType?.value ?? this.settings.startMarkerType;
-            if (linkObjects["startMarkerSize"] !== undefined) this.settings.startMarkerSize = start?.startMarkerSize?.value ?? this.settings.startMarkerSize;
+            if (linkObjects["showStartMarker"] !== undefined) this.settings.showStartMarker = start?.showStartMarker?.value ?? defaults.showStartMarker;
+            if (linkObjects["startMarkerType"] !== undefined) this.settings.startMarkerType = start?.startMarkerType?.value?.value ?? start?.startMarkerType?.value ?? defaults.startMarkerType;
+            if (linkObjects["startMarkerSize"] !== undefined) this.settings.startMarkerSize = start?.startMarkerSize?.value ?? defaults.startMarkerSize;
 
             const end = ls.endMarker as any;
-            if (linkObjects["showEndMarker"] !== undefined) this.settings.showEndMarker = end?.showEndMarker?.value ?? this.settings.showEndMarker;
-            if (linkObjects["endMarkerType"] !== undefined) this.settings.endMarkerType = end?.endMarkerType?.value?.value ?? end?.endMarkerType?.value ?? this.settings.endMarkerType;
-            if (linkObjects["endMarkerSize"] !== undefined) this.settings.endMarkerSize = end?.endMarkerSize?.value ?? this.settings.endMarkerSize;
+            if (linkObjects["showEndMarker"] !== undefined) this.settings.showEndMarker = end?.showEndMarker?.value ?? defaults.showEndMarker;
+            if (linkObjects["endMarkerType"] !== undefined) this.settings.endMarkerType = end?.endMarkerType?.value?.value ?? end?.endMarkerType?.value ?? defaults.endMarkerType;
+            if (linkObjects["endMarkerSize"] !== undefined) this.settings.endMarkerSize = end?.endMarkerSize?.value ?? defaults.endMarkerSize;
 
             const markerColors = ls.markerColors;
-            if (linkObjects["useCustomMarkerColors"] !== undefined) this.settings.useCustomMarkerColors = markerColors?.useCustomMarkerColors?.value ?? this.settings.useCustomMarkerColors;
-            if (linkObjects["startMarkerColor"] !== undefined) this.settings.startMarkerColor = markerColors?.startMarkerColor?.value?.value ?? this.settings.startMarkerColor;
-            if (linkObjects["endMarkerColor"] !== undefined) this.settings.endMarkerColor = markerColors?.endMarkerColor?.value?.value ?? this.settings.endMarkerColor;
+            if (linkObjects["useCustomMarkerColors"] !== undefined) this.settings.useCustomMarkerColors = markerColors?.useCustomMarkerColors?.value ?? defaults.useCustomMarkerColors;
+            if (linkObjects["startMarkerColor"] !== undefined) this.settings.startMarkerColor = markerColors?.startMarkerColor?.value?.value ?? defaults.startMarkerColor;
+            if (linkObjects["endMarkerColor"] !== undefined) this.settings.endMarkerColor = markerColors?.endMarkerColor?.value?.value ?? defaults.endMarkerColor;
         }
 
-        // Color settings
+        // Color settings - always read from formatting model (includes defaults when reset)
         if (cs && colorObjects) {
-            if (colorObjects["useAutoColors"] !== undefined) {
-                const autoVal = cs.useAutoColors?.value;
-                if (autoVal !== undefined) {
-                    this.settings.useAutoColors = autoVal;
-                    if (autoVal) {
-                        this.settings.colors = this.getDefaultColors();
-                    }
-                }
-            }
-            if (!this.settings.colors || this.settings.colors.length < 8) {
-                this.settings.colors = this.getDefaultColors();
-            }
             if (colorObjects["level0Color"] !== undefined) this.settings.colors[0] = cs.level0Color?.value?.value ?? this.settings.colors[0];
             if (colorObjects["level1Color"] !== undefined) this.settings.colors[1] = cs.level1Color?.value?.value ?? this.settings.colors[1];
             if (colorObjects["level2Color"] !== undefined) this.settings.colors[2] = cs.level2Color?.value?.value ?? this.settings.colors[2];
@@ -1191,14 +1100,14 @@ export class Visual implements IVisual {
 
         // Display settings
         if (ds && displayObjects) {
-            if (displayObjects["showEmptyPlaceholder"] !== undefined) this.settings.showEmptyPlaceholder = ds.showEmptyPlaceholder?.value ?? this.settings.showEmptyPlaceholder;
-            if (displayObjects["showCounters"] !== undefined) this.settings.showCounters = ds.showCounters?.value ?? this.settings.showCounters;
-            if (displayObjects["counterFontSize"] !== undefined) this.settings.headerCounterFontSize = ds.counterFontSize?.value ?? this.settings.headerCounterFontSize;
-            if (displayObjects["counterFontFamily"] !== undefined) this.settings.headerCounterFontFamily = (ds.counterFontFamily as any)?.value?.value ?? (ds.counterFontFamily as any)?.value ?? this.settings.headerCounterFontFamily;
-            if (displayObjects["counterFontWeight"] !== undefined) this.settings.headerCounterFontWeight = (ds.counterFontWeight as any)?.value?.value ?? (ds.counterFontWeight as any)?.value ?? this.settings.headerCounterFontWeight;
-            if (displayObjects["counterColor"] !== undefined) this.settings.headerCounterColor = ds.counterColor?.value?.value ?? this.settings.headerCounterColor;
-            if (displayObjects["counterSeparator"] !== undefined) this.settings.headerCounterSeparator = ds.counterSeparator?.value ?? this.settings.headerCounterSeparator;
-            if (displayObjects["showControls"] !== undefined) this.settings.showControls = ds.showControls?.value ?? this.settings.showControls;
+            if (displayObjects["showEmptyPlaceholder"] !== undefined) this.settings.showEmptyPlaceholder = ds.showEmptyPlaceholder?.value ?? defaults.showEmptyPlaceholder;
+            if (displayObjects["showCounters"] !== undefined) this.settings.showCounters = ds.showCounters?.value ?? defaults.showCounters;
+            if (displayObjects["counterFontSize"] !== undefined) this.settings.headerCounterFontSize = ds.counterFontSize?.value ?? defaults.headerCounterFontSize;
+            if (displayObjects["counterFontFamily"] !== undefined) this.settings.headerCounterFontFamily = (ds.counterFontFamily as any)?.value?.value ?? (ds.counterFontFamily as any)?.value ?? defaults.headerCounterFontFamily;
+            if (displayObjects["counterFontWeight"] !== undefined) this.settings.headerCounterFontWeight = (ds.counterFontWeight as any)?.value?.value ?? (ds.counterFontWeight as any)?.value ?? defaults.headerCounterFontWeight;
+            if (displayObjects["counterColor"] !== undefined) this.settings.headerCounterColor = ds.counterColor?.value?.value ?? defaults.headerCounterColor;
+            if (displayObjects["counterSeparator"] !== undefined) this.settings.headerCounterSeparator = ds.counterSeparator?.value ?? defaults.headerCounterSeparator;
+            if (displayObjects["showControls"] !== undefined) this.settings.showControls = ds.showControls?.value ?? defaults.showControls;
         }
 
         if (this.isHighContrastMode && this.highContrastColors) {
@@ -1339,7 +1248,6 @@ export class Visual implements IVisual {
 
         // Sync color settings
         if (cs) {
-            cs.useAutoColors.value = this.settings.useAutoColors;
             cs.level0Color.value = { value: this.settings.colors[0] };
             cs.level1Color.value = { value: this.settings.colors[1] };
             cs.level2Color.value = { value: this.settings.colors[2] };
@@ -1548,13 +1456,13 @@ export class Visual implements IVisual {
     }
 
     private resetAllSettings(): void {
-        // Reset to factory defaults
-        this.settings = this.getDefaultSettings();
-        this.previousPreset = "professionalBlue";
+        const targetPreset = this.getCurrentStylePresetId();
+        this.settings = this.getPresetDefaults(targetPreset);
+        this.previousPreset = targetPreset;
     }
 
     private resetSettingsCard(cardName: string): void {
-        const defaults = this.getDefaultSettings();
+        const defaults = this.getPresetDefaults();
 
         switch (cardName) {
             case "stylePresets":
@@ -1699,7 +1607,6 @@ export class Visual implements IVisual {
             // ===== COLOR SETTINGS =====
             case "colorSettings":
                 // Reset all color settings
-                this.settings.useAutoColors = defaults.useAutoColors;
                 this.settings.colors = [...defaults.colors];
                 break;
 
@@ -1768,7 +1675,7 @@ export class Visual implements IVisual {
 
     private getColorSettingsProperties(): string[] {
         return [
-            "useAutoColors", "level0Color", "level1Color", "level2Color", "level3Color",
+            "level0Color", "level1Color", "level2Color", "level3Color",
             "level4Color", "level5Color", "level6Color", "level7Color"
         ];
     }
@@ -3019,4 +2926,3 @@ export class Visual implements IVisual {
 
 export class AdvancedSankeyChart extends Visual { }
 export default AdvancedSankeyChart;
-

@@ -13,11 +13,9 @@ class StylePresetsCard extends formattingSettings.SimpleCard {
             { displayName: "Vibrant Spectrum", value: "vibrantSpectrum" },
             { displayName: "Neon", value: "neon" },
             { displayName: "Earth Tones", value: "earthTones" },
-            { displayName: "High Contrast", value: "highContrast" },
             { displayName: "Pastel", value: "pastel" },
             { displayName: "Angular Tech", value: "angularTech" },
-            { displayName: "Gradient Flow", value: "gradientFlow" },
-            { displayName: "Corporate", value: "corporate" }
+            { displayName: "Gradient Flow", value: "gradientFlow" }
         ],
         value: { displayName: "Professional Blue", value: "professionalBlue" }
     });
@@ -549,12 +547,6 @@ class LinkSettingsCard extends formattingSettings.CompositeCard {
 
 /** ---------- COLORS ---------- */
 class ColorSettingsCard extends formattingSettings.SimpleCard {
-    useAutoColors = new formattingSettings.ToggleSwitch({
-        name: "useAutoColors",
-        displayName: "Auto colors per level",
-        value: true
-    });
-
     level0Color = new formattingSettings.ColorPicker({ name: "level0Color", displayName: "Level 0", value: { value: "#0078D4" } });
     level1Color = new formattingSettings.ColorPicker({ name: "level1Color", displayName: "Level 1", value: { value: "#50E6FF" } });
     level2Color = new formattingSettings.ColorPicker({ name: "level2Color", displayName: "Level 2", value: { value: "#00B294" } });
@@ -567,7 +559,6 @@ class ColorSettingsCard extends formattingSettings.SimpleCard {
     name = "colorSettings";
     displayName = "Colors";
     slices = [
-        this.useAutoColors,
         this.level0Color, this.level1Color, this.level2Color, this.level3Color,
         this.level4Color, this.level5Color, this.level6Color, this.level7Color
     ];

@@ -284,11 +284,6 @@
       "displayName": "Colors",
       "displayNameKey": "Objects_Colors",
       "properties": {
-        "useAutoColors": {
-          "displayName": "Use Auto Colors",
-          "displayNameKey": "ColorSettings_AutoColors",
-          "type": { "bool": true }
-        },
         "level0Color": {
           "displayName": "Level 0 Color",
           "displayNameKey": "ColorSettings_Level0",
