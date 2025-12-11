@@ -21,15 +21,15 @@ Snapshot of each preset’s baseline settings as applied in `applyStylePreset` (
 - Markers: start on (`arrow`, size 10), end on (`arrow`, size 10), custom marker colors off
 
 ## earthTones
-- Colors: `#8B4513`, `#D2691E`, `#CD853F`, `#DEB887`, `#6B8E23`, `#8FBC8F`, `#BC8F8F`, `#F4A460`
-- Nodes: roundedRect, cornerRadius 6, fillOpacity 88%, border solid 2px `#3E2723`, text `#FFFFFF`, font 10px Georgia, height 50, spacing 60, levelSpacing 280
-- Links: curve `bezier`, colorMode `source`, lineOpacity 0.28, width 1.8, style solid
+- Colors: `#5D3A00`, `#A05A2C`, `#C68A47`, `#D9B382`, `#4F6B2A`, `#7DA45A`, `#A26A5E`, `#8C5319`
+- Nodes: roundedRect, cornerRadius 6, fillOpacity 92%, border solid 2px `#3E2723`, text `#FFFFFF`, font 10px Georgia, height 50, spacing 60, levelSpacing 280
+- Links: curve `bezier`, colorMode `source`, lineOpacity 0.35, width 2.0, style solid
 - Markers: start off, end on (`diamond`, size 7), custom marker colors off
 
 ## pastel
 - Colors: `#B39DDB`, `#90CAF9`, `#80CBC4`, `#A5D6A7`, `#FFF59D`, `#FFAB91`, `#F48FB1`, `#CE93D8`
 - Nodes: pill, fillOpacity 75%, border solid 1.5px `#9E9E9E`, text `#424242`, font 10px Segoe UI, height 50, spacing 60, levelSpacing 280
-- Links: curve `bezier`, colorMode `gradient`, lineOpacity 0.2, width 1.5, style solid
+- Links: curve `bezier`, colorMode `gradient`, lineOpacity 0.35 (auto-min 0.5 when gradient), width 2.0, style solid
 - Markers: start on (`circle`, size 4), end on (`circle`, size 4), custom marker colors off
 
 ## angularTech
@@ -41,13 +41,13 @@ Snapshot of each preset’s baseline settings as applied in `applyStylePreset` (
 ## gradientFlow
 - Colors: `#667EEA`, `#764BA2`, `#F093FB`, `#4FACFE`, `#00F2FE`, `#43E97B`, `#38F9D7`, `#FA709A`
 - Nodes: pill, fillOpacity 88%, border none, text `#FFFFFF`, font 10px Segoe UI, height 52, spacing 70, levelSpacing 300
-- Links: curve `bezier`, colorMode `gradient`, lineOpacity 0.5, width 2.5, style solid
+- Links: curve `bezier`, colorMode `gradient`, lineOpacity 0.5 (auto-min 0.5 when gradient), width 2.5, style solid
 - Markers: start off, end on (`arrow`, size 8), custom marker colors off
 
 ## midnightPro
 - Colors: `#5E6AD2`, `#8B5CF6`, `#3B82F6`, `#6366F1`, `#2563EB`, `#1D4ED8`, `#1E40AF`, `#1E3A8A`
 - Nodes: roundedRect, cornerRadius 6, fillOpacity 100%, border solid 1px `#4338CA`, text `#FFFFFF`, font 11px Inter, height 46, spacing 60, levelSpacing 280
-- Links: curve `bezier`, colorMode `gradient`, lineOpacity 0.4, width 1.5, style solid
+- Links: curve `bezier`, colorMode `gradient`, lineOpacity 0.4 (auto-min 0.5 when gradient), width 1.5, style solid
 - Markers: start off, end on (`arrow`, size 6), custom marker colors off
 
 ## popArt
@@ -65,7 +65,7 @@ Snapshot of each preset’s baseline settings as applied in `applyStylePreset` (
 ## softGlass
 - Colors: `#93C5FD`, `#C4B5FD`, `#FCA5A5`, `#6EE7B7`, `#FDBA74`, `#D8B4FE`, `#FCD34D`, `#86EFAC`
 - Nodes: pill, cornerRadius 20, fillOpacity 40%, border solid 1px `rgba(0,0,0,0.1)`, text `#334155`, font 10px SF Pro Text, height 44, spacing 55, levelSpacing 280
-- Links: curve `bezier`, colorMode `gradient`, lineOpacity 0.3, width 2, style solid
+- Links: curve `bezier`, colorMode `gradient`, lineOpacity 0.3 (auto-min 0.5 when gradient), width 2, style solid
 - Markers: start off, end on (`arrow`, size 7), custom marker colors off
 
 ## monoBrutal
@@ -77,5 +77,5 @@ Snapshot of each preset’s baseline settings as applied in `applyStylePreset` (
 ## auroraFlow
 - Colors: `#845EC2`, `#D65DB1`, `#FF6F91`, `#FF9671`, `#FFC75F`, `#F9F871`, `#0081CF`, `#00C9A7`
 - Nodes: pill, cornerRadius 20, fillOpacity 100%, border none, text `#FFFFFF`, font 11px Montserrat, height 52, spacing 70, levelSpacing 300
-- Links: curve `bezier`, colorMode `gradient`, lineOpacity 0.5, width 4, style solid
+- Links: curve `bezier`, colorMode `gradient`, lineOpacity 0.5 (auto-min 0.5 when gradient), width 4, style solid
 - Markers: start off, end off, custom marker colors off

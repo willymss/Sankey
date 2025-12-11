@@ -2378,11 +2378,14 @@ export class Visual implements IVisual {
             }
 
             const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            const linkOpacity = this.settings.linkColorMode === "gradient"
+                ? Math.max(this.settings.lineOpacity, 0.5)
+                : this.settings.lineOpacity;
             path.setAttribute("d", this.generateLinkPath(x1, y1, x2, y2));
             path.setAttribute("fill", "none");
             path.setAttribute("stroke", this.settings.linkColorMode === "gradient" ? `url(#gradient-${index})` : linkColor);
             path.setAttribute("stroke-width", String(this.settings.linkWidth));
-            path.setAttribute("opacity", String(this.settings.lineOpacity));
+            path.setAttribute("opacity", String(linkOpacity));
             path.setAttribute("data-source", link.source);
             path.setAttribute("data-target", link.target);
             path.setAttribute("data-link-index", String(index));
@@ -2406,11 +2409,11 @@ export class Visual implements IVisual {
             }
 
             path.addEventListener("mouseenter", () => {
-                path.setAttribute("opacity", "0.7");
+                path.setAttribute("opacity", String(Math.min(linkOpacity + 0.2, 1)));
                 path.setAttribute("stroke-width", String(this.settings.linkWidth + 1));
             });
             path.addEventListener("mouseleave", () => {
-                path.setAttribute("opacity", String(this.settings.lineOpacity));
+                path.setAttribute("opacity", String(linkOpacity));
                 path.setAttribute("stroke-width", String(this.settings.linkWidth));
             });
 
@@ -2911,7 +2914,10 @@ export class Visual implements IVisual {
                 circles.forEach(c => c.setAttribute("opacity", "1"));
             });
             allLinks.forEach(path => {
-                path.setAttribute("opacity", String(this.settings.lineOpacity));
+                const linkOpacity = this.settings.linkColorMode === "gradient"
+                    ? Math.max(this.settings.lineOpacity, 0.5)
+                    : this.settings.lineOpacity;
+                path.setAttribute("opacity", String(linkOpacity));
                 path.setAttribute("stroke-width", String(this.settings.linkWidth));
             });
         }
