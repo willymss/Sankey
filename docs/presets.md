@@ -1,6 +1,7 @@
 # Style Preset Reference
 
-Snapshot of each preset’s baseline settings as applied in `applyStylePreset` (values shown per field). All presets keep `showControls` and `showValues` enabled.
+Snapshot of each preset's baseline settings as applied in `applyStylePreset` (values shown per field). All presets keep `showControls` and `showValues` enabled.
+Nodes reorder with a smooth 0.3s move when layout changes.
 
 ## professionalBlue
 - Colors: `#0078D4`, `#50E6FF`, `#106EBE`, `#005A9E`, `#74B4E7`, `#004578`, `#96C9F4`, `#003B5C`

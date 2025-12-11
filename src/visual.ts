@@ -175,6 +175,7 @@ export class Visual implements IVisual {
     private lastViewportWidth: number = 0;
     private lastViewportHeight: number = 0;
     private justSwitchedPreset: boolean = false;
+    private previousNodePositions: Map<string, { x: number; y: number }> = new Map();
 
     constructor(options: VisualConstructorOptions) {
         this.target = options.element;
@@ -2540,7 +2541,17 @@ export class Visual implements IVisual {
         this.nodes.forEach(node => {
             const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
             g.setAttribute("class", "node");
-            g.setAttribute("transform", `translate(${node.x},${node.y})`);
+            const targetTransform = `translate(${node.x},${node.y})`;
+            const previous = this.previousNodePositions.get(node.id);
+            if (previous) {
+                g.setAttribute("transform", `translate(${previous.x},${previous.y})`);
+                g.style.transition = "transform 0.3s ease";
+                requestAnimationFrame(() => {
+                    g.setAttribute("transform", targetTransform);
+                });
+            } else {
+                g.setAttribute("transform", targetTransform);
+            }
             g.style.cursor = this.allowInteractions ? "pointer" : "default";
             g.setAttribute("data-node-id", node.id);
             g.setAttribute("data-node-value", node.value);
@@ -2549,6 +2560,7 @@ export class Visual implements IVisual {
             g.setAttribute("aria-label", `${node.value}, ${node.level}, ${node.count} connections`);
 
             this.nodeElements.set(node.id, g);
+            this.previousNodePositions.set(node.id, { x: node.x, y: node.y });
 
             const shape = this.createNodeShape(node);
             g.appendChild(shape);
