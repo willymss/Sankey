@@ -20,7 +20,7 @@
     "email": "willy_mss@yahoo.com"
   },
   "assets": {
-    "icon": "assets/icon.png"
+    "icon": "assets/icon.svg"
   },
   "externalJS": [],
   "style": "style/visual.less",
