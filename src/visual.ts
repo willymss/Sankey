@@ -1197,6 +1197,13 @@ export class Visual implements IVisual {
         return "#888888";
     }
 
+    private getLinkOpacity(): number {
+        if (this.settings.linkColorMode === "gradient") {
+            return Math.max(this.settings.lineOpacity, 0.65);
+        }
+        return this.settings.lineOpacity;
+    }
+
     private updateSettingsFromModel(dataView: powerbi.DataView): void {
         // Check if the preset was explicitly changed
         const sp = this.formattingSettings?.stylePresets;
@@ -2357,6 +2364,7 @@ export class Visual implements IVisual {
             const sourceColor = link.sourceColor || this.getLevelColor(source?.levelIndex ?? 0);
             const targetColor = link.targetColor || this.getLevelColor(target?.levelIndex ?? 0);
             const linkColor = this.getLinkColor({ ...link, sourceColor, targetColor });
+            const baseOpacity = this.getLinkOpacity();
 
             if (this.settings.linkColorMode === "gradient") {
                 const gradientId = `gradient-${index}`;
@@ -2378,14 +2386,11 @@ export class Visual implements IVisual {
             }
 
             const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            const linkOpacity = this.settings.linkColorMode === "gradient"
-                ? Math.max(this.settings.lineOpacity, 0.5)
-                : this.settings.lineOpacity;
             path.setAttribute("d", this.generateLinkPath(x1, y1, x2, y2));
             path.setAttribute("fill", "none");
             path.setAttribute("stroke", this.settings.linkColorMode === "gradient" ? `url(#gradient-${index})` : linkColor);
             path.setAttribute("stroke-width", String(this.settings.linkWidth));
-            path.setAttribute("opacity", String(linkOpacity));
+            path.setAttribute("opacity", String(baseOpacity));
             path.setAttribute("data-source", link.source);
             path.setAttribute("data-target", link.target);
             path.setAttribute("data-link-index", String(index));
@@ -2409,11 +2414,11 @@ export class Visual implements IVisual {
             }
 
             path.addEventListener("mouseenter", () => {
-                path.setAttribute("opacity", String(Math.min(linkOpacity + 0.2, 1)));
+                path.setAttribute("opacity", String(Math.min(baseOpacity + 0.15, 1)));
                 path.setAttribute("stroke-width", String(this.settings.linkWidth + 1));
             });
             path.addEventListener("mouseleave", () => {
-                path.setAttribute("opacity", String(linkOpacity));
+                path.setAttribute("opacity", String(baseOpacity));
                 path.setAttribute("stroke-width", String(this.settings.linkWidth));
             });
 
@@ -2914,9 +2919,7 @@ export class Visual implements IVisual {
                 circles.forEach(c => c.setAttribute("opacity", "1"));
             });
             allLinks.forEach(path => {
-                const linkOpacity = this.settings.linkColorMode === "gradient"
-                    ? Math.max(this.settings.lineOpacity, 0.5)
-                    : this.settings.lineOpacity;
+                const linkOpacity = this.getLinkOpacity();
                 path.setAttribute("opacity", String(linkOpacity));
                 path.setAttribute("stroke-width", String(this.settings.linkWidth));
             });
