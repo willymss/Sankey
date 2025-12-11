@@ -2481,6 +2481,7 @@ export class Visual implements IVisual {
                 const gradientId = `gradient-${index}`;
                 const gradient = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
                 gradient.setAttribute("id", gradientId);
+                gradient.setAttribute("gradientUnits", "userSpaceOnUse");
                 gradient.setAttribute("x1", "0%");
                 gradient.setAttribute("y1", "0%");
                 gradient.setAttribute("x2", "100%");
@@ -2488,9 +2489,11 @@ export class Visual implements IVisual {
                 const stop1 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
                 stop1.setAttribute("offset", "0%");
                 stop1.setAttribute("stop-color", sourceColor);
+                stop1.setAttribute("stop-opacity", String(baseOpacity));
                 const stop2 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
                 stop2.setAttribute("offset", "100%");
                 stop2.setAttribute("stop-color", targetColor);
+                stop2.setAttribute("stop-opacity", String(baseOpacity));
                 gradient.appendChild(stop1);
                 gradient.appendChild(stop2);
                 this.defs.appendChild(gradient);
@@ -2501,7 +2504,7 @@ export class Visual implements IVisual {
             path.setAttribute("fill", "none");
             path.setAttribute("stroke", this.settings.linkColorMode === "gradient" ? `url(#gradient-${index})` : linkColor);
             path.setAttribute("stroke-width", String(this.settings.linkWidth));
-            path.setAttribute("opacity", String(baseOpacity));
+            path.setAttribute("stroke-opacity", String(baseOpacity));
             path.setAttribute("data-source", link.source);
             path.setAttribute("data-target", link.target);
             path.setAttribute("data-link-index", String(index));
