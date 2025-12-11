@@ -292,13 +292,13 @@ class NodeConnectionCountsCard extends formattingSettings.SimpleCard {
     badgePaddingTop = new formattingSettings.NumUpDown({
         name: "badgePaddingTop",
         displayName: "Padding top",
-        value: 4
+        value: 15
     });
 
     badgePaddingRight = new formattingSettings.NumUpDown({
         name: "badgePaddingRight",
         displayName: "Padding right",
-        value: 5
+        value: 6
     });
 
     badgePaddingBottom = new formattingSettings.NumUpDown({
