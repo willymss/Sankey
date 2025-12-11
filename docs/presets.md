@@ -4,7 +4,7 @@ Snapshot of each preset's baseline settings as applied in `applyStylePreset` (va
 Nodes reorder with a smooth 0.3s move when layout changes.
 
 ## professionalBlue
-- Colors: `#0078D4`, `#50E6FF`, `#106EBE`, `#005A9E`, `#74B4E7`, `#004578`, `#96C9F4`, `#003B5C`
+- Colors: `#0078D4`, `#009CDC`, `#106EBE`, `#005A9E`, `#74B4E7`, `#004578`, `#96C9F4`, `#003B5C`
 - Nodes: roundedRect, cornerRadius 8, fillOpacity 90%, border solid 2px `#003B5C`, text `#FFFFFF`, font 10px Segoe UI, height 50, spacing 60, levelSpacing 280
 - Links: curve `bezier`, colorMode `gradient`, lineOpacity 0.3, width 2, style solid
 - Markers: start off, end on (`arrow`, size 8), custom marker colors off

@@ -744,7 +744,7 @@ export class Visual implements IVisual {
         switch (presetValue) {
             case "professionalBlue":
                 // Professional Blue - Clean, corporate, Microsoft-inspired
-                this.settings.colors = ["#0078D4", "#50E6FF", "#106EBE", "#005A9E", "#74B4E7", "#004578", "#96C9F4", "#003B5C"];
+                this.settings.colors = ["#0078D4", "#009CDC", "#106EBE", "#005A9E", "#74B4E7", "#004578", "#96C9F4", "#003B5C"];
                 this.settings.nodeShape = "roundedRect";
                 this.settings.cornerRadius = 8;
                 this.settings.nodeFillOpacity = 90;
