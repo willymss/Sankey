@@ -36,6 +36,8 @@ interface SankeySettings {
     maxCharsPerLine: number;
     showValues: boolean;
     badgeTextSize: number;
+    badgeTextColor: string;
+    badgeFontFamily: string;
     badgePosition: string;
     badgePaddingTop: number;
     badgePaddingRight: number;
@@ -2698,7 +2700,7 @@ export class Visual implements IVisual {
     }
 
     private renderNodeBadge(g: SVGGElement, node: SankeyNode): void {
-        const badgeColor = this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.foreground : node.color;
+        const badgeColor = this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.foreground : (this.settings.badgeTextColor || node.color);
         const badgeBg = this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.background : "white";
         
         // Calculate badge size - circle size is proportional to text size (1.5x text size)
@@ -2757,7 +2759,7 @@ export class Visual implements IVisual {
         text.setAttribute("fill", badgeColor);
         text.setAttribute("font-size", textSize + "px");
         text.setAttribute("font-weight", "bold");
-        text.setAttribute("font-family", this.settings.fontFamily);
+        text.setAttribute("font-family", this.settings.badgeFontFamily || this.settings.fontFamily);
         text.style.pointerEvents = "none";
         text.textContent = String(node.count);
         
