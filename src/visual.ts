@@ -416,12 +416,12 @@ export class Visual implements IVisual {
         `;
         this.container.setAttribute("tabindex", "0");
         this.container.setAttribute("role", "application");
-        this.container.setAttribute("aria-label", this.localizationManager.getDisplayName("Visual_LandingPage_Title") || "Advanced Sankey Chart");
+        this.container.setAttribute("aria-label", this.localizationManager.getDisplayName("Visual_LandingPage_Title") || "StreamLinks");
 
         this.svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         this.svg.style.cssText = "width: 100%; height: 100%; display: block;";
         this.svg.setAttribute("role", "img");
-        this.svg.setAttribute("aria-label", "Sankey diagram visualization");
+        this.svg.setAttribute("aria-label", "StreamLinks visualization");
 
         this.defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
         this.svg.appendChild(this.defs);
@@ -623,7 +623,7 @@ export class Visual implements IVisual {
 
     private renderLandingPage(): void {
         this.removeLandingPage();
-        const title = this.localizationManager.getDisplayName("Visual_LandingPage_Title") || "Advanced Sankey Chart";
+        const title = this.localizationManager.getDisplayName("Visual_LandingPage_Title") || "StreamLinks";
         const description = this.localizationManager.getDisplayName("Visual_LandingPage_Description") || "Add hierarchy levels to the data field to visualize connections and data flow.";
         this.landingPageElement = document.createElement("div");
         this.landingPageElement.style.cssText = `display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 20px; text-align: center; color: ${this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.foreground : '#666'}; font-family: "Segoe UI", sans-serif;`;
@@ -3175,5 +3175,5 @@ export class Visual implements IVisual {
     }
 }
 
-export class AdvancedSankeyChart extends Visual { }
-export default AdvancedSankeyChart;
+export class StreamLinks extends Visual { }
+export default StreamLinks;

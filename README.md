@@ -1,6 +1,6 @@
-# Advanced Sankey Chart (Power BI Visual)
+# StreamLinks (Power BI Visual)
 
-Advanced Sankey diagram custom visual with configurable nodes, links, labels, accessibility support, and Power BI cross-filtering.
+Flow diagram custom visual with configurable nodes, links, labels, accessibility support, and Power BI cross-filtering. (Formerly Advanced Sankey Chart.)
 
 ## Requirements
 - Node.js 18+ and npm

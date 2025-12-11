@@ -1,13 +1,13 @@
 {
   "visual": {
-    "name": "advancedSankeyChart",
-    "displayName": "Advanced Sankey Chart",
-    "guid": "advancedSankeyChart2024A1B2C3D4E5F6G7",
+    "name": "streamLinks",
+    "displayName": "StreamLinks",
+    "guid": "streamLinks2024A1B2C3D4E5F6G7",
     "visualClassName": "Visual",
     "version": "1.1.0.0",
-    "description": "An advanced Sankey diagram visual for Power BI with customizable nodes, links, and colors. Supports cross-filtering, multi-select, keyboard navigation, and high contrast mode.",
+    "description": "StreamLinks flow diagram visual for Power BI with customizable nodes, links, and colors. Supports cross-filtering, multi-select, keyboard navigation, and high contrast mode.",
     "supportUrl": "http://example.com/support",
-    "gitHubUrl": "http://github.com/example/advancedSankeyChart"
+    "gitHubUrl": "http://github.com/example/streamLinks"
   },
   "server": {
     "certificateFolder": "pbiviz-certs",

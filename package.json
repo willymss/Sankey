@@ -1,6 +1,6 @@
 {
-  "name": "advanced-sankey-chart",
-  "description": "Advanced Sankey diagram visual for Power BI",
+  "name": "streamlinks",
+  "description": "StreamLinks flow diagram visual for Power BI",
   "version": "1.1.1.0",
   "repository": {
     "type": "git",

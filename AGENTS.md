@@ -8,7 +8,7 @@
 ## Build, Test, and Development Commands
 - `npm install` — install deps (requires Node and `powerbi-visuals-tools`; install globally via `npm install -g powerbi-visuals-tools` if missing).
 - `npm run start` — start pbiviz dev server (localhost:8080) for live-reload testing in Power BI Desktop (Developer Mode).
-- `npm run package` — build and emit `dist/advancedSankeyChart2024A1B2C3D4E5F6G7.1.1.0.0.pbiviz` (current tagged output).
+- `npm run package` — build and emit `dist/streamLinks2024A1B2C3D4E5F6G7.1.1.0.0.pbiviz` (current tagged output).
 - `npm run lint` — run ESLint with Power BI visuals ruleset.
 
 ## Visual Defaults & Presets

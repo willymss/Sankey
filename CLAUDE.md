@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a **Power BI Custom Visual** project for an Advanced Sankey Chart. The visual displays hierarchical flow diagrams (Sankey diagrams) with extensive customization options for nodes, links, colors, and interactivity features.
+This is a **Power BI Custom Visual** project for **StreamLinks**. The visual displays hierarchical flow diagrams with extensive customization options for nodes, links, colors, and interactivity features.
 
 **Key Capabilities:**
 - Multi-level hierarchical data visualization (up to 10 levels)
@@ -51,7 +51,7 @@ To debug the visual:
 
 **Main Visual Class** (`src/visual.ts`):
 - `Visual` class implements the `IVisual` interface (required by Power BI)
-- `AdvancedSankeyChart` extends `Visual` (export class for the visual)
+- `StreamLinks` extends `Visual` (export class for the visual)
 
 **Key Lifecycle Methods:**
 - `constructor(options: VisualConstructorOptions)`: Initializes DOM, services, and event handlers
@@ -205,7 +205,7 @@ Data reduction limit: 30,000 rows
 
 ## Important Notes
 
-- The visual class must be exported twice: `export class Visual` (implementation) and `export class AdvancedSankeyChart extends Visual {}` (Power BI entry point)
+- The visual class must be exported twice: `export class Visual` (implementation) and `export class StreamLinks extends Visual {}` (Power BI entry point)
 - TypeScript compilation target is ES2022
 - The visual supports landing page, empty state, and edit mode
 - Selection IDs must be created from table rows for proper cross-filtering
