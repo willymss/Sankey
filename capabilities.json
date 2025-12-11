@@ -370,6 +370,26 @@
           "displayNameKey": "DisplaySettings_CounterSeparator",
           "type": { "text": true }
         },
+        "headerTitleMatchNode": {
+          "displayName": "Match Level Title to Node Color",
+          "displayNameKey": "DisplaySettings_HeaderTitleMatchNode",
+          "type": { "bool": true }
+        },
+        "headerTitleColor": {
+          "displayName": "Level Title Color",
+          "displayNameKey": "DisplaySettings_HeaderTitleColor",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "headerTitleSize": {
+          "displayName": "Level Title Size",
+          "displayNameKey": "DisplaySettings_HeaderTitleSize",
+          "type": { "numeric": true }
+        },
+        "headerTitleFontFamily": {
+          "displayName": "Level Title Font Family",
+          "displayNameKey": "DisplaySettings_HeaderTitleFontFamily",
+          "type": { "text": true }
+        },
         "headerColor": {
           "displayName": "Header Color",
           "displayNameKey": "DisplaySettings_HeaderColor",

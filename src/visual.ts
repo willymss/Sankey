@@ -82,6 +82,10 @@ interface SankeySettings {
     headerCounterFontWeight: string;
     headerCounterColor: string;
     headerCounterSeparator: string;
+    headerTitleColor: string;
+    headerTitleMatchNode: boolean;
+    headerTitleSize: number;
+    headerTitleFontFamily: string;
     showControls: boolean;
 }
 
@@ -351,8 +355,8 @@ export class Visual implements IVisual {
             maxCharsPerLine: 28,
             showValues: true,
             badgeTextSize: 8,
-            badgeTextColor: "#ffffff",
-            badgeFontFamily: "Segoe UI, -apple-system, BlinkMacSystemFont, sans-serif",
+            badgeTextColor: this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.foreground : "#000000",
+            badgeFontFamily: "Segoe UI",
             badgePosition: "top-right",
             badgePaddingTop: 0,
             badgePaddingRight: 0,
@@ -367,9 +371,9 @@ export class Visual implements IVisual {
             labelPaddingRight: 0,
             labelPaddingBottom: 0,
             labelPaddingLeft: 0,
-            lineOpacity: 0.3,
+            lineOpacity: 30,
             linkWidth: 2,
-            highlightOpacity: 0.8,
+            highlightOpacity: 80,
             linkStyle: "solid",
             linkColorMode: "gradient",
             customLinkColor: "#888888",
@@ -383,14 +387,18 @@ export class Visual implements IVisual {
             useCustomMarkerColors: false,
             startMarkerColor: "#0078D4",
             endMarkerColor: "#0078D4",
-            colors: ["#0078D4", "#50E6FF", "#106EBE", "#005A9E", "#74B4E7", "#004578", "#96C9F4", "#003B5C"],
+            colors: ["#0078D4", "#009CDC", "#106EBE", "#005A9E", "#74B4E7", "#004578", "#96C9F4", "#003B5C"],
             showEmptyPlaceholder: true,
             showCounters: true,
             headerCounterFontSize: 11,
-            headerCounterFontFamily: "Segoe UI, -apple-system, BlinkMacSystemFont, sans-serif",
+            headerCounterFontFamily: "Segoe UI",
             headerCounterFontWeight: "bold",
-            headerCounterColor: "#4b5563",
+            headerCounterColor: "#000000",
             headerCounterSeparator: "|",
+            headerTitleColor: this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.foreground : "#000000",
+            headerTitleMatchNode: false,
+            headerTitleSize: 14,
+            headerTitleFontFamily: "Segoe UI",
             showControls: true
         };
     }
@@ -746,6 +754,14 @@ export class Visual implements IVisual {
     }
 
     private applyStylePreset(presetValue: string): void {
+        const preserveShowControls = this.settings.showControls;
+        const preserveShowCounters = this.settings.showCounters;
+
+        // Base defaults for text and badge readability across presets
+        this.settings.textColor = "#ffffff";
+        this.settings.badgeTextColor = "#000000";
+        this.settings.headerTitleColor = "#000000";
+
         switch (presetValue) {
             case "professionalBlue":
                 // Professional Blue - Clean, corporate, Microsoft-inspired
@@ -757,7 +773,7 @@ export class Visual implements IVisual {
                 this.settings.nodeBorderWidth = 0;
                 this.settings.useCustomBorderColor = false;
                 this.settings.nodeBorderColor = "#003B5C";
-                this.settings.textColor = "#FFFFFF";
+                this.settings.textColor = "#ffffff";
                 this.settings.fontSize = 10;
                 this.settings.fontFamily = "Segoe UI";
                 this.settings.nodeHeight = 50;
@@ -765,7 +781,7 @@ export class Visual implements IVisual {
                 this.settings.levelSpacing = 280;
                 this.settings.linkCurveStyle = "bezier";
                 this.settings.linkColorMode = "gradient";
-                this.settings.lineOpacity = 0.3;
+                this.settings.lineOpacity = 30;
                 this.settings.linkWidth = 2;
                 this.settings.linkStyle = "solid";
                 this.settings.showStartMarker = false;
@@ -773,6 +789,8 @@ export class Visual implements IVisual {
                 this.settings.endMarkerType = "arrow";
                 this.settings.endMarkerSize = 8;
                 this.settings.useCustomMarkerColors = false;
+                this.settings.badgeTextColor = "#000000";
+                this.settings.headerTitleColor = "#000000";
                 this.settings.showControls = true;
                 this.settings.showValues = true;
                 break;
@@ -786,7 +804,7 @@ export class Visual implements IVisual {
                 this.settings.nodeBorderWidth = 0;
                 this.settings.useCustomBorderColor = false;
                 this.settings.nodeBorderColor = "#000000";
-                this.settings.textColor = "#FFFFFF";
+                this.settings.textColor = "#ffffff";
                 this.settings.fontSize = 11;
                 this.settings.fontFamily = "Segoe UI";
                 this.settings.nodeHeight = 50;
@@ -794,7 +812,7 @@ export class Visual implements IVisual {
                 this.settings.levelSpacing = 280;
                 this.settings.linkCurveStyle = "bezier";
                 this.settings.linkColorMode = "source";
-                this.settings.lineOpacity = 0.35;
+                this.settings.lineOpacity = 35;
                 this.settings.linkWidth = 2.5;
                 this.settings.linkStyle = "solid";
                 this.settings.showStartMarker = false;
@@ -802,6 +820,8 @@ export class Visual implements IVisual {
                 this.settings.endMarkerType = "arrow";
                 this.settings.endMarkerSize = 8;
                 this.settings.useCustomMarkerColors = false;
+                this.settings.badgeTextColor = "#000000";
+                this.settings.headerTitleColor = "#000000";
                 this.settings.showControls = true;
                 this.settings.showValues = true;
                 break;
@@ -814,7 +834,7 @@ export class Visual implements IVisual {
                 this.settings.nodeBorderStyle = "none";
                 this.settings.nodeBorderWidth = 0;
                 this.settings.useCustomBorderColor = false;
-                this.settings.textColor = "#000000";
+                this.settings.textColor = "#ffffff";
                 this.settings.fontSize = 10;
                 this.settings.fontFamily = "Segoe UI";
                 this.settings.nodeHeight = 50;
@@ -822,8 +842,8 @@ export class Visual implements IVisual {
                 this.settings.levelSpacing = 320;
                 this.settings.linkCurveStyle = "bezier";
                 this.settings.linkColorMode = "gradient";
-                this.settings.lineOpacity = 0.8;
-                this.settings.highlightOpacity = 0.95;
+                this.settings.lineOpacity = 80;
+                this.settings.highlightOpacity = 95;
                 this.settings.linkWidth = 2.5;
                 this.settings.linkStyle = "solid";
                 this.settings.showStartMarker = true;
@@ -833,6 +853,8 @@ export class Visual implements IVisual {
                 this.settings.endMarkerType = "arrow";
                 this.settings.endMarkerSize = 10;
                 this.settings.useCustomMarkerColors = false;
+                this.settings.badgeTextColor = "#000000";
+                this.settings.headerTitleColor = "#000000";
                 this.settings.showControls = true;
                 this.settings.showValues = true;
                 break;
@@ -847,7 +869,7 @@ export class Visual implements IVisual {
                 this.settings.nodeBorderWidth = 0;
                 this.settings.useCustomBorderColor = false;
                 this.settings.nodeBorderColor = "#3E2723";
-                this.settings.textColor = "#FFFFFF";
+                this.settings.textColor = "#ffffff";
                 this.settings.fontSize = 10;
                 this.settings.fontFamily = "Georgia";
                 this.settings.nodeHeight = 50;
@@ -855,7 +877,7 @@ export class Visual implements IVisual {
                 this.settings.levelSpacing = 280;
                 this.settings.linkCurveStyle = "bezier";
                 this.settings.linkColorMode = "source";
-                this.settings.lineOpacity = 0.35;
+                this.settings.lineOpacity = 35;
                 this.settings.linkWidth = 2.0;
                 this.settings.linkStyle = "solid";
                 this.settings.showStartMarker = false;
@@ -863,6 +885,8 @@ export class Visual implements IVisual {
                 this.settings.endMarkerType = "diamond";
                 this.settings.endMarkerSize = 7;
                 this.settings.useCustomMarkerColors = false;
+                this.settings.badgeTextColor = "#000000";
+                this.settings.headerTitleColor = "#000000";
                 this.settings.showControls = true;
                 this.settings.showValues = true;
                 break;
@@ -876,7 +900,7 @@ export class Visual implements IVisual {
                 this.settings.nodeBorderWidth = 0;
                 this.settings.useCustomBorderColor = false;
                 this.settings.nodeBorderColor = "#9E9E9E";
-                this.settings.textColor = "#424242";
+                this.settings.textColor = "#ffffff";
                 this.settings.fontSize = 10;
                 this.settings.fontFamily = "Segoe UI";
                 this.settings.nodeHeight = 50;
@@ -884,7 +908,7 @@ export class Visual implements IVisual {
                 this.settings.levelSpacing = 280;
                 this.settings.linkCurveStyle = "bezier";
                 this.settings.linkColorMode = "gradient";
-                this.settings.lineOpacity = 0.35;
+                this.settings.lineOpacity = 35;
                 this.settings.linkWidth = 2.0;
                 this.settings.linkStyle = "solid";
                 this.settings.showStartMarker = true;
@@ -908,7 +932,7 @@ export class Visual implements IVisual {
                 this.settings.nodeBorderWidth = 0;
                 this.settings.useCustomBorderColor = false;
                 this.settings.nodeBorderColor = "#263238";
-                this.settings.textColor = "#FFFFFF";
+                this.settings.textColor = "#ffffff";
                 this.settings.fontSize = 10;
                 this.settings.fontFamily = "Consolas";
                 this.settings.nodeHeight = 48;
@@ -916,7 +940,7 @@ export class Visual implements IVisual {
                 this.settings.levelSpacing = 270;
                 this.settings.linkCurveStyle = "step";
                 this.settings.linkColorMode = "target";
-                this.settings.lineOpacity = 0.4;
+                this.settings.lineOpacity = 40;
                 this.settings.linkWidth = 2;
                 this.settings.linkStyle = "solid";
                 this.settings.showStartMarker = true;
@@ -938,7 +962,7 @@ export class Visual implements IVisual {
                 this.settings.nodeBorderStyle = "none";
                 this.settings.nodeBorderWidth = 0;
                 this.settings.useCustomBorderColor = false;
-                this.settings.textColor = "#FFFFFF";
+                this.settings.textColor = "#ffffff";
                 this.settings.fontSize = 10;
                 this.settings.fontFamily = "Segoe UI";
                 this.settings.nodeHeight = 52;
@@ -946,7 +970,7 @@ export class Visual implements IVisual {
                 this.settings.levelSpacing = 300;
                 this.settings.linkCurveStyle = "bezier";
                 this.settings.linkColorMode = "gradient";
-                this.settings.lineOpacity = 0.5;
+                this.settings.lineOpacity = 50;
                 this.settings.linkWidth = 2.5;
                 this.settings.linkStyle = "solid";
                 this.settings.showStartMarker = false;
@@ -968,7 +992,7 @@ export class Visual implements IVisual {
                 this.settings.nodeBorderWidth = 0;
                 this.settings.useCustomBorderColor = false;
                 this.settings.nodeBorderColor = "#4338CA";
-                this.settings.textColor = "#FFFFFF";
+                this.settings.textColor = "#ffffff";
                 this.settings.fontSize = 11;
                 this.settings.fontFamily = "Inter, sans-serif";
                 this.settings.nodeHeight = 46;
@@ -976,7 +1000,7 @@ export class Visual implements IVisual {
                 this.settings.levelSpacing = 280;
                 this.settings.linkCurveStyle = "bezier";
                 this.settings.linkColorMode = "gradient";
-                this.settings.lineOpacity = 0.4;
+                this.settings.lineOpacity = 40;
                 this.settings.linkWidth = 1.5;
                 this.settings.linkStyle = "solid";
                 this.settings.showStartMarker = false;
@@ -998,7 +1022,7 @@ export class Visual implements IVisual {
                 this.settings.nodeBorderWidth = 1;
                 this.settings.useCustomBorderColor = true;
                 this.settings.nodeBorderColor = "#000000";
-                this.settings.textColor = "#FFFFFF";
+                this.settings.textColor = "#ffffff";
                 this.settings.fontSize = 12;
                 this.settings.fontFamily = "Quicksand, sans-serif";
                 this.settings.nodeHeight = 54;
@@ -1006,7 +1030,7 @@ export class Visual implements IVisual {
                 this.settings.levelSpacing = 280;
                 this.settings.linkCurveStyle = "bezier";
                 this.settings.linkColorMode = "source";
-                this.settings.lineOpacity = 1.0;
+                this.settings.lineOpacity = 100;
                 this.settings.linkWidth = 2.5;
                 this.settings.linkStyle = "solid";
                 this.settings.showStartMarker = false;
@@ -1028,7 +1052,7 @@ export class Visual implements IVisual {
                 this.settings.nodeBorderWidth = 1;
                 this.settings.useCustomBorderColor = true;
                 this.settings.nodeBorderColor = "#00FF94";
-                this.settings.textColor = "#00FF94";
+                this.settings.textColor = "#ffffff";
                 this.settings.fontSize = 10;
                 this.settings.fontFamily = "JetBrains Mono, monospace";
                 this.settings.nodeHeight = 44;
@@ -1036,7 +1060,7 @@ export class Visual implements IVisual {
                 this.settings.levelSpacing = 320;
                 this.settings.linkCurveStyle = "step";
                 this.settings.linkColorMode = "target";
-                this.settings.lineOpacity = 0.6;
+                this.settings.lineOpacity = 60;
                 this.settings.linkWidth = 1.0;
                 this.settings.linkStyle = "solid";
                 this.settings.showStartMarker = true;
@@ -1061,7 +1085,7 @@ export class Visual implements IVisual {
                 this.settings.nodeBorderStyle = "none";
                 this.settings.nodeBorderWidth = 0;
                 this.settings.useCustomBorderColor = false;
-                this.settings.textColor = "#ECEFF4";
+                this.settings.textColor = "#ffffff";
                 this.settings.fontSize = 11;
                 this.settings.fontFamily = "Roboto Slab, serif";
                 this.settings.nodeHeight = 48;
@@ -1069,7 +1093,7 @@ export class Visual implements IVisual {
                 this.settings.levelSpacing = 280;
                 this.settings.linkCurveStyle = "bezier";
                 this.settings.linkColorMode = "source";
-                this.settings.lineOpacity = 0.25;
+                this.settings.lineOpacity = 25;
                 this.settings.linkWidth = 2;
                 this.settings.linkStyle = "solid";
                 this.settings.showStartMarker = false;
@@ -1091,7 +1115,7 @@ export class Visual implements IVisual {
                 this.settings.nodeBorderWidth = 0;
                 this.settings.useCustomBorderColor = false;
                 this.settings.nodeBorderColor = "rgba(0,0,0,0.1)";
-                this.settings.textColor = "#334155";
+                this.settings.textColor = "#ffffff";
                 this.settings.fontSize = 10;
                 this.settings.fontFamily = "SF Pro Text, sans-serif";
                 this.settings.nodeHeight = 44;
@@ -1099,7 +1123,7 @@ export class Visual implements IVisual {
                 this.settings.levelSpacing = 280;
                 this.settings.linkCurveStyle = "bezier";
                 this.settings.linkColorMode = "gradient";
-                this.settings.lineOpacity = 0.3;
+                this.settings.lineOpacity = 30;
                 this.settings.linkWidth = 2;
                 this.settings.linkStyle = "solid";
                 this.settings.showStartMarker = false;
@@ -1121,7 +1145,7 @@ export class Visual implements IVisual {
                 this.settings.nodeBorderWidth = 2;
                 this.settings.useCustomBorderColor = true;
                 this.settings.nodeBorderColor = "#000000";
-                this.settings.textColor = "#FFFFFF";
+                this.settings.textColor = "#ffffff";
                 this.settings.fontSize = 11;
                 this.settings.fontFamily = "Courier Prime, monospace";
                 this.settings.nodeHeight = 50;
@@ -1129,7 +1153,7 @@ export class Visual implements IVisual {
                 this.settings.levelSpacing = 270;
                 this.settings.linkCurveStyle = "step";
                 this.settings.linkColorMode = "target";
-                this.settings.lineOpacity = 1.0;
+                this.settings.lineOpacity = 100;
                 this.settings.linkWidth = 3;
                 this.settings.linkStyle = "solid";
                 this.settings.showStartMarker = true;
@@ -1152,7 +1176,7 @@ export class Visual implements IVisual {
                 this.settings.nodeBorderStyle = "none";
                 this.settings.nodeBorderWidth = 0;
                 this.settings.useCustomBorderColor = false;
-                this.settings.textColor = "#FFFFFF";
+                this.settings.textColor = "#ffffff";
                 this.settings.fontSize = 11;
                 this.settings.fontFamily = "Montserrat, sans-serif";
                 this.settings.nodeHeight = 52;
@@ -1160,7 +1184,7 @@ export class Visual implements IVisual {
                 this.settings.levelSpacing = 300;
                 this.settings.linkCurveStyle = "bezier";
                 this.settings.linkColorMode = "gradient";
-                this.settings.lineOpacity = 0.5;
+                this.settings.lineOpacity = 50;
                 this.settings.linkWidth = 4;
                 this.settings.linkStyle = "solid";
                 this.settings.showStartMarker = false;
@@ -1189,7 +1213,7 @@ export class Visual implements IVisual {
                 this.settings.linkCurveStyle = "bezier";
                 this.settings.linkColorMode = "custom";
                 this.settings.customLinkColor = "#555555";
-                this.settings.lineOpacity = 0.6;
+                this.settings.lineOpacity = 60;
                 this.settings.linkWidth = 2;
                 this.settings.linkStyle = "solid";
                 this.settings.showStartMarker = false;
@@ -1200,7 +1224,8 @@ export class Visual implements IVisual {
                 this.settings.endMarkerColor = "#555555";
                 this.settings.badgeTextColor = "#000000";
                 this.settings.badgeFontFamily = "Segoe UI, -apple-system, BlinkMacSystemFont, sans-serif";
-                this.settings.showControls = true;
+                this.settings.showControls = preserveShowControls;
+                this.settings.showCounters = preserveShowCounters;
                 this.settings.showValues = true;
                 break;
 
@@ -1209,6 +1234,10 @@ export class Visual implements IVisual {
                 this.applyStylePreset("professionalBlue");
                 break;
         }
+
+        // Restore persisted toggles for controls/counters after preset switch
+        this.settings.showControls = preserveShowControls;
+        this.settings.showCounters = preserveShowCounters;
     }
 
     private resolvePresetId(presetId: string): string {
@@ -1223,7 +1252,18 @@ export class Visual implements IVisual {
 
     private resetSettingsToPreset(presetId: string): void {
         const resolvedPreset = this.resolvePresetId(presetId);
+        const preservedShowControls = this.settings?.showControls;
+        const preservedShowCounters = this.settings?.showCounters;
+
         this.settings = this.getPresetDefaults(resolvedPreset);
+
+        // Keep user toggles for controls/counters across preset changes
+        if (preservedShowControls !== undefined) {
+            this.settings.showControls = preservedShowControls;
+        }
+        if (preservedShowCounters !== undefined) {
+            this.settings.showCounters = preservedShowCounters;
+        }
         this.previousPreset = resolvedPreset;
     }
 
@@ -1237,11 +1277,16 @@ export class Visual implements IVisual {
         return "#888888";
     }
 
+    private normalizeOpacity(value: number): number {
+        return Math.max(0, Math.min(value ?? 0, 100)) / 100;
+    }
+
     private getLinkOpacity(): number {
+        const base = this.normalizeOpacity(this.settings.lineOpacity);
         if (this.settings.linkColorMode === "gradient") {
-            return Math.max(this.settings.lineOpacity, 0.65);
+            return Math.max(base, 0.65);
         }
-        return this.settings.lineOpacity;
+        return base;
     }
 
     private updateSettingsFromModel(dataView: powerbi.DataView): void {
@@ -1384,12 +1429,18 @@ export class Visual implements IVisual {
             if (displayObjects["counterFontWeight"] !== undefined) this.settings.headerCounterFontWeight = (ds.counterFontWeight as any)?.value?.value ?? (ds.counterFontWeight as any)?.value ?? defaults.headerCounterFontWeight;
             if (displayObjects["counterColor"] !== undefined) this.settings.headerCounterColor = ds.counterColor?.value?.value ?? defaults.headerCounterColor;
             if (displayObjects["counterSeparator"] !== undefined) this.settings.headerCounterSeparator = ds.counterSeparator?.value ?? defaults.headerCounterSeparator;
+            if (displayObjects["headerTitleMatchNode"] !== undefined) this.settings.headerTitleMatchNode = ds.headerTitleMatchNode?.value ?? defaults.headerTitleMatchNode;
+            if (displayObjects["headerTitleColor"] !== undefined) this.settings.headerTitleColor = ds.headerTitleColor?.value?.value ?? defaults.headerTitleColor;
+            if (displayObjects["headerTitleSize"] !== undefined) this.settings.headerTitleSize = ds.headerTitleSize?.value ?? defaults.headerTitleSize;
+            if (displayObjects["headerTitleFontFamily"] !== undefined) this.settings.headerTitleFontFamily = (ds.headerTitleFontFamily as any)?.value?.value ?? (ds.headerTitleFontFamily as any)?.value ?? defaults.headerTitleFontFamily;
             if (displayObjects["showControls"] !== undefined) this.settings.showControls = ds.showControls?.value ?? defaults.showControls;
         }
 
         if (this.isHighContrastMode && this.highContrastColors) {
             this.settings.textColor = this.highContrastColors.background;
             this.settings.headerCounterColor = this.highContrastColors.foreground;
+            this.settings.badgeTextColor = this.highContrastColors.foreground;
+            this.settings.headerTitleColor = this.highContrastColors.foreground;
         }
     }
 
@@ -1546,6 +1597,10 @@ export class Visual implements IVisual {
             ds.counterFontWeight.value = { displayName: this.settings.headerCounterFontWeight, value: this.settings.headerCounterFontWeight } as any;
             ds.counterColor.value = { value: this.settings.headerCounterColor };
             ds.counterSeparator.value = this.settings.headerCounterSeparator;
+            ds.headerTitleMatchNode.value = this.settings.headerTitleMatchNode;
+            ds.headerTitleColor.value = { value: this.settings.headerTitleColor };
+            ds.headerTitleSize.value = this.settings.headerTitleSize;
+            ds.headerTitleFontFamily.value = { displayName: this.settings.headerTitleFontFamily, value: this.settings.headerTitleFontFamily } as any;
             ds.showControls.value = this.settings.showControls;
         }
     }
@@ -1903,6 +1958,10 @@ export class Visual implements IVisual {
                 this.settings.headerCounterFontWeight = defaults.headerCounterFontWeight;
                 this.settings.headerCounterColor = defaults.headerCounterColor;
                 this.settings.headerCounterSeparator = defaults.headerCounterSeparator;
+                this.settings.headerTitleMatchNode = defaults.headerTitleMatchNode;
+                this.settings.headerTitleColor = defaults.headerTitleColor;
+                this.settings.headerTitleSize = defaults.headerTitleSize;
+                this.settings.headerTitleFontFamily = defaults.headerTitleFontFamily;
                 this.settings.showControls = defaults.showControls;
                 break;
         }
@@ -1972,6 +2031,10 @@ export class Visual implements IVisual {
             "counterFontWeight",
             "counterColor",
             "counterSeparator",
+            "headerTitleMatchNode",
+            "headerTitleColor",
+            "headerTitleSize",
+            "headerTitleFontFamily",
             "showControls"
         ];
     }
@@ -2503,10 +2566,12 @@ export class Visual implements IVisual {
             text.setAttribute("x", String(x));
             text.setAttribute("y", "90");
             text.setAttribute("text-anchor", "middle");
-            text.setAttribute("font-size", "14px");
+            text.setAttribute("font-size", `${this.settings.headerTitleSize}px`);
             text.setAttribute("font-weight", "bold");
-            text.setAttribute("font-family", this.settings.fontFamily);
-            text.setAttribute("fill", this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.foreground : this.settings.colors[index % this.settings.colors.length]);
+            text.setAttribute("font-family", this.settings.headerTitleFontFamily || this.settings.fontFamily);
+            const levelColor = this.settings.colors[index % this.settings.colors.length];
+            const chosenColor = this.settings.headerTitleMatchNode ? levelColor : this.settings.headerTitleColor;
+            text.setAttribute("fill", this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.foreground : chosenColor);
             text.textContent = this.titleCase(colName);
             headerGroup.appendChild(text);
         });
@@ -3110,7 +3175,8 @@ export class Visual implements IVisual {
             const source = path.getAttribute("data-source");
             const target = path.getAttribute("data-target");
             if (source && target && filteredLinkPairs.has(`${source}->${target}`)) {
-                path.setAttribute("opacity", String(this.settings.highlightOpacity));
+                const highlightOpacity = Math.max(this.normalizeOpacity(this.settings.highlightOpacity), this.getLinkOpacity());
+                path.setAttribute("opacity", String(highlightOpacity));
                 path.setAttribute("stroke-width", String(this.settings.linkWidth * 2));
             }
         });
@@ -3168,7 +3234,7 @@ export class Visual implements IVisual {
 
         const allLinks = this.mainGroup.querySelectorAll(".links path");
         allLinks.forEach(path => {
-            path.setAttribute("opacity", String(this.settings.lineOpacity));
+            path.setAttribute("opacity", String(this.getLinkOpacity()));
             path.setAttribute("stroke-width", String(this.settings.linkWidth));
         });
     }

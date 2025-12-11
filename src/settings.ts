@@ -162,35 +162,35 @@ class NodeTextCard extends formattingSettings.SimpleCard {
         name: "fontFamily",
         displayName: "Font family",
         items: [
-            { displayName: "Segoe UI", value: "Segoe UI, -apple-system, BlinkMacSystemFont, sans-serif" },
-            { displayName: "Arial", value: "Arial, Helvetica, sans-serif" },
-            { displayName: "Arial Black", value: "'Arial Black', sans-serif" },
-            { displayName: "Calibri", value: "Calibri, sans-serif" },
-            { displayName: "Cambria", value: "Cambria, serif" },
-            { displayName: "Candara", value: "Candara, sans-serif" },
-            { displayName: "Comic Sans MS", value: "'Comic Sans MS', cursive" },
-            { displayName: "Consolas", value: "Consolas, monospace" },
-            { displayName: "Constantia", value: "Constantia, serif" },
-            { displayName: "Corbel", value: "Corbel, sans-serif" },
-            { displayName: "Courier New", value: "'Courier New', monospace" },
-            { displayName: "DIN", value: "DIN, sans-serif" },
-            { displayName: "Georgia", value: "Georgia, serif" },
-            { displayName: "Lucida Console", value: "'Lucida Console', monospace" },
-            { displayName: "Segoe Script", value: "'Segoe Script', cursive" },
-            { displayName: "Tahoma", value: "Tahoma, sans-serif" },
-            { displayName: "Times New Roman", value: "'Times New Roman', serif" },
-            { displayName: "Trebuchet MS", value: "'Trebuchet MS', sans-serif" },
-            { displayName: "Verdana", value: "Verdana, sans-serif" },
-            { displayName: "Roboto", value: "Roboto, sans-serif" },
-            { displayName: "Open Sans", value: "'Open Sans', sans-serif" }
+            { displayName: "Segoe UI", value: "Segoe UI" },
+            { displayName: "Arial", value: "Arial" },
+            { displayName: "Arial Black", value: "Arial Black" },
+            { displayName: "Calibri", value: "Calibri" },
+            { displayName: "Cambria", value: "Cambria" },
+            { displayName: "Candara", value: "Candara" },
+            { displayName: "Comic Sans MS", value: "Comic Sans MS" },
+            { displayName: "Consolas", value: "Consolas" },
+            { displayName: "Constantia", value: "Constantia" },
+            { displayName: "Corbel", value: "Corbel" },
+            { displayName: "Courier New", value: "Courier New" },
+            { displayName: "DIN", value: "DIN" },
+            { displayName: "Georgia", value: "Georgia" },
+            { displayName: "Lucida Console", value: "Lucida Console" },
+            { displayName: "Segoe Script", value: "Segoe Script" },
+            { displayName: "Tahoma", value: "Tahoma" },
+            { displayName: "Times New Roman", value: "Times New Roman" },
+            { displayName: "Trebuchet MS", value: "Trebuchet MS" },
+            { displayName: "Verdana", value: "Verdana" },
+            { displayName: "Roboto", value: "Roboto" },
+            { displayName: "Open Sans", value: "Open Sans" }
         ],
-        value: { displayName: "Segoe UI", value: "Segoe UI, -apple-system, BlinkMacSystemFont, sans-serif" }
+        value: { displayName: "Segoe UI", value: "Segoe UI" }
     });
 
     textColor = new formattingSettings.ColorPicker({
         name: "textColor",
         displayName: "Text color",
-        value: { value: "#ffffff" }
+        value: { value: "#000000" }
     });
 
     wrapText = new formattingSettings.ToggleSwitch({
@@ -229,36 +229,36 @@ class NodeConnectionCountsCard extends formattingSettings.SimpleCard {
     badgeTextColor = new formattingSettings.ColorPicker({
         name: "badgeTextColor",
         displayName: "Count text color",
-        value: { value: "#ffffff" }
+        value: { value: "#000000" }
     });
 
     badgeFontFamily = new formattingSettings.ItemDropdown({
         name: "badgeFontFamily",
         displayName: "Count font family",
         items: [
-            { displayName: "Segoe UI", value: "Segoe UI, -apple-system, BlinkMacSystemFont, sans-serif" },
-            { displayName: "Arial", value: "Arial, Helvetica, sans-serif" },
-            { displayName: "Arial Black", value: "'Arial Black', sans-serif" },
-            { displayName: "Calibri", value: "Calibri, sans-serif" },
-            { displayName: "Cambria", value: "Cambria, serif" },
-            { displayName: "Candara", value: "Candara, sans-serif" },
-            { displayName: "Comic Sans MS", value: "'Comic Sans MS', cursive" },
-            { displayName: "Consolas", value: "Consolas, monospace" },
-            { displayName: "Constantia", value: "Constantia, serif" },
-            { displayName: "Corbel", value: "Corbel, sans-serif" },
-            { displayName: "Courier New", value: "'Courier New', monospace" },
-            { displayName: "DIN", value: "DIN, sans-serif" },
-            { displayName: "Georgia", value: "Georgia, serif" },
-            { displayName: "Lucida Console", value: "'Lucida Console', monospace" },
-            { displayName: "Segoe Script", value: "'Segoe Script', cursive" },
-            { displayName: "Tahoma", value: "Tahoma, sans-serif" },
-            { displayName: "Times New Roman", value: "'Times New Roman', serif" },
-            { displayName: "Trebuchet MS", value: "'Trebuchet MS', sans-serif" },
-            { displayName: "Verdana", value: "Verdana, sans-serif" },
-            { displayName: "Roboto", value: "Roboto, sans-serif" },
-            { displayName: "Open Sans", value: "'Open Sans', sans-serif" }
+            { displayName: "Segoe UI", value: "Segoe UI" },
+            { displayName: "Arial", value: "Arial" },
+            { displayName: "Arial Black", value: "Arial Black" },
+            { displayName: "Calibri", value: "Calibri" },
+            { displayName: "Cambria", value: "Cambria" },
+            { displayName: "Candara", value: "Candara" },
+            { displayName: "Comic Sans MS", value: "Comic Sans MS" },
+            { displayName: "Consolas", value: "Consolas" },
+            { displayName: "Constantia", value: "Constantia" },
+            { displayName: "Corbel", value: "Corbel" },
+            { displayName: "Courier New", value: "Courier New" },
+            { displayName: "DIN", value: "DIN" },
+            { displayName: "Georgia", value: "Georgia" },
+            { displayName: "Lucida Console", value: "Lucida Console" },
+            { displayName: "Segoe Script", value: "Segoe Script" },
+            { displayName: "Tahoma", value: "Tahoma" },
+            { displayName: "Times New Roman", value: "Times New Roman" },
+            { displayName: "Trebuchet MS", value: "Trebuchet MS" },
+            { displayName: "Verdana", value: "Verdana" },
+            { displayName: "Roboto", value: "Roboto" },
+            { displayName: "Open Sans", value: "Open Sans" }
         ],
-        value: { displayName: "Segoe UI", value: "Segoe UI, -apple-system, BlinkMacSystemFont, sans-serif" }
+        value: { displayName: "Segoe UI", value: "Segoe UI" }
     });
 
     badgePosition = new formattingSettings.ItemDropdown({
@@ -392,15 +392,15 @@ class LinkOpacityCard extends formattingSettings.SimpleCard {
     lineOpacity = new formattingSettings.NumUpDown({
         name: "lineOpacity",
         displayName: "Default opacity",
-        description: "Opacity for unselected links (0-1)",
-        value: 0.25
+        description: "Opacity for unselected links (0-100%)",
+        value: 30
     });
 
     highlightOpacity = new formattingSettings.NumUpDown({
         name: "highlightOpacity",
         displayName: "Highlight opacity",
-        description: "Opacity for selected/highlighted links",
-        value: 0.8
+        description: "Opacity for selected/highlighted links (0-100%)",
+        value: 80
     });
 
     name = "linkOpacity";
@@ -607,18 +607,18 @@ class DisplaySettingsCard extends formattingSettings.SimpleCard {
         name: "counterFontFamily",
         displayName: "Counter font family",
         items: [
-            { displayName: "Segoe UI", value: "Segoe UI, -apple-system, BlinkMacSystemFont, sans-serif" },
-            { displayName: "Arial", value: "Arial, Helvetica, sans-serif" },
-            { displayName: "Calibri", value: "Calibri, sans-serif" },
-            { displayName: "Cambria", value: "Cambria, serif" },
-            { displayName: "Consolas", value: "Consolas, monospace" },
-            { displayName: "Georgia", value: "Georgia, serif" },
-            { displayName: "Roboto", value: "Roboto, sans-serif" },
-            { displayName: "Open Sans", value: "'Open Sans', sans-serif" },
-            { displayName: "Tahoma", value: "Tahoma, sans-serif" },
-            { displayName: "Verdana", value: "Verdana, sans-serif" }
+            { displayName: "Segoe UI", value: "Segoe UI" },
+            { displayName: "Arial", value: "Arial" },
+            { displayName: "Calibri", value: "Calibri" },
+            { displayName: "Cambria", value: "Cambria" },
+            { displayName: "Consolas", value: "Consolas" },
+            { displayName: "Georgia", value: "Georgia" },
+            { displayName: "Roboto", value: "Roboto" },
+            { displayName: "Open Sans", value: "Open Sans" },
+            { displayName: "Tahoma", value: "Tahoma" },
+            { displayName: "Verdana", value: "Verdana" }
         ],
-        value: { displayName: "Segoe UI", value: "Segoe UI, -apple-system, BlinkMacSystemFont, sans-serif" }
+        value: { displayName: "Segoe UI", value: "Segoe UI" }
     });
 
     counterFontWeight = new formattingSettings.ItemDropdown({
@@ -635,7 +635,7 @@ class DisplaySettingsCard extends formattingSettings.SimpleCard {
     counterColor = new formattingSettings.ColorPicker({
         name: "counterColor",
         displayName: "Counter color",
-        value: { value: "#4b5563" }
+        value: { value: "#000000" }
     });
 
     counterSeparator = new formattingSettings.TextInput({
@@ -643,6 +643,42 @@ class DisplaySettingsCard extends formattingSettings.SimpleCard {
         displayName: "Counter separator",
         placeholder: "|",
         value: "|"
+    });
+
+    headerTitleColor = new formattingSettings.ColorPicker({
+        name: "headerTitleColor",
+        displayName: "Level title color",
+        value: { value: "#000000" }
+    });
+
+    headerTitleMatchNode = new formattingSettings.ToggleSwitch({
+        name: "headerTitleMatchNode",
+        displayName: "Match level title to node color",
+        value: false
+    });
+
+    headerTitleSize = new formattingSettings.NumUpDown({
+        name: "headerTitleSize",
+        displayName: "Level title size",
+        value: 14
+    });
+
+    headerTitleFontFamily = new formattingSettings.ItemDropdown({
+        name: "headerTitleFontFamily",
+        displayName: "Level title font family",
+        items: [
+            { displayName: "Segoe UI", value: "Segoe UI" },
+            { displayName: "Arial", value: "Arial" },
+            { displayName: "Calibri", value: "Calibri" },
+            { displayName: "Cambria", value: "Cambria" },
+            { displayName: "Consolas", value: "Consolas" },
+            { displayName: "Georgia", value: "Georgia" },
+            { displayName: "Roboto", value: "Roboto" },
+            { displayName: "Open Sans", value: "Open Sans" },
+            { displayName: "Tahoma", value: "Tahoma" },
+            { displayName: "Verdana", value: "Verdana" }
+        ],
+        value: { displayName: "Segoe UI", value: "Segoe UI" }
     });
 
     name = "displaySettings";
@@ -655,7 +691,11 @@ class DisplaySettingsCard extends formattingSettings.SimpleCard {
         this.counterFontFamily,
         this.counterFontWeight,
         this.counterColor,
-        this.counterSeparator
+        this.counterSeparator,
+        this.headerTitleMatchNode,
+        this.headerTitleColor,
+        this.headerTitleSize,
+        this.headerTitleFontFamily
     ];
 }
 
