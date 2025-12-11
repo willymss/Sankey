@@ -351,6 +351,8 @@ export class Visual implements IVisual {
             maxCharsPerLine: 28,
             showValues: true,
             badgeTextSize: 8,
+            badgeTextColor: "#ffffff",
+            badgeFontFamily: "Segoe UI, -apple-system, BlinkMacSystemFont, sans-serif",
             badgePosition: "top-right",
             badgePaddingTop: 0,
             badgePaddingRight: 0,
@@ -1196,6 +1198,8 @@ export class Visual implements IVisual {
                 this.settings.endMarkerSize = 8;
                 this.settings.useCustomMarkerColors = true;
                 this.settings.endMarkerColor = "#555555";
+                this.settings.badgeTextColor = "#000000";
+                this.settings.badgeFontFamily = "Segoe UI, -apple-system, BlinkMacSystemFont, sans-serif";
                 this.settings.showControls = true;
                 this.settings.showValues = true;
                 break;
@@ -1318,6 +1322,8 @@ export class Visual implements IVisual {
             const counts = ns.connectionCounts as any;
             if (nodeObjects["showValues"] !== undefined) this.settings.showValues = counts?.showValues?.value ?? defaults.showValues;
             if (nodeObjects["badgeTextSize"] !== undefined) this.settings.badgeTextSize = counts?.badgeTextSize?.value ?? defaults.badgeTextSize;
+            if (nodeObjects["badgeTextColor"] !== undefined) this.settings.badgeTextColor = counts?.badgeTextColor?.value?.value ?? defaults.badgeTextColor;
+            if (nodeObjects["badgeFontFamily"] !== undefined) this.settings.badgeFontFamily = counts?.badgeFontFamily?.value?.value ?? counts?.badgeFontFamily?.value ?? defaults.badgeFontFamily;
             if (nodeObjects["badgePosition"] !== undefined) this.settings.badgePosition = counts?.badgePosition?.value?.value ?? counts?.badgePosition?.value ?? defaults.badgePosition;
             if (nodeObjects["countMode"] !== undefined) this.settings.countMode = counts?.countMode?.value?.value ?? counts?.countMode?.value ?? defaults.countMode;
             if (nodeObjects["badgePaddingTop"] !== undefined) this.settings.badgePaddingTop = counts?.badgePaddingTop?.value ?? defaults.badgePaddingTop;
@@ -1480,6 +1486,8 @@ export class Visual implements IVisual {
             if (ns.connectionCounts) {
                 ns.connectionCounts.showValues.value = this.settings.showValues;
                 ns.connectionCounts.badgeTextSize.value = this.settings.badgeTextSize;
+                ns.connectionCounts.badgeTextColor.value = { value: this.settings.badgeTextColor };
+                ns.connectionCounts.badgeFontFamily.value = { displayName: this.settings.badgeFontFamily, value: this.settings.badgeFontFamily } as any;
                 ns.connectionCounts.badgePosition.value = { displayName: this.settings.badgePosition, value: this.settings.badgePosition } as any;
                 ns.connectionCounts.countMode.value = { displayName: this.settings.countMode, value: this.settings.countMode } as any;
             }
@@ -1622,6 +1630,8 @@ export class Visual implements IVisual {
                 return [
                     { objectName: "nodeSettings", propertyName: "showValues" },
                     { objectName: "nodeSettings", propertyName: "badgeTextSize" },
+                    { objectName: "nodeSettings", propertyName: "badgeTextColor" },
+                    { objectName: "nodeSettings", propertyName: "badgeFontFamily" },
                     { objectName: "nodeSettings", propertyName: "badgePosition" },
                     { objectName: "nodeSettings", propertyName: "badgePaddingTop" },
                     { objectName: "nodeSettings", propertyName: "badgePaddingRight" },
@@ -1806,6 +1816,8 @@ export class Visual implements IVisual {
                 // Reset only Connection Counts sub-card
                 this.settings.showValues = defaults.showValues;
                 this.settings.badgeTextSize = defaults.badgeTextSize;
+                this.settings.badgeTextColor = defaults.badgeTextColor;
+                this.settings.badgeFontFamily = defaults.badgeFontFamily;
                 this.settings.badgePosition = defaults.badgePosition;
                 this.settings.badgePaddingTop = defaults.badgePaddingTop;
                 this.settings.badgePaddingRight = defaults.badgePaddingRight;
@@ -1929,7 +1941,7 @@ export class Visual implements IVisual {
             "nodeWidth", "nodeHeight", "nodeShape", "cornerRadius", "nodeFillOpacity",
             "nodeBorderStyle", "nodeBorderWidth", "useCustomBorderColor", "nodeBorderColor",
             "levelSpacing", "nodeSpacing", "fontSize", "fontFamily", "textColor",
-            "wrapText", "maxCharsPerLine", "showValues", "badgeTextSize",
+            "wrapText", "maxCharsPerLine", "showValues", "badgeTextSize", "badgeTextColor", "badgeFontFamily",
             "badgePosition", "badgePaddingTop", "badgePaddingRight",
             "badgePaddingBottom", "badgePaddingLeft", "countMode"
         ];
@@ -1982,7 +1994,7 @@ export class Visual implements IVisual {
                 return ["fontSize", "fontFamily", "textColor", "wrapText", "maxCharsPerLine"];
             case "nodeConnectionCounts":
                 return ["showValues", "badgeTextSize", "badgePosition", "badgePaddingTop",
-                        "badgePaddingRight", "badgePaddingBottom", "badgePaddingLeft", "countMode"];
+                    "badgePaddingRight", "badgePaddingBottom", "badgePaddingLeft", "countMode", "badgeTextColor", "badgeFontFamily"];
 
             // Link Settings - Parent and Sub-cards
             case "linkSettings":
