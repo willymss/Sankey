@@ -21,9 +21,10 @@ class StylePresetsCard extends formattingSettings.SimpleCard {
             { displayName: "Nordic Minimal", value: "nordicMinimal" },
             { displayName: "Soft Glass", value: "softGlass" },
             { displayName: "Mono Brutal", value: "monoBrutal" },
-            { displayName: "Aurora Flow", value: "auroraFlow" }
+            { displayName: "Aurora Flow", value: "auroraFlow" },
+            { displayName: "Offwhite", value: "offwhite" }
         ],
-        value: { displayName: "Professional Blue", value: "professionalBlue" }
+        value: { displayName: "Offwhite", value: "offwhite" }
     });
 
     // Hidden property to track active preset for state isolation

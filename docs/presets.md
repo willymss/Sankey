@@ -5,13 +5,13 @@ Nodes reorder with a smooth 0.3s move when layout changes.
 
 ## professionalBlue
 - Colors: `#0078D4`, `#009CDC`, `#106EBE`, `#005A9E`, `#74B4E7`, `#004578`, `#96C9F4`, `#003B5C`
-- Nodes: roundedRect, cornerRadius 8, fillOpacity 90%, border solid 2px `#003B5C`, text `#FFFFFF`, font 10px Segoe UI, height 50, spacing 60, levelSpacing 280
+- Nodes: roundedRect, cornerRadius 8, fillOpacity 90%, border none, text `#FFFFFF`, font 10px Segoe UI, height 50, spacing 60, levelSpacing 280
 - Links: curve `bezier`, colorMode `gradient`, lineOpacity 0.3, width 2, style solid
 - Markers: start off, end on (`arrow`, size 8), custom marker colors off
 
 ## vibrantSpectrum
 - Colors: `#E74856`, `#FF8C00`, `#FFB900`, `#00CC6A`, `#00B7C3`, `#0078D4`, `#8764B8`, `#E3008C`
-- Nodes: pill, fillOpacity 95%, border solid 3px `#000000`, text `#FFFFFF`, font 11px Segoe UI, height 50, spacing 60, levelSpacing 280
+- Nodes: pill, fillOpacity 95%, border none, text `#FFFFFF`, font 11px Segoe UI, height 50, spacing 60, levelSpacing 280
 - Links: curve `bezier`, colorMode `source`, lineOpacity 0.35, width 2.5, style solid
 - Markers: start off, end on (`arrow`, size 8), custom marker colors off
 
@@ -23,19 +23,19 @@ Nodes reorder with a smooth 0.3s move when layout changes.
 
 ## earthTones
 - Colors: `#5D3A00`, `#A05A2C`, `#C68A47`, `#D9B382`, `#4F6B2A`, `#7DA45A`, `#A26A5E`, `#8C5319`
-- Nodes: roundedRect, cornerRadius 6, fillOpacity 92%, border solid 2px `#3E2723`, text `#FFFFFF`, font 10px Georgia, height 50, spacing 60, levelSpacing 280
+- Nodes: roundedRect, cornerRadius 6, fillOpacity 92%, border none, text `#FFFFFF`, font 10px Georgia, height 50, spacing 60, levelSpacing 280
 - Links: curve `bezier`, colorMode `source`, lineOpacity 0.35, width 2.0, style solid
 - Markers: start off, end on (`diamond`, size 7), custom marker colors off
 
 ## pastel
 - Colors: `#B39DDB`, `#90CAF9`, `#80CBC4`, `#A5D6A7`, `#FFF59D`, `#FFAB91`, `#F48FB1`, `#CE93D8`
-- Nodes: pill, fillOpacity 75%, border solid 1.5px `#9E9E9E`, text `#424242`, font 10px Segoe UI, height 50, spacing 60, levelSpacing 280
+- Nodes: pill, fillOpacity 75%, border none, text `#424242`, font 10px Segoe UI, height 50, spacing 60, levelSpacing 280
 - Links: curve `bezier`, colorMode `gradient`, lineOpacity 0.35 (auto-min 0.5 when gradient), width 2.0, style solid
 - Markers: start on (`circle`, size 4), end on (`circle`, size 4), custom marker colors off
 
 ## angularTech
 - Colors: `#00BCD4`, `#009688`, `#4CAF50`, `#8BC34A`, `#CDDC39`, `#FFC107`, `#FF9800`, `#FF5722`
-- Nodes: roundedRect, cornerRadius 2, fillOpacity 92%, border solid 2px `#263238`, text `#FFFFFF`, font 10px Consolas, height 48, spacing 55, levelSpacing 270
+- Nodes: roundedRect, cornerRadius 2, fillOpacity 92%, border none, text `#FFFFFF`, font 10px Consolas, height 48, spacing 55, levelSpacing 270
 - Links: curve `step`, colorMode `target`, lineOpacity 0.4, width 2, style solid
 - Markers: start on (`circle`, size 6), end on (`arrow`, size 8), custom marker colors off
 
@@ -47,7 +47,7 @@ Nodes reorder with a smooth 0.3s move when layout changes.
 
 ## midnightPro
 - Colors: `#5E6AD2`, `#8B5CF6`, `#3B82F6`, `#6366F1`, `#2563EB`, `#1D4ED8`, `#1E40AF`, `#1E3A8A`
-- Nodes: roundedRect, cornerRadius 6, fillOpacity 100%, border solid 1px `#4338CA`, text `#FFFFFF`, font 11px Inter, height 46, spacing 60, levelSpacing 280
+- Nodes: roundedRect, cornerRadius 6, fillOpacity 100%, border none, text `#FFFFFF`, font 11px Inter, height 46, spacing 60, levelSpacing 280
 - Links: curve `bezier`, colorMode `gradient`, lineOpacity 0.4 (auto-min 0.5 when gradient), width 1.5, style solid
 - Markers: start off, end on (`arrow`, size 6), custom marker colors off
 
@@ -65,15 +65,21 @@ Nodes reorder with a smooth 0.3s move when layout changes.
 
 ## softGlass
 - Colors: `#93C5FD`, `#C4B5FD`, `#FCA5A5`, `#6EE7B7`, `#FDBA74`, `#D8B4FE`, `#FCD34D`, `#86EFAC`
-- Nodes: pill, cornerRadius 20, fillOpacity 40%, border solid 1px `rgba(0,0,0,0.1)`, text `#334155`, font 10px SF Pro Text, height 44, spacing 55, levelSpacing 280
+- Nodes: pill, cornerRadius 20, fillOpacity 40%, border none, text `#334155`, font 10px SF Pro Text, height 44, spacing 55, levelSpacing 280
 - Links: curve `bezier`, colorMode `gradient`, lineOpacity 0.3 (auto-min 0.5 when gradient), width 2, style solid
 - Markers: start off, end on (`arrow`, size 7), custom marker colors off
 
 ## monoBrutal
 - Colors: `#0A0A0A`, `#1A1A1A`, `#2B2B2B`, `#3C3C3C`, `#4D4D4D`, `#5E5E5E`, `#777777`, `#8F8F8F`
-- Nodes: roundedRect, cornerRadius 0, fillOpacity 100%, border solid 3px `#000000`, text `#FFFFFF`, font 11px Courier Prime, height 50, spacing 60, levelSpacing 270
+- Nodes: roundedRect, cornerRadius 0, fillOpacity 100%, border solid 2px `#000000`, text `#FFFFFF`, font 11px Courier Prime, height 50, spacing 60, levelSpacing 270
 - Links: curve `step`, colorMode `target`, lineOpacity 1.0, width 3, style solid
 - Markers: start on (`square`, size 8), end on (`arrow`, size 10), custom marker colors off
+
+## offwhite
+- Colors: `#FFFFFF`, `#F9F9F9`, `#F2F2F2`, `#EDEDED`, `#E5E5E5`, `#DDDDDD`, `#D5D5D5`, `#CDCDCD`
+- Nodes: roundedRect, cornerRadius 8, fillOpacity 100%, border solid 2px `#000000`, text `#000000`, font 11px Segoe UI, height 50, spacing 60, levelSpacing 280
+- Links: curve `bezier`, colorMode `custom` (`#555555`), lineOpacity 0.6, width 2, style solid
+- Markers: start off, end on (`arrow`, size 8), custom marker colors on (`#555555`)
 
 ## auroraFlow
 - Colors: `#845EC2`, `#D65DB1`, `#FF6F91`, `#FF9671`, `#FFC75F`, `#F9F871`, `#0081CF`, `#00C9A7`

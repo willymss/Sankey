@@ -145,7 +145,8 @@ export class Visual implements IVisual {
         "nordicMinimal",
         "softGlass",
         "monoBrutal",
-        "auroraFlow"
+        "auroraFlow",
+        "offwhite"
     ];
     private lastClickedNode: string | null = null;
     private zoomScale: number = 1;
@@ -748,9 +749,9 @@ export class Visual implements IVisual {
                 this.settings.nodeShape = "roundedRect";
                 this.settings.cornerRadius = 8;
                 this.settings.nodeFillOpacity = 90;
-                this.settings.nodeBorderStyle = "solid";
-                this.settings.nodeBorderWidth = 2;
-                this.settings.useCustomBorderColor = true;
+                this.settings.nodeBorderStyle = "none";
+                this.settings.nodeBorderWidth = 0;
+                this.settings.useCustomBorderColor = false;
                 this.settings.nodeBorderColor = "#003B5C";
                 this.settings.textColor = "#FFFFFF";
                 this.settings.fontSize = 10;
@@ -777,9 +778,9 @@ export class Visual implements IVisual {
                 this.settings.colors = ["#E74856", "#FF8C00", "#FFB900", "#00CC6A", "#00B7C3", "#0078D4", "#8764B8", "#E3008C"];
                 this.settings.nodeShape = "pill";
                 this.settings.nodeFillOpacity = 95;
-                this.settings.nodeBorderStyle = "solid";
-                this.settings.nodeBorderWidth = 3;
-                this.settings.useCustomBorderColor = true;
+                this.settings.nodeBorderStyle = "none";
+                this.settings.nodeBorderWidth = 0;
+                this.settings.useCustomBorderColor = false;
                 this.settings.nodeBorderColor = "#000000";
                 this.settings.textColor = "#FFFFFF";
                 this.settings.fontSize = 11;
@@ -838,9 +839,9 @@ export class Visual implements IVisual {
                 this.settings.nodeShape = "roundedRect";
                 this.settings.cornerRadius = 6;
                 this.settings.nodeFillOpacity = 92;
-                this.settings.nodeBorderStyle = "solid";
-                this.settings.nodeBorderWidth = 2;
-                this.settings.useCustomBorderColor = true;
+                this.settings.nodeBorderStyle = "none";
+                this.settings.nodeBorderWidth = 0;
+                this.settings.useCustomBorderColor = false;
                 this.settings.nodeBorderColor = "#3E2723";
                 this.settings.textColor = "#FFFFFF";
                 this.settings.fontSize = 10;
@@ -867,9 +868,9 @@ export class Visual implements IVisual {
                 this.settings.colors = ["#B39DDB", "#90CAF9", "#80CBC4", "#A5D6A7", "#FFF59D", "#FFAB91", "#F48FB1", "#CE93D8"];
                 this.settings.nodeShape = "pill";
                 this.settings.nodeFillOpacity = 75;
-                this.settings.nodeBorderStyle = "solid";
-                this.settings.nodeBorderWidth = 1.5;
-                this.settings.useCustomBorderColor = true;
+                this.settings.nodeBorderStyle = "none";
+                this.settings.nodeBorderWidth = 0;
+                this.settings.useCustomBorderColor = false;
                 this.settings.nodeBorderColor = "#9E9E9E";
                 this.settings.textColor = "#424242";
                 this.settings.fontSize = 10;
@@ -899,9 +900,9 @@ export class Visual implements IVisual {
                 this.settings.nodeShape = "roundedRect";
                 this.settings.cornerRadius = 2;
                 this.settings.nodeFillOpacity = 92;
-                this.settings.nodeBorderStyle = "solid";
-                this.settings.nodeBorderWidth = 2;
-                this.settings.useCustomBorderColor = true;
+                this.settings.nodeBorderStyle = "none";
+                this.settings.nodeBorderWidth = 0;
+                this.settings.useCustomBorderColor = false;
                 this.settings.nodeBorderColor = "#263238";
                 this.settings.textColor = "#FFFFFF";
                 this.settings.fontSize = 10;
@@ -959,9 +960,9 @@ export class Visual implements IVisual {
                 this.settings.nodeShape = "roundedRect";
                 this.settings.cornerRadius = 6;
                 this.settings.nodeFillOpacity = 100;
-                this.settings.nodeBorderStyle = "solid";
-                this.settings.nodeBorderWidth = 1;
-                this.settings.useCustomBorderColor = true;
+                this.settings.nodeBorderStyle = "none";
+                this.settings.nodeBorderWidth = 0;
+                this.settings.useCustomBorderColor = false;
                 this.settings.nodeBorderColor = "#4338CA";
                 this.settings.textColor = "#FFFFFF";
                 this.settings.fontSize = 11;
@@ -1082,9 +1083,9 @@ export class Visual implements IVisual {
                 this.settings.nodeShape = "pill";
                 this.settings.cornerRadius = 20;
                 this.settings.nodeFillOpacity = 40;
-                this.settings.nodeBorderStyle = "solid";
-                this.settings.nodeBorderWidth = 1;
-                this.settings.useCustomBorderColor = true;
+                this.settings.nodeBorderStyle = "none";
+                this.settings.nodeBorderWidth = 0;
+                this.settings.useCustomBorderColor = false;
                 this.settings.nodeBorderColor = "rgba(0,0,0,0.1)";
                 this.settings.textColor = "#334155";
                 this.settings.fontSize = 10;
@@ -1113,7 +1114,7 @@ export class Visual implements IVisual {
                 this.settings.cornerRadius = 0;
                 this.settings.nodeFillOpacity = 100;
                 this.settings.nodeBorderStyle = "solid";
-                this.settings.nodeBorderWidth = 3;
+                this.settings.nodeBorderWidth = 2;
                 this.settings.useCustomBorderColor = true;
                 this.settings.nodeBorderColor = "#000000";
                 this.settings.textColor = "#FFFFFF";
@@ -1161,6 +1162,38 @@ export class Visual implements IVisual {
                 this.settings.showStartMarker = false;
                 this.settings.showEndMarker = false;
                 this.settings.useCustomMarkerColors = false;
+                this.settings.showControls = true;
+                this.settings.showValues = true;
+                break;
+
+            case "offwhite":
+                // Offwhite - Clean neutral palette with black borders and links
+                this.settings.colors = ["#FFFFFF", "#F9F9F9", "#F2F2F2", "#EDEDED", "#E5E5E5", "#DDDDDD", "#D5D5D5", "#CDCDCD"];
+                this.settings.nodeShape = "roundedRect";
+                this.settings.cornerRadius = 8;
+                this.settings.nodeFillOpacity = 100;
+                this.settings.nodeBorderStyle = "solid";
+                this.settings.nodeBorderWidth = 2;
+                this.settings.useCustomBorderColor = true;
+                this.settings.nodeBorderColor = "#000000";
+                this.settings.textColor = "#000000";
+                this.settings.fontSize = 11;
+                this.settings.fontFamily = "Segoe UI, -apple-system, BlinkMacSystemFont, sans-serif";
+                this.settings.nodeHeight = 50;
+                this.settings.nodeSpacing = 60;
+                this.settings.levelSpacing = 280;
+                this.settings.linkCurveStyle = "bezier";
+                this.settings.linkColorMode = "custom";
+                this.settings.customLinkColor = "#555555";
+                this.settings.lineOpacity = 0.6;
+                this.settings.linkWidth = 2;
+                this.settings.linkStyle = "solid";
+                this.settings.showStartMarker = false;
+                this.settings.showEndMarker = true;
+                this.settings.endMarkerType = "arrow";
+                this.settings.endMarkerSize = 8;
+                this.settings.useCustomMarkerColors = true;
+                this.settings.endMarkerColor = "#555555";
                 this.settings.showControls = true;
                 this.settings.showValues = true;
                 break;
