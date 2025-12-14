@@ -18,7 +18,8 @@
       "WebSearch",
       "Bash(winget install:*)",
       "Bash(pbiviz --install-cert)",
-      "Bash(where:*)"
+      "Bash(where:*)",
+      "Bash(dir:*)"
     ]
   }
 }

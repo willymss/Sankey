@@ -1,0 +1,5 @@
+{
+  "name": "DataLineage Flow",
+  "description": "A dynamic, AI-powered data lineage visualization tool allowing users to explore relationships between Workspaces, Reports, Datasets, and Tables with customizable aesthetics.",
+  "requestFramePermissions": []
+}
