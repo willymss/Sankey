@@ -858,7 +858,7 @@ export class Visual implements IVisual {
 
             case "neon":
                 // Neon Dark Mode - Dark background-friendly, glowing effect
-                this.settings.colors = ["#00F5FF", "#39FF14", "#FF10F0", "#FFFF00", "#FF006E", "#8A2BE2", "#FF4500", "#00FFFF"];
+                this.settings.colors = ["#00F5FF", "#39FF14", "#FF10F0", "#00D1FF", "#FF006E", "#8A2BE2", "#FF4500", "#00FFFF"];
                 this.settings.nodeShape = "pill";
                 this.settings.nodeFillOpacity = 90;
                 this.settings.nodeBorderStyle = "none";
@@ -876,12 +876,12 @@ export class Visual implements IVisual {
                 this.settings.highlightOpacity = 95;
                 this.settings.linkWidth = 2.5;
                 this.settings.linkStyle = "solid";
-                this.settings.showStartMarker = true;
+                this.settings.showStartMarker = false;
                 this.settings.startMarkerType = "arrow";
-                this.settings.startMarkerSize = 10;
+                this.settings.startMarkerSize = 8;
                 this.settings.showEndMarker = true;
                 this.settings.endMarkerType = "arrow";
-                this.settings.endMarkerSize = 10;
+                this.settings.endMarkerSize = 8;
                 this.settings.useCustomMarkerColors = false;
                 this.settings.badgeTextColor = "#000000";
                 this.settings.headerTitleColor = "#000000";
@@ -898,7 +898,7 @@ export class Visual implements IVisual {
                 this.settings.nodeBorderWidth = 0;
                 this.settings.useCustomBorderColor = false;
                 this.settings.nodeBorderColor = "#9E9E9E";
-                this.settings.textColor = "#ffffff";
+                this.settings.textColor = "#000000";
                 this.settings.fontSize = 10;
                 this.settings.fontFamily = "Segoe UI";
                 this.settings.nodeHeight = 50;
@@ -1153,7 +1153,7 @@ export class Visual implements IVisual {
                 // Modern Features - Default Modern
                 this.settings.fillType = "gradient";
                 this.settings.borderType = "solid";
-                this.settings.showIcons = true;
+                this.settings.showIcons = false;
 
                 this.settings.linkColorMode = "gradient";
                 this.settings.showValues = true;
@@ -1246,6 +1246,12 @@ export class Visual implements IVisual {
                 this.settings.nodeSpacing = 60;
                 this.settings.showControls = preserveShowControls;
                 this.settings.showCounters = preserveShowCounters;
+                this.settings.nodeShadowEnabled = true;
+                this.settings.nodeShadowColor = "#000000";
+                this.settings.nodeShadowOpacity = 20;
+                this.settings.nodeShadowBlur = 3;
+                this.settings.nodeShadowOffsetX = 0;
+                this.settings.nodeShadowOffsetY = 0;
                 break;
 
 
