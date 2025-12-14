@@ -25,7 +25,7 @@ class StylePresetsCard extends formattingSettings.SimpleCard {
             { displayName: "Outlined Gradient", value: "outlinedGradient" },
             { displayName: "Soft White", value: "softWhite" }
         ],
-        value: { displayName: "Offwhite", value: "offwhite" }
+        value: { displayName: "Soft White", value: "softWhite" }
     });
 
     // Hidden property to track active preset for state isolation
@@ -33,7 +33,7 @@ class StylePresetsCard extends formattingSettings.SimpleCard {
         name: "activePresetId",
         displayName: "", // Hidden from UI
         placeholder: "",
-        value: "professionalBlue",
+        value: "softWhite",
         visible: false
     });
 
@@ -263,9 +263,22 @@ class NodeTextCard extends formattingSettings.SimpleCard {
             { displayName: "Trebuchet MS", value: "Trebuchet MS" },
             { displayName: "Verdana", value: "Verdana" },
             { displayName: "Roboto", value: "Roboto" },
-            { displayName: "Open Sans", value: "Open Sans" }
+            { displayName: "Open Sans", value: "Open Sans" },
+            { displayName: "Inter", value: "Inter" }
         ],
         value: { displayName: "Segoe UI", value: "Segoe UI" }
+    });
+
+
+    textAlignment = new formattingSettings.ItemDropdown({
+        name: "textAlignment",
+        displayName: "Text alignment",
+        items: [
+            { displayName: "Left", value: "left" },
+            { displayName: "Center", value: "center" },
+            { displayName: "Right", value: "right" }
+        ],
+        value: { displayName: "Center", value: "center" }
     });
 
     textColor = new formattingSettings.ColorPicker({
@@ -298,7 +311,7 @@ class NodeTextCard extends formattingSettings.SimpleCard {
 
     name = "nodeText";
     displayName = "Text";
-    slices = [this.fontSize, this.fontFamily, this.textColor, this.wrapText, this.maxCharsPerLine];
+    slices = [this.fontSize, this.fontFamily, this.textAlignment, this.textColor, this.wrapText, this.maxCharsPerLine];
 }
 
 /** ---------- Connection Counts Section ---------- */
@@ -357,7 +370,8 @@ class NodeConnectionCountsCard extends formattingSettings.SimpleCard {
             { displayName: "Trebuchet MS", value: "Trebuchet MS" },
             { displayName: "Verdana", value: "Verdana" },
             { displayName: "Roboto", value: "Roboto" },
-            { displayName: "Open Sans", value: "Open Sans" }
+            { displayName: "Open Sans", value: "Open Sans" },
+            { displayName: "Inter", value: "Inter" }
         ],
         value: { displayName: "Segoe UI", value: "Segoe UI" }
     });
@@ -915,9 +929,21 @@ class DisplaySettingsCard extends formattingSettings.SimpleCard {
             { displayName: "Roboto", value: "Roboto" },
             { displayName: "Open Sans", value: "Open Sans" },
             { displayName: "Tahoma", value: "Tahoma" },
-            { displayName: "Verdana", value: "Verdana" }
+            { displayName: "Verdana", value: "Verdana" },
+            { displayName: "Inter", value: "Inter" }
         ],
         value: { displayName: "Segoe UI", value: "Segoe UI" }
+    });
+
+    counterAlignment = new formattingSettings.ItemDropdown({
+        name: "counterAlignment",
+        displayName: "Counter alignment",
+        items: [
+            { displayName: "Left", value: "left" },
+            { displayName: "Center", value: "center" },
+            { displayName: "Right", value: "right" }
+        ],
+        value: { displayName: "Left", value: "left" }
     });
 
     counterFontWeight = new formattingSettings.ItemDropdown({
@@ -985,7 +1011,8 @@ class DisplaySettingsCard extends formattingSettings.SimpleCard {
             { displayName: "Roboto", value: "Roboto" },
             { displayName: "Open Sans", value: "Open Sans" },
             { displayName: "Tahoma", value: "Tahoma" },
-            { displayName: "Verdana", value: "Verdana" }
+            { displayName: "Verdana", value: "Verdana" },
+            { displayName: "Inter", value: "Inter" }
         ],
         value: { displayName: "Segoe UI", value: "Segoe UI" }
     });
@@ -999,6 +1026,7 @@ class DisplaySettingsCard extends formattingSettings.SimpleCard {
         this.showCounters,
         this.counterFontSize,
         this.counterFontFamily,
+        this.counterAlignment,
         this.counterFontWeight,
         this.counterColor,
         this.counterSeparator,
@@ -1012,10 +1040,10 @@ class DisplaySettingsCard extends formattingSettings.SimpleCard {
 /** ---------- MODEL ---------- */
 export class VisualFormattingSettingsModel extends formattingSettings.Model {
     stylePresets = new StylePresetsCard();
+    displaySettings = new DisplaySettingsCard();
+    colorSettings = new ColorSettingsCard();
     nodeSettings = new NodeSettingsCard();
     linkSettings = new LinkSettingsCard();
-    colorSettings = new ColorSettingsCard();
-    displaySettings = new DisplaySettingsCard();
 
-    cards = [this.stylePresets, this.nodeSettings, this.linkSettings, this.colorSettings, this.displaySettings];
+    cards = [this.stylePresets, this.displaySettings, this.colorSettings, this.nodeSettings, this.linkSettings];
 }

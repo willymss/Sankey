@@ -31,6 +31,7 @@ interface SankeySettings {
     nodeSpacing: number;
     fontSize: number;
     fontFamily: string;
+    textAlignment: string;
     textColor: string;
     wrapText: boolean;
     maxCharsPerLine: number;
@@ -81,6 +82,7 @@ interface SankeySettings {
     headerCounterFontSize: number;
     headerCounterFontFamily: string;
     headerCounterFontWeight: string;
+    headerCounterAlignment: string;
     headerCounterColor: string;
     headerCounterSeparator: string;
     headerTitleColor: string;
@@ -186,7 +188,7 @@ export class Visual implements IVisual {
     private landingPageElement: HTMLElement | null = null;
     private allowInteractions: boolean = true;
     private markerIdCounter: number = 0;
-    private previousPreset: string = "professionalBlue";
+    private previousPreset: string = "softWhite";
     private copyHandler: ((e: ClipboardEvent) => void) | null = null;
     private currentDrillLevel: number = 0;
     private maxDrillLevel: number = 0;
@@ -363,6 +365,7 @@ export class Visual implements IVisual {
             nodeSpacing: 60,
             fontSize: 10,
             fontFamily: "Segoe UI",
+            textAlignment: "center",
             textColor: this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.foreground : "#ffffff",
             wrapText: true,
             maxCharsPerLine: 28,
@@ -393,7 +396,7 @@ export class Visual implements IVisual {
             linkCurveStyle: "bezier",
             showStartMarker: false,
             startMarkerType: "circle",
-            startMarkerSize: 6,
+            startMarkerSize: 8,
             showEndMarker: true,
             endMarkerType: "arrow",
             endMarkerSize: 8,
@@ -407,6 +410,7 @@ export class Visual implements IVisual {
             headerCounterFontSize: 11,
             headerCounterFontFamily: "Segoe UI",
             headerCounterFontWeight: "bold",
+            headerCounterAlignment: "left",
             headerCounterColor: "#000000",
             headerCounterSeparator: "|",
             headerTitleColor: this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.foreground : "#000000",
@@ -884,7 +888,8 @@ export class Visual implements IVisual {
                 this.settings.endMarkerSize = 8;
                 this.settings.useCustomMarkerColors = false;
                 this.settings.badgeTextColor = "#000000";
-                this.settings.headerTitleColor = "#000000";
+                this.settings.headerTitleColor = "#ffffff";
+                this.settings.headerCounterColor = "#ffffff";
                 this.settings.showControls = true;
                 this.settings.showValues = true;
                 break;
@@ -911,10 +916,10 @@ export class Visual implements IVisual {
                 this.settings.linkStyle = "solid";
                 this.settings.showStartMarker = true;
                 this.settings.startMarkerType = "circle";
-                this.settings.startMarkerSize = 4;
+                this.settings.startMarkerSize = 8;
                 this.settings.showEndMarker = true;
                 this.settings.endMarkerType = "circle";
-                this.settings.endMarkerSize = 4;
+                this.settings.endMarkerSize = 8;
                 this.settings.useCustomMarkerColors = false;
                 this.settings.showControls = true;
                 this.settings.showValues = true;
@@ -923,8 +928,8 @@ export class Visual implements IVisual {
             case "angularTech":
                 // Angular Tech - Sharp, geometric, tech-forward
                 this.settings.colors = ["#00BCD4", "#009688", "#4CAF50", "#8BC34A", "#CDDC39", "#FFC107", "#FF9800", "#FF5722"];
-                this.settings.nodeShape = "roundedRect";
-                this.settings.cornerRadius = 2;
+                this.settings.nodeShape = "rectangle";
+                this.settings.cornerRadius = 0;
                 this.settings.nodeFillOpacity = 92;
                 this.settings.nodeBorderStyle = "none";
                 this.settings.nodeBorderWidth = 0;
@@ -941,9 +946,9 @@ export class Visual implements IVisual {
                 this.settings.lineOpacity = 40;
                 this.settings.linkWidth = 2;
                 this.settings.linkStyle = "solid";
-                this.settings.showStartMarker = true;
+                this.settings.showStartMarker = false;
                 this.settings.startMarkerType = "circle";
-                this.settings.startMarkerSize = 6;
+                this.settings.startMarkerSize = 8;
                 this.settings.showEndMarker = true;
                 this.settings.endMarkerType = "arrow";
                 this.settings.endMarkerSize = 8;
@@ -978,6 +983,8 @@ export class Visual implements IVisual {
                 this.settings.useCustomMarkerColors = false;
                 this.settings.showControls = true;
                 this.settings.showValues = true;
+                this.settings.headerTitleColor = "#ffffff";
+                this.settings.headerCounterColor = "#ffffff";
                 break;
 
             case "midnightPro":
@@ -1004,10 +1011,12 @@ export class Visual implements IVisual {
                 this.settings.showStartMarker = false;
                 this.settings.showEndMarker = true;
                 this.settings.endMarkerType = "arrow";
-                this.settings.endMarkerSize = 6;
+                this.settings.endMarkerSize = 8;
                 this.settings.useCustomMarkerColors = false;
                 this.settings.showControls = true;
                 this.settings.showValues = true;
+                this.settings.headerTitleColor = "#ffffff";
+                this.settings.headerCounterColor = "#ffffff";
                 break;
 
             case "popArt":
@@ -1061,17 +1070,19 @@ export class Visual implements IVisual {
                 this.settings.lineOpacity = 60;
                 this.settings.linkWidth = 1.0;
                 this.settings.linkStyle = "solid";
-                this.settings.showStartMarker = true;
+                this.settings.showStartMarker = false;
                 this.settings.startMarkerType = "square";
-                this.settings.startMarkerSize = 4;
+                this.settings.startMarkerSize = 8;
                 this.settings.showEndMarker = true;
-                this.settings.endMarkerType = "square";
-                this.settings.endMarkerSize = 4;
+                this.settings.endMarkerType = "arrow";
+                this.settings.endMarkerSize = 8;
                 this.settings.useCustomMarkerColors = true;
                 this.settings.startMarkerColor = this.settings.nodeBorderColor;
                 this.settings.endMarkerColor = this.settings.nodeBorderColor;
                 this.settings.showControls = true;
                 this.settings.showValues = true;
+                this.settings.headerTitleColor = "#ffffff";
+                this.settings.headerCounterColor = "#ffffff";
                 break;
 
             case "auroraFlow":
@@ -1138,6 +1149,7 @@ export class Visual implements IVisual {
 
             case "modernApp":
                 this.settings.colors = ["#3B82F6", "#10B981", "#8B5CF6", "#F59E0B", "#EF4444", "#EC4899"];
+                this.settings.nodeShape = "pill";
                 this.settings.cornerRadius = 12;
                 this.settings.nodeHeight = 50;
                 this.settings.nodeSpacing = 60;
@@ -1260,10 +1272,6 @@ export class Visual implements IVisual {
                 this.applyStylePreset("professionalBlue");
                 break;
         }
-
-        // Enforce pill shape across presets
-        this.settings.nodeShape = "pill";
-        this.settings.cornerRadius = 0;
 
         // Restore persisted toggles for controls/counters after preset switch
         this.settings.showControls = preserveShowControls;
@@ -1402,6 +1410,7 @@ export class Visual implements IVisual {
             const text = ns.text as any;
             if (nodeObjects["fontSize"] !== undefined) this.settings.fontSize = text?.fontSize?.value ?? defaults.fontSize;
             if (nodeObjects["fontFamily"] !== undefined) this.settings.fontFamily = text?.fontFamily?.value?.value ?? text?.fontFamily?.value ?? defaults.fontFamily;
+            if (nodeObjects["textAlignment"] !== undefined) this.settings.textAlignment = text?.textAlignment?.value?.value ?? text?.textAlignment?.value ?? defaults.textAlignment;
             if (nodeObjects["textColor"] !== undefined) this.settings.textColor = text?.textColor?.value?.value ?? defaults.textColor;
             if (nodeObjects["wrapText"] !== undefined) this.settings.wrapText = text?.wrapText?.value ?? defaults.wrapText;
             if (nodeObjects["maxCharsPerLine"] !== undefined) this.settings.maxCharsPerLine = text?.maxCharsPerLine?.value ?? defaults.maxCharsPerLine;
@@ -1417,6 +1426,11 @@ export class Visual implements IVisual {
             if (nodeObjects["badgePaddingRight"] !== undefined) this.settings.badgePaddingRight = counts?.badgePaddingRight?.value ?? defaults.badgePaddingRight;
             if (nodeObjects["badgePaddingBottom"] !== undefined) this.settings.badgePaddingBottom = counts?.badgePaddingBottom?.value ?? defaults.badgePaddingBottom;
             if (nodeObjects["badgePaddingLeft"] !== undefined) this.settings.badgePaddingLeft = counts?.badgePaddingLeft?.value ?? defaults.badgePaddingLeft;
+        }
+
+        // Apply formatting model values even if metadata object is missing (for new properties)
+        if (ns?.text?.textAlignment) {
+            this.settings.textAlignment = (ns.text.textAlignment as any).value?.value ?? (ns.text.textAlignment as any).value ?? this.settings.textAlignment;
         }
 
         // Link settings
@@ -1470,6 +1484,7 @@ export class Visual implements IVisual {
             if (displayObjects["counterFontSize"] !== undefined) this.settings.headerCounterFontSize = ds.counterFontSize?.value ?? defaults.headerCounterFontSize;
             if (displayObjects["counterFontFamily"] !== undefined) this.settings.headerCounterFontFamily = (ds.counterFontFamily as any)?.value?.value ?? (ds.counterFontFamily as any)?.value ?? defaults.headerCounterFontFamily;
             if (displayObjects["counterFontWeight"] !== undefined) this.settings.headerCounterFontWeight = (ds.counterFontWeight as any)?.value?.value ?? (ds.counterFontWeight as any)?.value ?? defaults.headerCounterFontWeight;
+            if (displayObjects["counterAlignment"] !== undefined) this.settings.headerCounterAlignment = (ds.counterAlignment as any)?.value?.value ?? (ds.counterAlignment as any)?.value ?? defaults.headerCounterAlignment;
             if (displayObjects["counterColor"] !== undefined) this.settings.headerCounterColor = ds.counterColor?.value?.value ?? defaults.headerCounterColor;
             if (displayObjects["counterSeparator"] !== undefined) this.settings.headerCounterSeparator = ds.counterSeparator?.value ?? defaults.headerCounterSeparator;
             if (displayObjects["headerTitleMatchNode"] !== undefined) this.settings.headerTitleMatchNode = ds.headerTitleMatchNode?.value ?? defaults.headerTitleMatchNode;
@@ -1477,6 +1492,11 @@ export class Visual implements IVisual {
             if (displayObjects["headerTitleSize"] !== undefined) this.settings.headerTitleSize = ds.headerTitleSize?.value ?? defaults.headerTitleSize;
             if (displayObjects["headerTitleFontFamily"] !== undefined) this.settings.headerTitleFontFamily = (ds.headerTitleFontFamily as any)?.value?.value ?? (ds.headerTitleFontFamily as any)?.value ?? defaults.headerTitleFontFamily;
             if (displayObjects["showControls"] !== undefined) this.settings.showControls = ds.showControls?.value ?? defaults.showControls;
+        }
+
+        // Apply formatting model values even if metadata object is missing (for new properties)
+        if (ds?.counterAlignment) {
+            this.settings.headerCounterAlignment = (ds.counterAlignment as any).value?.value ?? (ds.counterAlignment as any).value ?? this.settings.headerCounterAlignment;
         }
 
         if (this.isHighContrastMode && this.highContrastColors) {
@@ -1573,6 +1593,7 @@ export class Visual implements IVisual {
             if (ns.text) {
                 ns.text.fontSize.value = this.settings.fontSize;
                 ns.text.fontFamily.value = { displayName: this.settings.fontFamily, value: this.settings.fontFamily } as any;
+                ns.text.textAlignment.value = { displayName: this.settings.textAlignment, value: this.settings.textAlignment } as any;
                 ns.text.textColor.value = { value: this.settings.textColor };
                 ns.text.wrapText.value = this.settings.wrapText;
                 ns.text.maxCharsPerLine.value = this.settings.maxCharsPerLine;
@@ -1646,6 +1667,7 @@ export class Visual implements IVisual {
             ds.counterFontSize.value = this.settings.headerCounterFontSize;
             ds.counterFontFamily.value = { displayName: this.settings.headerCounterFontFamily, value: this.settings.headerCounterFontFamily } as any;
             ds.counterFontWeight.value = { displayName: this.settings.headerCounterFontWeight, value: this.settings.headerCounterFontWeight } as any;
+            (ds as any).counterAlignment.value = { displayName: this.settings.headerCounterAlignment, value: this.settings.headerCounterAlignment } as any;
             ds.counterColor.value = { value: this.settings.headerCounterColor };
             ds.counterSeparator.value = this.settings.headerCounterSeparator;
             ds.headerTitleMatchNode.value = this.settings.headerTitleMatchNode;
@@ -1727,6 +1749,7 @@ export class Visual implements IVisual {
                 return [
                     { objectName: "nodeSettings", propertyName: "fontSize" },
                     { objectName: "nodeSettings", propertyName: "fontFamily" },
+                    { objectName: "nodeSettings", propertyName: "textAlignment" },
                     { objectName: "nodeSettings", propertyName: "textColor" },
                     { objectName: "nodeSettings", propertyName: "wrapText" },
                     { objectName: "nodeSettings", propertyName: "maxCharsPerLine" }
@@ -1873,6 +1896,7 @@ export class Visual implements IVisual {
                 this.settings.nodeSpacing = defaults.nodeSpacing;
                 this.settings.fontSize = defaults.fontSize;
                 this.settings.fontFamily = defaults.fontFamily;
+                this.settings.textAlignment = defaults.textAlignment;
                 this.settings.textColor = defaults.textColor;
                 this.settings.wrapText = defaults.wrapText;
                 this.settings.maxCharsPerLine = defaults.maxCharsPerLine;
@@ -1913,6 +1937,7 @@ export class Visual implements IVisual {
                 // Reset only Text sub-card
                 this.settings.fontSize = defaults.fontSize;
                 this.settings.fontFamily = defaults.fontFamily;
+                this.settings.textAlignment = defaults.textAlignment;
                 this.settings.textColor = defaults.textColor;
                 this.settings.wrapText = defaults.wrapText;
                 this.settings.maxCharsPerLine = defaults.maxCharsPerLine;
@@ -2007,6 +2032,7 @@ export class Visual implements IVisual {
                 this.settings.headerCounterFontSize = defaults.headerCounterFontSize;
                 this.settings.headerCounterFontFamily = defaults.headerCounterFontFamily;
                 this.settings.headerCounterFontWeight = defaults.headerCounterFontWeight;
+                this.settings.headerCounterAlignment = defaults.headerCounterAlignment;
                 this.settings.headerCounterColor = defaults.headerCounterColor;
                 this.settings.headerCounterSeparator = defaults.headerCounterSeparator;
                 this.settings.headerTitleMatchNode = defaults.headerTitleMatchNode;
@@ -2050,7 +2076,7 @@ export class Visual implements IVisual {
         return [
             "nodeWidth", "nodeHeight", "nodeShape", "cornerRadius", "nodeFillOpacity",
             "nodeBorderStyle", "nodeBorderWidth", "useCustomBorderColor", "nodeBorderColor",
-            "levelSpacing", "nodeSpacing", "fontSize", "fontFamily", "textColor",
+            "levelSpacing", "nodeSpacing", "fontSize", "fontFamily", "textAlignment", "textColor",
             "wrapText", "maxCharsPerLine", "showValues", "badgeTextSize", "badgeTextColor", "badgeFontFamily",
             "badgePosition", "badgePaddingTop", "badgePaddingRight",
             "badgePaddingBottom", "badgePaddingLeft", "countMode",
@@ -2080,6 +2106,7 @@ export class Visual implements IVisual {
             "showCounters",
             "counterFontSize",
             "counterFontFamily",
+            "counterAlignment",
             "counterFontWeight",
             "counterColor",
             "counterSeparator",
@@ -2108,7 +2135,7 @@ export class Visual implements IVisual {
             case "nodeShadow":
                 return ["nodeShadowEnabled", "nodeShadowColor", "nodeShadowOpacity", "nodeShadowBlur", "nodeShadowOffsetX", "nodeShadowOffsetY"];
             case "nodeText":
-                return ["fontSize", "fontFamily", "textColor", "wrapText", "maxCharsPerLine"];
+                return ["fontSize", "fontFamily", "textAlignment", "textColor", "wrapText", "maxCharsPerLine"];
             case "nodeConnectionCounts":
                 return ["showValues", "badgeTextSize", "badgePosition", "badgePaddingTop",
                     "badgePaddingRight", "badgePaddingBottom", "badgePaddingLeft", "countMode", "badgeTextColor", "badgeFontFamily"];
@@ -3009,9 +3036,27 @@ export class Visual implements IVisual {
         const startY = this.settings.nodeHeight / 2 - ((lines.length - 1) * lineHeight) / 2 + 4;
         const textColor = this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.background : this.settings.textColor;
 
-        // Adjust for icon
-        const textX = this.settings.showIcons ? 40 : this.settings.nodeWidth / 2;
-        const textAnchor = this.settings.showIcons ? "start" : "middle";
+        let textX = this.settings.showIcons ? 40 : this.settings.nodeWidth / 2;
+        let textAnchor = this.settings.showIcons ? "start" : "middle";
+        switch (this.settings.textAlignment) {
+            case "left":
+                textAnchor = "start";
+                textX = this.settings.showIcons ? 40 : 12;
+                break;
+            case "right":
+                textAnchor = "end";
+                textX = this.settings.nodeWidth - 12;
+                break;
+            default:
+                if (this.settings.showIcons) {
+                    textAnchor = "start";
+                    textX = 40;
+                } else {
+                    textAnchor = "middle";
+                    textX = this.settings.nodeWidth / 2;
+                }
+                break;
+        }
 
         lines.forEach((line, i) => {
             const textEl = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -3039,22 +3084,17 @@ export class Visual implements IVisual {
         let cy = 0;
 
         // Parse position (e.g., "top-right", "center", "bottom-left")
-        const [vertical, horizontal] = this.settings.badgePosition.split("-");
+        const parts = this.settings.badgePosition.split("-");
+        let vertical = parts.length === 2 ? parts[0] : "center";
+        let horizontal = parts.length === 2 ? parts[1] : (parts[0] || "center");
 
         // Calculate horizontal position
-        if (horizontal === "left" || vertical === "left") {
+        if (horizontal === "left") {
             cx = badgeRadius + this.settings.badgePaddingLeft;
-        } else if (horizontal === "right" || vertical === "right") {
+        } else if (horizontal === "right") {
             cx = this.settings.nodeWidth - badgeRadius - this.settings.badgePaddingRight;
-        } else if (horizontal === "center" || vertical === "center") {
-            cx = this.settings.nodeWidth / 2;
         } else {
-            // Default to middle horizontal for middle-* positions
-            if (vertical === "middle") {
-                cx = this.settings.nodeWidth - badgeRadius - this.settings.badgePaddingRight;
-            } else {
-                cx = this.settings.nodeWidth / 2;
-            }
+            cx = this.settings.nodeWidth / 2;
         }
 
         // Calculate vertical position
@@ -3191,12 +3231,22 @@ export class Visual implements IVisual {
         if (!allCounters.length) return;
 
         const statsText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        statsText.setAttribute("x", "20");
+        let statsX = 20;
+        let statsAnchor: string = "start";
+        if (this.settings.headerCounterAlignment === "center") {
+            statsX = width / 2;
+            statsAnchor = "middle";
+        } else if (this.settings.headerCounterAlignment === "right") {
+            statsX = width - 20;
+            statsAnchor = "end";
+        }
+        statsText.setAttribute("x", String(statsX));
         statsText.setAttribute("y", "30");
         statsText.setAttribute("font-size", `${this.settings.headerCounterFontSize}px`);
         statsText.setAttribute("font-weight", this.settings.headerCounterFontWeight);
         statsText.setAttribute("font-family", this.settings.headerCounterFontFamily || this.settings.fontFamily);
         statsText.setAttribute("fill", counterColor);
+        statsText.setAttribute("text-anchor", statsAnchor);
         statsText.textContent = allCounters.join(joiner);
         this.fixedHeader.appendChild(statsText);
     }
@@ -3612,3 +3662,4 @@ export class Visual implements IVisual {
 
 export class StreamLinks extends Visual { }
 export default StreamLinks;
+

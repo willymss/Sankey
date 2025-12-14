@@ -319,9 +319,10 @@ Data reduction limit: 30,000 rows
 The visual has 14 built-in style presets that configure all visual settings at once:
 
 **Preset Architecture:**
-- Presets are defined in `settings.ts` as complete `SankeySettings` objects
+- Presets are defined in `visual.ts` via `applyStylePreset()` method (visual.ts:790)
+- Base defaults come from `getDefaultSettings()` (visual.ts:353)
 - Available presets: `professionalBlue`, `vibrantSpectrum`, `neon`, `pastel`, `angularTech`, `gradientFlow`, `midnightPro`, `popArt`, `auroraFlow`, `offwhite`, `modernApp`, `gradientPill`, `outlinedGradient`, `softWhite`
-- Default preset is `professionalBlue`
+- Default preset is `softWhite`
 
 **Preset Loading Flow:**
 1. `update()` loads base preset defaults via `updateSettingsFromModel()`
