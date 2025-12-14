@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run package:*)",
+      "Bash(npx pbiviz:*)",
+      "Bash(npm install:*)",
+      "Bash(powershell -Command \"echo $PROFILE\")",
+      "Bash(powershell -Command \"$PROFILE\")",
+      "Bash(powershell -NoProfile -Command \"Write-Host $PROFILE\")",
+      "Bash(powershell -NoProfile -Command \"[System.Environment]::GetFolderPath(''MyDocuments'') + ''\\PowerShell\\Microsoft.PowerShell_profile.ps1''\")",
+      "Bash(powershell:*)",
+      "Bash(npm run lint)",
+      "Bash(git push:*)"
+    ]
+  }
+}

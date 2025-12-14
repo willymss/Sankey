@@ -39,11 +39,35 @@ npm run lint
 ```
 Runs ESLint using the Power BI visuals plugin configuration. The project follows the recommended Power BI visuals linting rules.
 
-### Debugging
-To debug the visual:
-1. Start the development server with `npm start`
-2. Open Power BI Service with developer mode enabled
-3. Attach Chrome debugger on port 9222 (configured in `.vscode/launch.json`)
+### Debugging and Testing Workflow
+
+**Development Server:**
+1. Start with `npm start` or `pbiviz start`
+2. Server runs on https://localhost:8080
+3. Generates `.pbiviz` file in `dist/` directory
+4. Enable Developer Mode in Power BI Desktop/Service to use local visual
+5. Import the visual from Developer Visual section in Power BI
+
+**Testing the Visual:**
+1. Enable Developer Mode: File → Options → Preview features → Developer visual
+2. Add sample hierarchical data (2-10 columns for hierarchy levels)
+3. Test interactions: selection, cross-filtering, keyboard navigation
+4. Verify settings changes apply immediately via `update()` calls
+5. Check accessibility: high contrast mode, screen reader, keyboard focus
+
+**Debugging with Chrome DevTools:**
+1. Start dev server with `npm start`
+2. Open Power BI Desktop or Power BI Service
+3. Add the developer visual to a report
+4. Attach Chrome debugger on port 9222 (configured in `.vscode/launch.json`)
+5. Set breakpoints in TypeScript source (source maps are generated)
+6. Use `console.log()` or debugger statements in `visual.ts`
+
+**Hot Reload:**
+- Changes to `visual.ts`, `settings.ts`, or `visual.less` rebuild automatically
+- Refresh the visual in Power BI to see changes
+- Settings pane updates require re-opening the format pane
+- Changes to `capabilities.json` require restarting the dev server
 
 ## Architecture
 
@@ -94,35 +118,42 @@ To debug the visual:
 
 The visual uses Power BI's FormattingSettingsService for the settings pane:
 
+**Dual Settings Pattern:**
+- `SankeySettings` interface: Flat object with all settings values (used by rendering code)
+- `VisualFormattingSettingsModel`: Hierarchical FormattingSettingsModel for Power BI pane
+- Settings flow: FormattingSettingsModel → `updateSettingsFromModel()` → flat SankeySettings object
+
 **Settings Structure** (`src/settings.ts`):
 - Settings are organized into "Cards" (top-level categories)
 - Cards contain "Slices" (individual settings)
 - Two types of cards:
   - `SimpleCard`: Single-level settings groups
-  - `CompositeCard`: Contains nested sub-cards
+  - `CompositeCard`: Contains nested sub-cards (e.g., Node Settings has Shape, Border, Text sub-cards)
 
 **Main Setting Cards:**
-1. **Style Presets** (`StylePresetsCard`): Pre-configured layout styles
+1. **Style Presets** (`StylePresetsCard`): Pre-configured layout styles (dropdown selector)
 2. **Node Settings** (`NodeSettingsCard`): Composite card with sub-cards:
-   - Size and Spacing
-   - Shape
-   - Border
-   - Text
-   - Connection Counts (badges)
+   - Size and Spacing (width, height, level spacing, node spacing)
+   - Shape (node shape, corner radius)
+   - Fill (fill type, color override, opacity)
+   - Border (border style, width, type, custom color)
+   - Shadow (enabled, color, opacity, blur, offset X/Y)
+   - Text (font size, family, color, wrap settings, show values)
+   - Connection Counts (badges: position, padding, font settings, count mode)
 3. **Link Settings** (`LinkSettingsCard`): Composite card with:
-   - Style
-   - Opacity
-   - Color
-   - Start Marker
-   - End Marker
-   - Marker Colors
-4. **Color Settings** (`ColorSettingsCard`): Auto colors and custom color palette
-5. **Display Settings** (`DisplaySettingsCard`): Header, controls, empty state
+   - Style (opacity, width, curve style, link style)
+   - Color (color mode, custom color)
+   - Start Marker (show, type, size)
+   - End Marker (show, type, size)
+   - Marker Colors (custom colors for markers)
+4. **Color Settings** (`ColorSettingsCard`): 10 level color pickers (no auto-color toggle)
+5. **Display Settings** (`DisplaySettingsCard`): Header (title, counters), controls (show/hide), empty state
 
 **Settings Flow:**
 - Power BI calls `getFormattingModel()` to render settings pane
-- User changes trigger `update()` with new settings
+- User changes trigger `update()` with new settings in `options.dataViews[0].metadata.objects`
 - `updateSettingsFromModel()` extracts values from FormattingSettingsModel into flat `SankeySettings` object
+- Preset defaults are loaded first, then persisted metadata properties override them
 
 ### Selection and Interactivity
 
@@ -188,12 +219,74 @@ The visual uses Power BI's FormattingSettingsService for the settings pane:
 
 ## Key Files
 
-- `src/visual.ts`: Main visual logic (~2,366 lines)
-- `src/settings.ts`: Formatting pane settings model
-- `capabilities.json`: Visual capabilities and data role definitions
-- `pbiviz.json`: Visual metadata and configuration
-- `style/visual.less`: LESS styles for the visual
-- `stringResources/en-US/resources.resjson`: Localization strings
+- `src/visual.ts`: Main visual logic (~2,800+ lines) - all rendering, interaction, and layout
+- `src/settings.ts`: Formatting pane settings model with preset definitions
+- `capabilities.json`: Visual capabilities, data role definitions, and object properties
+- `pbiviz.json`: Visual metadata (name: advancedSankeyChart, display: StreamLinks)
+- `style/visual.less`: LESS styles for controls, headers, and base elements
+- `stringResources/en-US/resources.resjson`: Localization strings for settings pane
+
+## Critical Development Patterns
+
+### Adding New Settings
+
+When adding a new setting:
+1. Add property to `SankeySettings` interface in `visual.ts`
+2. Add corresponding property definition to `capabilities.json` under appropriate object
+3. Create new slice in appropriate card class in `settings.ts`
+4. Update `updateSettingsFromModel()` to extract the value from FormattingSettingsModel
+5. Update all preset definitions with default values for the new setting
+6. Use the setting in rendering code
+
+### Working with SVG Effects
+
+**Filter/Gradient Reapplication Pattern:**
+- SVG filters and gradients must be recreated when settings change
+- Always call `ensureSoftShadowFilter()` before applying shadow to nodes
+- Call `createNodeGradients()` before rendering if using gradient fill or border
+- After selection/highlight changes, call `applyShadowToAllNodes()` to reapply filters
+
+**Why reapplication is needed:**
+- Highlight state changes modify node opacity
+- Opacity changes can make filters appear incorrect
+- Filters must be explicitly reapplied to maintain visual consistency
+
+### Power BI Visual Update Cycle
+
+Every time data or settings change, Power BI calls `update(options)`:
+1. Check `options.type` for update reason (data, resize, viewMode, etc.)
+2. Extract data via `extractData()` if data changed
+3. Update settings via `updateSettingsFromModel()`
+4. Process data into nodes/links via `processData()`
+5. Full re-render via `render()`
+6. Apply any selection state via `highlightConnections()`
+
+**Performance considerations:**
+- The visual clears and recreates all SVG on each update
+- Animation uses CSS transitions to smooth position changes
+- `previousNodePositions` map enables smooth transitions between layouts
+
+### Debugging Common Issues
+
+**Selection not working:**
+- Verify selection IDs are created from table row indices, not node IDs
+- Check that `rowSelectionByIndex`, `nodeSelectionById`, and `nodeRowIndexById` maps are populated during `processData()`
+- Ensure `selectRowsForSelectedNodes()` is called after node selection
+
+**Gradients not showing:**
+- Verify `fillType` or `borderType` is set to "gradient"
+- Check that `createNodeGradients()` is called before `renderNodes()`
+- Gradient IDs must match pattern: `node-gradient-{nodeId}` or `node-border-gradient-{nodeId}`
+
+**Shadows disappearing on selection:**
+- Shadow filter must be reapplied after opacity changes
+- Call `applyShadowToAllNodes()` after highlight state changes
+- Do not reduce opacity when shadow is enabled (prevents shadow from being visible)
+
+**Preset reset not working:**
+- Verify the preset object has values for all settings
+- Check that `updateSettingsFromModel()` uses preset defaults as base values
+- Ensure metadata persistence isn't overriding reset values
 
 ## Data Roles
 
@@ -203,12 +296,74 @@ The visual accepts:
 
 Data reduction limit: 30,000 rows
 
+### SVG Effects and Gradients
+
+**Node Gradients** (`createNodeGradients`):
+- Creates linear gradient definitions for each node when `fillType` or `borderType` is "gradient"
+- Gradient IDs use format: `node-gradient-{nodeId}` and `node-border-gradient-{nodeId}`
+- Called before rendering nodes if gradient mode is enabled
+
+**Soft Shadow Filter** (`ensureSoftShadowFilter`):
+- Creates SVG filter definition with ID `#node-shadow` when `nodeShadowEnabled` is true
+- Uses feGaussianBlur, feOffset, feFlood, feComposite, and feMerge for realistic shadow
+- Shadow properties: color, opacity, blur radius, X/Y offset are all configurable
+- `applyShadowToAllNodes()` applies/removes shadow filter to all node shapes
+
+**Marker Definitions** (`createMarkerDefinitions`):
+- Creates SVG markers for link arrows (start/end)
+- Supports arrow, circle, diamond, triangle marker types
+- Marker colors can match link color or use custom colors
+
+### Style Presets System
+
+The visual has 14 built-in style presets that configure all visual settings at once:
+
+**Preset Architecture:**
+- Presets are defined in `settings.ts` as complete `SankeySettings` objects
+- Available presets: `professionalBlue`, `vibrantSpectrum`, `neon`, `pastel`, `angularTech`, `gradientFlow`, `midnightPro`, `popArt`, `auroraFlow`, `offwhite`, `modernApp`, `gradientPill`, `outlinedGradient`, `softWhite`
+- Default preset is `professionalBlue`
+
+**Preset Loading Flow:**
+1. `update()` loads base preset defaults via `updateSettingsFromModel()`
+2. Only persisted properties override preset defaults
+3. "Reset to default" per card restores preset defaults for that card
+4. Full visual reset preserves the active preset
+
+**Important Preset Behavior:**
+- When switching presets, control toggles (show/hide settings) are preserved from previous state
+- Color palette and styling are always replaced from the new preset
+- Users can customize any individual setting after selecting a preset
+
+### Animation and Transitions
+
+**Node Position Transitions:**
+- Nodes animate to new positions on layout changes
+- Uses CSS transitions (`transform 0.3s ease`)
+- `previousNodePositions` map tracks last positions for smooth transitions
+- Applied via `requestAnimationFrame` for optimal performance
+
+**Selection and Highlight Animations:**
+- Highlight state updates trigger visual opacity/filter changes
+- Non-highlighted nodes reduce opacity when selection exists
+- Shadow filters reapply after selection changes via `applyShadowToAllNodes()`
+
+### Recent Development Focus
+
+Based on git history, recent work has focused on:
+- Gradient link visibility improvements (stroke opacity adjustments)
+- Badge styling and positioning (padding, font, color bindings)
+- Preset system refinement (control toggle preservation, reset behavior)
+- Shadow filter implementation for modern visual effects
+- Visual rebranding from "Advanced Sankey Chart" to "StreamLinks"
+
 ## Important Notes
 
-- The visual class must be exported twice: `export class Visual` (implementation) and `export class StreamLinks extends Visual {}` (Power BI entry point)
-- TypeScript compilation target is ES2022
-- The visual supports landing page, empty state, and edit mode
-- Selection IDs must be created from table rows for proper cross-filtering
-- All SVG rendering is manual (custom implementation)
-- The project uses D3 v7.9.0 for utilities, but does not use D3's built-in sankey layout library
-- The visual uses FormattingSettingsService from `powerbi-visuals-utils-formattingmodel` v6.0.4 for settings management
+- **Class Export Requirement**: The visual class must be exported twice: `export class Visual` (implementation) and `export class StreamLinks extends Visual {}` (Power BI entry point). This dual export is critical for Power BI to recognize the visual.
+- **TypeScript Target**: ES2022 compilation target
+- **Power BI Capabilities**: Supports landing page, empty state, edit mode, highlight, keyboard focus, and multi-visual selection
+- **Selection ID Pattern**: Selection IDs MUST be created from table row indices for proper cross-filtering. The pattern is: create selection from row → store in maps → use for node interaction.
+- **Manual SVG Rendering**: All SVG rendering is custom implementation (no framework). DOM manipulation uses `document.createElementNS` for SVG elements.
+- **D3 Usage**: The project uses D3 v7.9.0 for utilities (color scales, array operations) but does NOT use D3's built-in sankey layout - all layout logic is custom.
+- **Formatting Model**: Uses FormattingSettingsService from `powerbi-visuals-utils-formattingmodel` v6.0.4. Settings are organized into Cards (categories) containing Slices (individual settings).
+- **Build Artifacts**: Never commit `dist/`, `.tmp/`, or `pbiviz-certs/` directories.
+- **Visual Identity**: The visual name in pbiviz.json remains "advancedSankeyChart" for upgrade compatibility, but display name is "Advanced Sankey Chart" (branded as StreamLinks).

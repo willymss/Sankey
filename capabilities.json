@@ -23,18 +23,32 @@
     {
       "conditions": [
         {
-          "group": { "max": 10 },
-          "tooltips": { "max": 5 }
+          "group": {
+            "max": 10
+          },
+          "tooltips": {
+            "max": 5
+          }
         }
       ],
       "table": {
         "rows": {
           "select": [
-            { "for": { "in": "group" } },
-            { "for": { "in": "tooltips" } }
+            {
+              "for": {
+                "in": "group"
+              }
+            },
+            {
+              "for": {
+                "in": "tooltips"
+              }
+            }
           ],
           "dataReductionAlgorithm": {
-            "top": { "count": 30000 }
+            "top": {
+              "count": 30000
+            }
           }
         }
       }
@@ -48,12 +62,16 @@
         "stylePreset": {
           "displayName": "Style",
           "displayNameKey": "StylePresets_Style",
-          "type": { "text": true }
+          "type": {
+            "text": true
+          }
         },
         "activePresetId": {
           "displayName": "Active Preset ID",
           "displayNameKey": "StylePresets_ActivePresetId",
-          "type": { "text": true }
+          "type": {
+            "text": true
+          }
         }
       }
     },
@@ -64,133 +82,237 @@
         "nodeWidth": {
           "displayName": "Node Width",
           "displayNameKey": "NodeSettings_NodeWidth",
-          "type": { "numeric": true }
+          "type": {
+            "numeric": true
+          }
         },
         "nodeHeight": {
           "displayName": "Node Height",
           "displayNameKey": "NodeSettings_NodeHeight",
-          "type": { "numeric": true }
+          "type": {
+            "numeric": true
+          }
         },
         "nodeShape": {
           "displayName": "Node Shape",
           "displayNameKey": "NodeSettings_NodeShape",
-          "type": { "text": true }
+          "type": {
+            "text": true
+          }
         },
         "cornerRadius": {
           "displayName": "Corner Radius",
           "displayNameKey": "NodeSettings_CornerRadius",
-          "type": { "numeric": true }
+          "type": {
+            "numeric": true
+          }
         },
         "nodeFillOpacity": {
           "displayName": "Fill Opacity",
           "displayNameKey": "NodeSettings_FillOpacity",
-          "type": { "numeric": true }
+          "type": {
+            "numeric": true
+          }
         },
         "nodeBorderStyle": {
           "displayName": "Border Style",
           "displayNameKey": "NodeSettings_BorderStyle",
-          "type": { "text": true }
+          "type": {
+            "text": true
+          }
         },
         "nodeBorderWidth": {
           "displayName": "Border Width",
           "displayNameKey": "NodeSettings_BorderWidth",
-          "type": { "numeric": true }
+          "type": {
+            "numeric": true
+          }
         },
         "useCustomBorderColor": {
           "displayName": "Custom Border Color",
           "displayNameKey": "NodeSettings_UseCustomBorderColor",
-          "type": { "bool": true }
+          "type": {
+            "bool": true
+          }
         },
         "nodeBorderColor": {
           "displayName": "Border Color",
           "displayNameKey": "NodeSettings_BorderColor",
-          "type": { "fill": { "solid": { "color": true } } }
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
         },
         "levelSpacing": {
           "displayName": "Level Spacing",
           "displayNameKey": "NodeSettings_LevelSpacing",
-          "type": { "numeric": true }
+          "type": {
+            "numeric": true
+          }
         },
         "nodeSpacing": {
           "displayName": "Node Spacing",
           "displayNameKey": "NodeSettings_NodeSpacing",
-          "type": { "numeric": true }
+          "type": {
+            "numeric": true
+          }
         },
         "fontSize": {
           "displayName": "Font Size",
           "displayNameKey": "NodeSettings_FontSize",
-          "type": { "numeric": true }
+          "type": {
+            "numeric": true
+          }
         },
         "fontFamily": {
           "displayName": "Font Family",
           "displayNameKey": "NodeSettings_FontFamily",
-          "type": { "text": true }
+          "type": {
+            "text": true
+          }
         },
         "textColor": {
           "displayName": "Text Color",
           "displayNameKey": "NodeSettings_TextColor",
-          "type": { "fill": { "solid": { "color": true } } }
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
         },
         "wrapText": {
           "displayName": "Wrap Text",
           "displayNameKey": "NodeSettings_WrapText",
-          "type": { "bool": true }
+          "type": {
+            "bool": true
+          }
         },
         "maxCharsPerLine": {
           "displayName": "Max Chars Per Line",
           "displayNameKey": "NodeSettings_MaxChars",
-          "type": { "numeric": true }
+          "type": {
+            "numeric": true
+          }
         },
         "showValues": {
           "displayName": "Show Values",
           "displayNameKey": "NodeSettings_ShowValues",
           "description": "Display measure values on nodes",
-          "type": { "bool": true }
+          "type": {
+            "bool": true
+          }
         },
         "badgeTextSize": {
           "displayName": "Badge Text Size",
           "displayNameKey": "NodeSettings_BadgeTextSize",
-          "type": { "numeric": true }
+          "type": {
+            "numeric": true
+          }
         },
         "badgeTextColor": {
           "displayName": "Badge Text Color",
           "displayNameKey": "NodeSettings_BadgeTextColor",
-          "type": { "fill": { "solid": { "color": true } } }
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
         },
         "badgeFontFamily": {
           "displayName": "Badge Font Family",
           "displayNameKey": "NodeSettings_BadgeFontFamily",
-          "type": { "text": true }
+          "type": {
+            "text": true
+          }
         },
         "badgePosition": {
           "displayName": "Badge Position",
           "displayNameKey": "NodeSettings_BadgePosition",
-          "type": { "text": true }
+          "type": {
+            "text": true
+          }
         },
         "badgePaddingTop": {
           "displayName": "Badge Padding Top",
           "displayNameKey": "NodeSettings_BadgePaddingTop",
-          "type": { "numeric": true }
+          "type": {
+            "numeric": true
+          }
         },
         "badgePaddingRight": {
           "displayName": "Badge Padding Right",
           "displayNameKey": "NodeSettings_BadgePaddingRight",
-          "type": { "numeric": true }
+          "type": {
+            "numeric": true
+          }
         },
         "badgePaddingBottom": {
           "displayName": "Badge Padding Bottom",
           "displayNameKey": "NodeSettings_BadgePaddingBottom",
-          "type": { "numeric": true }
+          "type": {
+            "numeric": true
+          }
         },
         "badgePaddingLeft": {
           "displayName": "Badge Padding Left",
           "displayNameKey": "NodeSettings_BadgePaddingLeft",
-          "type": { "numeric": true }
+          "type": {
+            "numeric": true
+          }
         },
         "countMode": {
           "displayName": "Count Mode",
           "displayNameKey": "NodeSettings_CountMode",
-          "type": { "text": true }
+          "type": {
+            "text": true
+          }
+        },
+        "nodeShadowEnabled": {
+          "displayName": "Shadow",
+          "type": {
+            "bool": true
+          }
+        },
+        "nodeShadowColor": {
+          "displayName": "Shadow Color",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "nodeShadowOpacity": {
+          "displayName": "Shadow Opacity",
+          "type": {
+            "numeric": true
+          }
+        },
+        "nodeShadowBlur": {
+          "displayName": "Shadow Blur",
+          "type": {
+            "numeric": true
+          }
+        },
+        "nodeShadowOffsetX": {
+          "displayName": "Shadow Offset X",
+          "type": {
+            "numeric": true
+          }
+        },
+        "nodeShadowOffsetY": {
+          "displayName": "Shadow Offset Y",
+          "type": {
+            "numeric": true
+          }
         }
       }
     },
@@ -201,82 +323,126 @@
         "lineOpacity": {
           "displayName": "Link Opacity",
           "displayNameKey": "LinkSettings_Opacity",
-          "type": { "numeric": true }
+          "type": {
+            "numeric": true
+          }
         },
         "linkWidth": {
           "displayName": "Link Width",
           "displayNameKey": "LinkSettings_Width",
-          "type": { "numeric": true }
+          "type": {
+            "numeric": true
+          }
         },
         "highlightOpacity": {
           "displayName": "Highlight Opacity",
           "displayNameKey": "LinkSettings_HighlightOpacity",
-          "type": { "numeric": true }
+          "type": {
+            "numeric": true
+          }
         },
         "linkStyle": {
           "displayName": "Link Style",
           "displayNameKey": "LinkSettings_LinkStyle",
-          "type": { "text": true }
+          "type": {
+            "text": true
+          }
         },
         "linkColorMode": {
           "displayName": "Link Color Mode",
           "displayNameKey": "LinkSettings_ColorMode",
-          "type": { "text": true }
+          "type": {
+            "text": true
+          }
         },
         "customLinkColor": {
           "displayName": "Custom Link Color",
           "displayNameKey": "LinkSettings_CustomColor",
-          "type": { "fill": { "solid": { "color": true } } }
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
         },
         "linkCurveStyle": {
           "displayName": "Curve Style",
           "displayNameKey": "LinkSettings_CurveStyle",
-          "type": { "text": true }
+          "type": {
+            "text": true
+          }
         },
         "showStartMarker": {
           "displayName": "Show Start Marker",
           "displayNameKey": "LinkSettings_ShowStartMarker",
-          "type": { "bool": true }
+          "type": {
+            "bool": true
+          }
         },
         "startMarkerType": {
           "displayName": "Start Marker Type",
           "displayNameKey": "LinkSettings_StartMarkerType",
-          "type": { "text": true }
+          "type": {
+            "text": true
+          }
         },
         "startMarkerSize": {
           "displayName": "Start Marker Size",
           "displayNameKey": "LinkSettings_StartMarkerSize",
-          "type": { "numeric": true }
+          "type": {
+            "numeric": true
+          }
         },
         "showEndMarker": {
           "displayName": "Show End Marker",
           "displayNameKey": "LinkSettings_ShowEndMarker",
-          "type": { "bool": true }
+          "type": {
+            "bool": true
+          }
         },
         "endMarkerType": {
           "displayName": "End Marker Type",
           "displayNameKey": "LinkSettings_EndMarkerType",
-          "type": { "text": true }
+          "type": {
+            "text": true
+          }
         },
         "endMarkerSize": {
           "displayName": "End Marker Size",
           "displayNameKey": "LinkSettings_EndMarkerSize",
-          "type": { "numeric": true }
+          "type": {
+            "numeric": true
+          }
         },
         "useCustomMarkerColors": {
           "displayName": "Custom Marker Colors",
           "displayNameKey": "LinkSettings_UseCustomMarkerColors",
-          "type": { "bool": true }
+          "type": {
+            "bool": true
+          }
         },
         "startMarkerColor": {
           "displayName": "Start Marker Color",
           "displayNameKey": "LinkSettings_StartMarkerColor",
-          "type": { "fill": { "solid": { "color": true } } }
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
         },
         "endMarkerColor": {
           "displayName": "End Marker Color",
           "displayNameKey": "LinkSettings_EndMarkerColor",
-          "type": { "fill": { "solid": { "color": true } } }
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
         }
       }
     },
@@ -287,42 +453,90 @@
         "level0Color": {
           "displayName": "Level 0 Color",
           "displayNameKey": "ColorSettings_Level0",
-          "type": { "fill": { "solid": { "color": true } } }
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
         },
         "level1Color": {
           "displayName": "Level 1 Color",
           "displayNameKey": "ColorSettings_Level1",
-          "type": { "fill": { "solid": { "color": true } } }
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
         },
         "level2Color": {
           "displayName": "Level 2 Color",
           "displayNameKey": "ColorSettings_Level2",
-          "type": { "fill": { "solid": { "color": true } } }
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
         },
         "level3Color": {
           "displayName": "Level 3 Color",
           "displayNameKey": "ColorSettings_Level3",
-          "type": { "fill": { "solid": { "color": true } } }
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
         },
         "level4Color": {
           "displayName": "Level 4 Color",
           "displayNameKey": "ColorSettings_Level4",
-          "type": { "fill": { "solid": { "color": true } } }
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
         },
         "level5Color": {
           "displayName": "Level 5 Color",
           "displayNameKey": "ColorSettings_Level5",
-          "type": { "fill": { "solid": { "color": true } } }
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
         },
         "level6Color": {
           "displayName": "Level 6 Color",
           "displayNameKey": "ColorSettings_Level6",
-          "type": { "fill": { "solid": { "color": true } } }
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
         },
         "level7Color": {
           "displayName": "Level 7 Color",
           "displayNameKey": "ColorSettings_Level7",
-          "type": { "fill": { "solid": { "color": true } } }
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
         }
       }
     },
@@ -333,77 +547,123 @@
         "showEmptyPlaceholder": {
           "displayName": "Show Empty Placeholder",
           "displayNameKey": "DisplaySettings_EmptyPlaceholder",
-          "type": { "bool": true }
+          "type": {
+            "bool": true
+          }
         },
         "showHeader": {
           "displayName": "Show Header",
           "displayNameKey": "DisplaySettings_ShowHeader",
-          "type": { "bool": true }
+          "type": {
+            "bool": true
+          }
         },
         "showCounters": {
           "displayName": "Show Header Counters",
           "displayNameKey": "DisplaySettings_ShowCounters",
-          "type": { "bool": true }
+          "type": {
+            "bool": true
+          }
         },
         "counterFontSize": {
           "displayName": "Counter Font Size",
           "displayNameKey": "DisplaySettings_CounterFontSize",
-          "type": { "numeric": true }
+          "type": {
+            "numeric": true
+          }
         },
         "counterFontFamily": {
           "displayName": "Counter Font Family",
           "displayNameKey": "DisplaySettings_CounterFontFamily",
-          "type": { "text": true }
+          "type": {
+            "text": true
+          }
         },
         "counterFontWeight": {
           "displayName": "Counter Weight",
           "displayNameKey": "DisplaySettings_CounterFontWeight",
-          "type": { "text": true }
+          "type": {
+            "text": true
+          }
         },
         "counterColor": {
           "displayName": "Counter Color",
           "displayNameKey": "DisplaySettings_CounterColor",
-          "type": { "fill": { "solid": { "color": true } } }
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
         },
         "counterSeparator": {
           "displayName": "Counter Separator",
           "displayNameKey": "DisplaySettings_CounterSeparator",
-          "type": { "text": true }
+          "type": {
+            "text": true
+          }
         },
         "headerTitleMatchNode": {
           "displayName": "Match Level Title to Node Color",
           "displayNameKey": "DisplaySettings_HeaderTitleMatchNode",
-          "type": { "bool": true }
+          "type": {
+            "bool": true
+          }
         },
         "headerTitleColor": {
           "displayName": "Level Title Color",
           "displayNameKey": "DisplaySettings_HeaderTitleColor",
-          "type": { "fill": { "solid": { "color": true } } }
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
         },
         "headerTitleSize": {
           "displayName": "Level Title Size",
           "displayNameKey": "DisplaySettings_HeaderTitleSize",
-          "type": { "numeric": true }
+          "type": {
+            "numeric": true
+          }
         },
         "headerTitleFontFamily": {
           "displayName": "Level Title Font Family",
           "displayNameKey": "DisplaySettings_HeaderTitleFontFamily",
-          "type": { "text": true }
+          "type": {
+            "text": true
+          }
         },
         "headerColor": {
           "displayName": "Header Color",
           "displayNameKey": "DisplaySettings_HeaderColor",
-          "type": { "fill": { "solid": { "color": true } } }
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
         },
         "headerTextColor": {
           "displayName": "Header Text Color",
           "displayNameKey": "DisplaySettings_HeaderTextColor",
-          "type": { "fill": { "solid": { "color": true } } }
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
         },
         "showControls": {
           "displayName": "Show Controls",
           "displayNameKey": "DisplaySettings_ShowControls",
-          "type": { "bool": true }
+          "type": {
+            "bool": true
+          }
         }
       }
     }
@@ -413,13 +673,17 @@
       "default": true,
       "canvas": true
     },
-    "roles": ["tooltips"],
+    "roles": [
+      "tooltips"
+    ],
     "supportEnhancedTooltips": true
   },
   "sorting": {
     "default": {}
   },
   "drilldown": {
-    "roles": ["group"]
+    "roles": [
+      "group"
+    ]
   }
 }

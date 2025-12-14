@@ -1,184 +1,67 @@
-/* Table Matrix Clean Visual Styles */
+/* Modern Sankey Visual Styles */
 
-.table-matrix-container {
-  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, "Roboto", "Helvetica Neue", Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  
-  /* Custom scrollbar for modern browsers */
-  &::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 5px;
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 5px;
-    
-    &:hover {
-      background: #a8a8a8;
-    }
-  }
-  
-  /* Firefox scrollbar */
-  scrollbar-width: thin;
-  scrollbar-color: #c1c1c1 #f1f1f1;
+@import (inline) url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+:root {
+    --bg-color: #f8fafc;
+    --surface-color: #ffffff;
+    --primary-color: #3b82f6;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
-.table-wrapper {
-  position: relative;
-}
-
-.data-table {
-  border-spacing: 0;
-  
-  th {
-    position: sticky;
-    top: 0;
-    background-clip: padding-box;
+.sankeyContainer {
+    font-family: 'Inter', "Segoe UI", sans-serif;
     
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-    }
-  }
-  
-  td, th {
-    position: relative;
-    
-    /* Text selection styling */
-    &::selection {
-      background-color: rgba(0, 120, 215, 0.3);
-    }
-  }
-  
-  tbody tr {
-    cursor: default;
-    
-    &:hover {
-      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+    .nodes {
+        g {
+            transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            &.dimmed {
+                opacity: 0.1;
+            }
+        }
+        
+        .node-rect {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: drop-shadow(0 4px 3px rgb(0 0 0 / 0.07)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06));
+            
+            &:hover {
+                filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
+                transform: translateY(-1px);
+            }
+        }
+        
+        text {
+            pointer-events: none;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
     }
     
-    &:focus-within {
-      outline: 2px solid #0078d4;
-      outline-offset: -2px;
-    }
-  }
-}
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-  .data-table {
-    th {
-      border: 2px solid currentColor !important;
-      font-weight: 700 !important;
-    }
-    
-    td {
-      border: 1px solid currentColor !important;
+    .links {
+        path {
+            transition: opacity 0.3s ease, stroke-width 0.3s ease;
+            mix-blend-mode: multiply;
+            
+            &.dimmed {
+                opacity: 0.05;
+            }
+            
+            &:hover {
+                stroke-opacity: 0.8 !important;
+            }
+        }
     }
     
-    tbody tr:hover {
-      background-color: Highlight !important;
-      color: HighlightText !important;
+    .headers {
+        text {
+            font-family: 'Inter', "Segoe UI", sans-serif;
+            font-weight: 600;
+            fill: var(--text-primary);
+        }
     }
-  }
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  .data-table tbody tr {
-    transition: none !important;
-  }
-}
-
-/* Dark mode support (if Power BI theme is dark) */
-@media (prefers-color-scheme: dark) {
-  .table-matrix-container {
-    &::-webkit-scrollbar-track {
-      background: #2d2d2d;
-    }
-    
-    &::-webkit-scrollbar-thumb {
-      background: #5a5a5a;
-      
-      &:hover {
-        background: #6e6e6e;
-      }
-    }
-    
-    scrollbar-color: #5a5a5a #2d2d2d;
-  }
-}
-
-/* Print styles */
-@media print {
-  .table-matrix-container {
-    overflow: visible !important;
-    height: auto !important;
-  }
-  
-  .data-table {
-    thead {
-      display: table-header-group;
-    }
-    
-    tbody tr {
-      page-break-inside: avoid;
-    }
-  }
-}
-
-/* Loading state */
-.table-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: #605e5c;
-  font-size: 14px;
-}
-
-/* Empty state */
-.table-empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: #605e5c;
-  font-size: 14px;
-  flex-direction: column;
-  gap: 12px;
-  
-  .empty-icon {
-    font-size: 48px;
-    opacity: 0.5;
-  }
-}
-
-/* Error state */
-.table-error {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: #a4262c;
-  font-size: 14px;
-  flex-direction: column;
-  gap: 12px;
-  padding: 20px;
-  text-align: center;
-  
-  .error-icon {
-    font-size: 48px;
-  }
 }

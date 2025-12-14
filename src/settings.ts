@@ -12,17 +12,17 @@ class StylePresetsCard extends formattingSettings.SimpleCard {
             { displayName: "Professional Blue", value: "professionalBlue" },
             { displayName: "Vibrant Spectrum", value: "vibrantSpectrum" },
             { displayName: "Neon", value: "neon" },
-            { displayName: "Earth Tones", value: "earthTones" },
             { displayName: "Pastel", value: "pastel" },
             { displayName: "Angular Tech", value: "angularTech" },
             { displayName: "Gradient Flow", value: "gradientFlow" },
             { displayName: "Midnight Pro", value: "midnightPro" },
             { displayName: "Pop Art", value: "popArt" },
-            { displayName: "Nordic Minimal", value: "nordicMinimal" },
-            { displayName: "Soft Glass", value: "softGlass" },
-            { displayName: "Mono Brutal", value: "monoBrutal" },
             { displayName: "Aurora Flow", value: "auroraFlow" },
-            { displayName: "Offwhite", value: "offwhite" }
+            { displayName: "Offwhite", value: "offwhite" },
+            { displayName: "Modern App", value: "modernApp" },
+            { displayName: "Gradient Pill", value: "gradientPill" },
+            { displayName: "Outlined Gradient", value: "outlinedGradient" },
+            { displayName: "Soft White", value: "softWhite" }
         ],
         value: { displayName: "Offwhite", value: "offwhite" }
     });
@@ -83,14 +83,14 @@ class NodeShapeCard extends formattingSettings.SimpleCard {
         displayName: "Shape",
         items: [
             { displayName: "Rectangle", value: "rectangle" },
-            { displayName: "Rounded Rectangle", value: "roundedRect" },
             { displayName: "Pill/Stadium", value: "pill" },
+            { displayName: "Rounded Rectangle", value: "roundedRect" },
             { displayName: "Ellipse", value: "ellipse" },
             { displayName: "Diamond", value: "diamond" },
             { displayName: "Hexagon", value: "hexagon" },
             { displayName: "Parallelogram", value: "parallelogram" }
         ],
-        value: { displayName: "Rounded Rectangle", value: "roundedRect" }
+        value: { displayName: "Pill/Stadium", value: "pill" }
     });
 
     cornerRadius = new formattingSettings.NumUpDown({
@@ -329,17 +329,69 @@ class NodeConnectionCountsCard extends formattingSettings.SimpleCard {
     ];
 }
 
+
+/** ---------- Shadow Section ---------- */
+class NodeShadowCard extends formattingSettings.SimpleCard {
+    nodeShadowEnabled = new formattingSettings.ToggleSwitch({
+        name: "nodeShadowEnabled",
+        displayName: "Shadow",
+        value: false
+    });
+
+    nodeShadowColor = new formattingSettings.ColorPicker({
+        name: "nodeShadowColor",
+        displayName: "Shadow color",
+        value: { value: "#111111" }
+    });
+
+    nodeShadowOpacity = new formattingSettings.NumUpDown({
+        name: "nodeShadowOpacity",
+        displayName: "Shadow opacity (%)",
+        value: 10
+    });
+
+    nodeShadowBlur = new formattingSettings.NumUpDown({
+        name: "nodeShadowBlur",
+        displayName: "Blur radius",
+        value: 6
+    });
+
+    nodeShadowOffsetX = new formattingSettings.NumUpDown({
+        name: "nodeShadowOffsetX",
+        displayName: "Offset X",
+        value: 0
+    });
+
+    nodeShadowOffsetY = new formattingSettings.NumUpDown({
+        name: "nodeShadowOffsetY",
+        displayName: "Offset Y",
+        value: 4
+    });
+
+    name = "nodeShadow";
+    displayName = "Shadow";
+    slices = [
+        this.nodeShadowEnabled,
+        this.nodeShadowColor,
+        this.nodeShadowOpacity,
+        this.nodeShadowBlur,
+        this.nodeShadowOffsetX,
+        this.nodeShadowOffsetY
+    ];
+}
+
 /** ---------- Nodes Main Composite Card ---------- */
 class NodeSettingsCard extends formattingSettings.CompositeCard {
     sizeAndSpacing = new NodeSizeAndSpacingCard();
     shape = new NodeShapeCard();
     border = new NodeBorderCard();
+    shadow = new NodeShadowCard();
     text = new NodeTextCard();
     connectionCounts = new NodeConnectionCountsCard();
 
     name = "nodeSettings";
     displayName = "Nodes";
-    groups = [this.sizeAndSpacing, this.shape, this.border, this.text, this.connectionCounts];
+    groups = [this.sizeAndSpacing, this.shape, this.border, this.shadow, this.text, this.connectionCounts];
 
     setVisibility() {
         // Corner radius visibility based on shape

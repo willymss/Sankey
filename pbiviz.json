@@ -25,6 +25,8 @@
   "externalJS": [],
   "style": "style/visual.less",
   "capabilities": "capabilities.json",
-  "dependencies": null,
-  "stringResources": ["stringResources/en-US/resources.resjson"]
+  "dependencies": "dependencies.json",
+  "stringResources": [
+    "stringResources/en-US/resources.resjson"
+  ]
 }
