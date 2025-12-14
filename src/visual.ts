@@ -75,6 +75,7 @@ interface SankeySettings {
     colors: string[];
 
     // Display settings
+    backgroundColor: string;
     showEmptyPlaceholder: boolean;
     showCounters: boolean;
     headerCounterFontSize: number;
@@ -400,6 +401,7 @@ export class Visual implements IVisual {
             startMarkerColor: "#0078D4",
             endMarkerColor: "#0078D4",
             colors: ["#0078D4", "#009CDC", "#106EBE", "#005A9E", "#74B4E7", "#004578", "#96C9F4", "#003B5C"],
+            backgroundColor: "#FFFFFF",
             showEmptyPlaceholder: true,
             showCounters: true,
             headerCounterFontSize: 11,
@@ -448,7 +450,6 @@ export class Visual implements IVisual {
             height: 100%;
             overflow: hidden;
             position: relative;
-            background-color: ${this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.background : '#ffffff'};
         `;
         this.container.setAttribute("tabindex", "0");
         this.container.setAttribute("role", "application");
@@ -725,6 +726,12 @@ export class Visual implements IVisual {
 
             this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(VisualFormattingSettingsModel, dataView);
             this.updateSettingsFromModel(dataView);
+
+            // Apply background color
+            this.container.style.backgroundColor = this.isHighContrastMode && this.highContrastColors
+                ? this.highContrastColors.background
+                : this.settings.backgroundColor;
+
             this.rowSelectionByIndex.clear();
             this.nodeSelectionById.clear();
             if (dataView.table) {
@@ -1451,6 +1458,7 @@ export class Visual implements IVisual {
 
         // Display settings
         if (ds && displayObjects) {
+            if (displayObjects["backgroundColor"] !== undefined) this.settings.backgroundColor = ds.backgroundColor?.value?.value ?? defaults.backgroundColor;
             if (displayObjects["showEmptyPlaceholder"] !== undefined) this.settings.showEmptyPlaceholder = ds.showEmptyPlaceholder?.value ?? defaults.showEmptyPlaceholder;
             if (displayObjects["showCounters"] !== undefined) this.settings.showCounters = ds.showCounters?.value ?? defaults.showCounters;
             if (displayObjects["counterFontSize"] !== undefined) this.settings.headerCounterFontSize = ds.counterFontSize?.value ?? defaults.headerCounterFontSize;
@@ -3190,45 +3198,93 @@ export class Visual implements IVisual {
     private renderControls(width: number): void {
         const controlsGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
         controlsGroup.setAttribute("class", "controls");
-        controlsGroup.setAttribute("transform", `translate(${width - 360}, 10)`);
+        controlsGroup.setAttribute("transform", `translate(${width - 200}, 10)`);
+
+        const iconColor = this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.foreground : "#64748b";
+        const iconHoverColor = this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.foreground : "#0078D4";
+
         const buttons = [
-            { label: "Zoom +", action: () => this.zoomIn() },
-            { label: "Zoom -", action: () => this.zoomOut() },
-            { label: "Reset", action: () => this.resetZoom() },
-            { label: "Fit", action: () => this.fitToScreen() }
+            {
+                label: "Zoom In",
+                action: () => this.zoomIn(),
+                icon: "M12 5v14m-7-7h14" // Plus icon path
+            },
+            {
+                label: "Zoom Out",
+                action: () => this.zoomOut(),
+                icon: "M5 12h14" // Minus icon path
+            },
+            {
+                label: "Reset Zoom",
+                action: () => this.resetZoom(),
+                icon: "M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7c-2 0-3 1-3 3zm8 8V9m-3 3l3-3 3 3" // Reset icon
+            },
+            {
+                label: "Fit to Screen",
+                action: () => this.fitToScreen(),
+                icon: "M4 8V6c0-1 0-2 2-2h2M4 16v2c0 1 0 2 2 2h2m8-16h2c1 0 2 0 2 2v2m0 8v2c0 1 0 2-2 2h-2" // Maximize icon
+            }
         ];
-        const buttonColor = this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.foreground : "#0078D4";
 
         buttons.forEach((btn, i) => {
             const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-            g.setAttribute("transform", `translate(${i * 88}, 0)`);
+            g.setAttribute("transform", `translate(${i * 44}, 0)`);
             g.style.cursor = "pointer";
             g.setAttribute("tabindex", "0");
             g.setAttribute("role", "button");
             g.setAttribute("aria-label", btn.label);
-            const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-            rect.setAttribute("width", "80");
-            rect.setAttribute("height", "28");
-            rect.setAttribute("rx", "5");
-            rect.setAttribute("fill", buttonColor);
-            rect.setAttribute("opacity", "0.9");
-            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            text.setAttribute("x", "40");
-            text.setAttribute("y", "18");
-            text.setAttribute("text-anchor", "middle");
-            text.setAttribute("fill", this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.background : "white");
-            text.setAttribute("font-size", "12px");
-            text.setAttribute("font-weight", "bold");
-            text.setAttribute("font-family", this.settings.fontFamily);
-            text.textContent = btn.label;
-            g.appendChild(rect);
-            g.appendChild(text);
-            g.addEventListener("mouseenter", () => rect.setAttribute("opacity", "1"));
-            g.addEventListener("mouseleave", () => rect.setAttribute("opacity", "0.9"));
+
+            // Background circle
+            const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            circle.setAttribute("cx", "18");
+            circle.setAttribute("cy", "18");
+            circle.setAttribute("r", "16");
+            circle.setAttribute("fill", this.isHighContrastMode && this.highContrastColors ? "none" : "#f8fafc");
+            circle.setAttribute("stroke", this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.foreground : "#e2e8f0");
+            circle.setAttribute("stroke-width", "1.5");
+            circle.setAttribute("opacity", "0.9");
+
+            // Icon path
+            const icon = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            icon.setAttribute("d", btn.icon);
+            icon.setAttribute("stroke", iconColor);
+            icon.setAttribute("stroke-width", "2");
+            icon.setAttribute("stroke-linecap", "round");
+            icon.setAttribute("stroke-linejoin", "round");
+            icon.setAttribute("fill", "none");
+            icon.setAttribute("transform", "translate(6, 6)");
+
+            g.appendChild(circle);
+            g.appendChild(icon);
+
+            // Hover effects
+            g.addEventListener("mouseenter", () => {
+                circle.setAttribute("opacity", "1");
+                circle.setAttribute("fill", this.isHighContrastMode && this.highContrastColors ? "none" : "#ffffff");
+                circle.setAttribute("stroke", iconHoverColor);
+                circle.setAttribute("stroke-width", "2");
+                icon.setAttribute("stroke", iconHoverColor);
+            });
+
+            g.addEventListener("mouseleave", () => {
+                circle.setAttribute("opacity", "0.9");
+                circle.setAttribute("fill", this.isHighContrastMode && this.highContrastColors ? "none" : "#f8fafc");
+                circle.setAttribute("stroke", this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.foreground : "#e2e8f0");
+                circle.setAttribute("stroke-width", "1.5");
+                icon.setAttribute("stroke", iconColor);
+            });
+
             g.addEventListener("click", btn.action);
-            g.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); btn.action(); } });
+            g.addEventListener("keydown", (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    btn.action();
+                }
+            });
+
             controlsGroup.appendChild(g);
         });
+
         this.fixedHeader.appendChild(controlsGroup);
     }
 

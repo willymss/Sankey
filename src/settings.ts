@@ -1,4 +1,5 @@
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
+import powerbi from "powerbi-visuals-api";
 
 /** ========================================
  *  STYLE PRESETS
@@ -47,28 +48,68 @@ class StylePresetsCard extends formattingSettings.SimpleCard {
 
 /** ---------- Size and Spacing Section ---------- */
 class NodeSizeAndSpacingCard extends formattingSettings.SimpleCard {
-    nodeWidth = new formattingSettings.NumUpDown({
+    nodeWidth = new formattingSettings.Slider({
         name: "nodeWidth",
         displayName: "Width",
-        value: 200
+        value: 200,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 50
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 500
+            }
+        }
     });
 
-    nodeHeight = new formattingSettings.NumUpDown({
+    nodeHeight = new formattingSettings.Slider({
         name: "nodeHeight",
         displayName: "Height",
-        value: 50
+        value: 50,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 20
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 200
+            }
+        }
     });
 
-    levelSpacing = new formattingSettings.NumUpDown({
+    levelSpacing = new formattingSettings.Slider({
         name: "levelSpacing",
         displayName: "Horizontal spacing (between levels)",
-        value: 280
+        value: 280,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 100
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 600
+            }
+        }
     });
 
-    nodeSpacing = new formattingSettings.NumUpDown({
+    nodeSpacing = new formattingSettings.Slider({
         name: "nodeSpacing",
         displayName: "Vertical spacing (between nodes)",
-        value: 60
+        value: 60,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 10
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 200
+            }
+        }
     });
 
     name = "nodeSizeAndSpacing";
@@ -93,18 +134,38 @@ class NodeShapeCard extends formattingSettings.SimpleCard {
         value: { displayName: "Pill/Stadium", value: "pill" }
     });
 
-    cornerRadius = new formattingSettings.NumUpDown({
+    cornerRadius = new formattingSettings.Slider({
         name: "cornerRadius",
         displayName: "Corner radius",
         description: "Applies to Rounded Rectangle shape",
         value: 5,
-        visible: true
+        visible: true,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 0
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 50
+            }
+        }
     });
 
-    nodeFillOpacity = new formattingSettings.NumUpDown({
+    nodeFillOpacity = new formattingSettings.Slider({
         name: "nodeFillOpacity",
         displayName: "Fill opacity (%)",
-        value: 85
+        value: 85,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 0
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 100
+            }
+        }
     });
 
     name = "nodeShape";
@@ -126,10 +187,20 @@ class NodeBorderCard extends formattingSettings.SimpleCard {
         value: { displayName: "Solid", value: "solid" }
     });
 
-    nodeBorderWidth = new formattingSettings.NumUpDown({
+    nodeBorderWidth = new formattingSettings.Slider({
         name: "nodeBorderWidth",
         displayName: "Border width",
-        value: 2
+        value: 2,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 0
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 10
+            }
+        }
     });
 
     useCustomBorderColor = new formattingSettings.ToggleSwitch({
@@ -152,10 +223,20 @@ class NodeBorderCard extends formattingSettings.SimpleCard {
 
 /** ---------- Text Section ---------- */
 class NodeTextCard extends formattingSettings.SimpleCard {
-    fontSize = new formattingSettings.NumUpDown({
+    fontSize = new formattingSettings.Slider({
         name: "fontSize",
         displayName: "Font size",
-        value: 10
+        value: 10,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 6
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 40
+            }
+        }
     });
 
     fontFamily = new formattingSettings.ItemDropdown({
@@ -199,10 +280,20 @@ class NodeTextCard extends formattingSettings.SimpleCard {
         value: true
     });
 
-    maxCharsPerLine = new formattingSettings.NumUpDown({
+    maxCharsPerLine = new formattingSettings.Slider({
         name: "maxCharsPerLine",
         displayName: "Max characters per line",
-        value: 28
+        value: 28,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 5
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 100
+            }
+        }
     });
 
     name = "nodeText";
@@ -219,11 +310,21 @@ class NodeConnectionCountsCard extends formattingSettings.SimpleCard {
         value: true
     });
 
-    badgeTextSize = new formattingSettings.NumUpDown({
+    badgeTextSize = new formattingSettings.Slider({
         name: "badgeTextSize",
         displayName: "Count text size",
         description: "Font size for count numbers (circle scales proportionally)",
-        value: 8
+        value: 8,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 4
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 24
+            }
+        }
     });
 
     badgeTextColor = new formattingSettings.ColorPicker({
@@ -289,28 +390,68 @@ class NodeConnectionCountsCard extends formattingSettings.SimpleCard {
         value: { displayName: "Outgoing", value: "out" }
     });
 
-    badgePaddingTop = new formattingSettings.NumUpDown({
+    badgePaddingTop = new formattingSettings.Slider({
         name: "badgePaddingTop",
         displayName: "Padding top",
-        value: 15
+        value: 15,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 0
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 50
+            }
+        }
     });
 
-    badgePaddingRight = new formattingSettings.NumUpDown({
+    badgePaddingRight = new formattingSettings.Slider({
         name: "badgePaddingRight",
         displayName: "Padding right",
-        value: 6
+        value: 6,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 0
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 50
+            }
+        }
     });
 
-    badgePaddingBottom = new formattingSettings.NumUpDown({
+    badgePaddingBottom = new formattingSettings.Slider({
         name: "badgePaddingBottom",
         displayName: "Padding bottom",
-        value: 0
+        value: 0,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 0
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 50
+            }
+        }
     });
 
-    badgePaddingLeft = new formattingSettings.NumUpDown({
+    badgePaddingLeft = new formattingSettings.Slider({
         name: "badgePaddingLeft",
         displayName: "Padding left",
-        value: 0
+        value: 0,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 0
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 50
+            }
+        }
     });
 
     name = "nodeConnectionCounts";
@@ -344,28 +485,68 @@ class NodeShadowCard extends formattingSettings.SimpleCard {
         value: { value: "#111111" }
     });
 
-    nodeShadowOpacity = new formattingSettings.NumUpDown({
+    nodeShadowOpacity = new formattingSettings.Slider({
         name: "nodeShadowOpacity",
         displayName: "Shadow opacity (%)",
-        value: 10
+        value: 10,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 0
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 100
+            }
+        }
     });
 
-    nodeShadowBlur = new formattingSettings.NumUpDown({
+    nodeShadowBlur = new formattingSettings.Slider({
         name: "nodeShadowBlur",
         displayName: "Blur radius",
-        value: 6
+        value: 6,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 0
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 30
+            }
+        }
     });
 
-    nodeShadowOffsetX = new formattingSettings.NumUpDown({
+    nodeShadowOffsetX = new formattingSettings.Slider({
         name: "nodeShadowOffsetX",
         displayName: "Offset X",
-        value: 0
+        value: 0,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: -20
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 20
+            }
+        }
     });
 
-    nodeShadowOffsetY = new formattingSettings.NumUpDown({
+    nodeShadowOffsetY = new formattingSettings.Slider({
         name: "nodeShadowOffsetY",
         displayName: "Offset Y",
-        value: 4
+        value: 4,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: -20
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 20
+            }
+        }
     });
 
     name = "nodeShadow";
@@ -417,10 +598,20 @@ class LinkStyleCard extends formattingSettings.SimpleCard {
         value: { displayName: "Solid", value: "solid" }
     });
 
-    linkWidth = new formattingSettings.NumUpDown({
+    linkWidth = new formattingSettings.Slider({
         name: "linkWidth",
         displayName: "Line width",
-        value: 1.5
+        value: 1.5,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 0.5
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 10
+            }
+        }
     });
 
     linkCurveStyle = new formattingSettings.ItemDropdown({
@@ -441,18 +632,38 @@ class LinkStyleCard extends formattingSettings.SimpleCard {
 
 /** ---------- Opacity Section ---------- */
 class LinkOpacityCard extends formattingSettings.SimpleCard {
-    lineOpacity = new formattingSettings.NumUpDown({
+    lineOpacity = new formattingSettings.Slider({
         name: "lineOpacity",
         displayName: "Default opacity",
         description: "Opacity for unselected links (0-100%)",
-        value: 30
+        value: 30,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 0
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 100
+            }
+        }
     });
 
-    highlightOpacity = new formattingSettings.NumUpDown({
+    highlightOpacity = new formattingSettings.Slider({
         name: "highlightOpacity",
         displayName: "Highlight opacity",
         description: "Opacity for selected/highlighted links (0-100%)",
-        value: 80
+        value: 80,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 0
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 100
+            }
+        }
     });
 
     name = "linkOpacity";
@@ -508,10 +719,20 @@ class LinkStartMarkerCard extends formattingSettings.SimpleCard {
         value: { displayName: "Circle", value: "circle" }
     });
 
-    startMarkerSize = new formattingSettings.NumUpDown({
+    startMarkerSize = new formattingSettings.Slider({
         name: "startMarkerSize",
         displayName: "Start marker size",
-        value: 6
+        value: 6,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 2
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 20
+            }
+        }
     });
 
     name = "linkStartMarker";
@@ -541,10 +762,20 @@ class LinkEndMarkerCard extends formattingSettings.SimpleCard {
         value: { displayName: "Arrow", value: "arrow" }
     });
 
-    endMarkerSize = new formattingSettings.NumUpDown({
+    endMarkerSize = new formattingSettings.Slider({
         name: "endMarkerSize",
         displayName: "End marker size",
-        value: 8
+        value: 8,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 2
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 20
+            }
+        }
     });
 
     name = "linkEndMarker";
@@ -625,6 +856,12 @@ class ColorSettingsCard extends formattingSettings.SimpleCard {
 
 /** ---------- DISPLAY ---------- */
 class DisplaySettingsCard extends formattingSettings.SimpleCard {
+    backgroundColor = new formattingSettings.ColorPicker({
+        name: "backgroundColor",
+        displayName: "Background color",
+        value: { value: "#FFFFFF" }
+    });
+
     showControls = new formattingSettings.ToggleSwitch({
         name: "showControls",
         displayName: "Show zoom controls",
@@ -649,10 +886,20 @@ class DisplaySettingsCard extends formattingSettings.SimpleCard {
         value: true
     });
 
-    counterFontSize = new formattingSettings.NumUpDown({
+    counterFontSize = new formattingSettings.Slider({
         name: "counterFontSize",
         displayName: "Counter font size",
-        value: 11
+        value: 11,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 6
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 30
+            }
+        }
     });
 
     counterFontFamily = new formattingSettings.ItemDropdown({
@@ -709,10 +956,20 @@ class DisplaySettingsCard extends formattingSettings.SimpleCard {
         value: false
     });
 
-    headerTitleSize = new formattingSettings.NumUpDown({
+    headerTitleSize = new formattingSettings.Slider({
         name: "headerTitleSize",
         displayName: "Level title size",
-        value: 14
+        value: 14,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 8
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 36
+            }
+        }
     });
 
     headerTitleFontFamily = new formattingSettings.ItemDropdown({
@@ -736,6 +993,7 @@ class DisplaySettingsCard extends formattingSettings.SimpleCard {
     name = "displaySettings";
     displayName = "Display";
     slices = [
+        this.backgroundColor,
         this.showControls,
         this.showEmptyPlaceholder,
         this.showCounters,

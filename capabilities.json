@@ -544,6 +544,17 @@
       "displayName": "Display",
       "displayNameKey": "Objects_Display",
       "properties": {
+        "backgroundColor": {
+          "displayName": "Background Color",
+          "displayNameKey": "DisplaySettings_BackgroundColor",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
         "showEmptyPlaceholder": {
           "displayName": "Show Empty Placeholder",
           "displayNameKey": "DisplaySettings_EmptyPlaceholder",

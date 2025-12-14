@@ -10,7 +10,15 @@
       "Bash(powershell -NoProfile -Command \"[System.Environment]::GetFolderPath(''MyDocuments'') + ''\\PowerShell\\Microsoft.PowerShell_profile.ps1''\")",
       "Bash(powershell:*)",
       "Bash(npm run lint)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(npm start)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill:*)",
+      "WebSearch",
+      "Bash(winget install:*)",
+      "Bash(pbiviz --install-cert)",
+      "Bash(where:*)"
     ]
   }
 }
