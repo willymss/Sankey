@@ -13,6 +13,12 @@
       "displayNameKey": "Role_HierarchyLevels"
     },
     {
+      "name": "values",
+      "kind": "Measure",
+      "displayName": "Measure (Flow Values)",
+      "displayNameKey": "Role_Measure"
+    },
+    {
       "name": "tooltips",
       "kind": "Measure",
       "displayName": "Tooltips (Last Level Only)",
@@ -26,6 +32,9 @@
           "group": {
             "max": 10
           },
+          "values": {
+            "max": 1
+          },
           "tooltips": {
             "max": 5
           }
@@ -37,6 +46,11 @@
             {
               "for": {
                 "in": "group"
+              }
+            },
+            {
+              "for": {
+                "in": "values"
               }
             },
             {
@@ -688,6 +702,61 @@
           "displayNameKey": "DisplaySettings_ShowControls",
           "type": {
             "bool": true
+          }
+        }
+      }
+    },
+    "measureSettings": {
+      "displayName": "Measure Configuration",
+      "displayNameKey": "Objects_MeasureSettings",
+      "properties": {
+        "measureAggregation": {
+          "displayName": "Aggregation Method",
+          "displayNameKey": "MeasureSettings_Aggregation",
+          "type": {
+            "text": true
+          }
+        },
+        "measureDisplayMode": {
+          "displayName": "Display Mode",
+          "displayNameKey": "MeasureSettings_DisplayMode",
+          "type": {
+            "text": true
+          }
+        },
+        "linkSizingMode": {
+          "displayName": "Link Width Mode",
+          "displayNameKey": "MeasureSettings_LinkSizingMode",
+          "type": {
+            "text": true
+          }
+        },
+        "linkMinWidth": {
+          "displayName": "Min Link Width",
+          "displayNameKey": "MeasureSettings_LinkMinWidth",
+          "type": {
+            "numeric": true
+          }
+        },
+        "linkMaxWidth": {
+          "displayName": "Max Link Width",
+          "displayNameKey": "MeasureSettings_LinkMaxWidth",
+          "type": {
+            "numeric": true
+          }
+        },
+        "measureFormat": {
+          "displayName": "Number Format",
+          "displayNameKey": "MeasureSettings_Format",
+          "type": {
+            "text": true
+          }
+        },
+        "measureDecimals": {
+          "displayName": "Decimal Places",
+          "displayNameKey": "MeasureSettings_Decimals",
+          "type": {
+            "numeric": true
           }
         }
       }

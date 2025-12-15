@@ -19,7 +19,13 @@
       "Bash(winget install:*)",
       "Bash(pbiviz --install-cert)",
       "Bash(where:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(git add:*)",
+      "Bash(del nul)",
+      "Bash(if [ -d \"datalineage-flow\" ])",
+      "Bash(then echo \"Directory exists\")",
+      "Bash(else echo \"Directory does not exist\")",
+      "Bash(fi)"
     ]
   }
 }

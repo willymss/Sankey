@@ -849,6 +849,116 @@ class LinkSettingsCard extends formattingSettings.CompositeCard {
     }
 }
 
+/** ---------- MEASURE SETTINGS ---------- */
+class MeasureSettingsCard extends formattingSettings.SimpleCard {
+    measureAggregation = new formattingSettings.ItemDropdown({
+        name: "measureAggregation",
+        displayName: "Aggregation method",
+        items: [
+            { displayName: "Sum", value: "sum" },
+            { displayName: "Average", value: "average" },
+            { displayName: "Count", value: "count" },
+            { displayName: "Minimum", value: "min" },
+            { displayName: "Maximum", value: "max" }
+        ],
+        value: { displayName: "Sum", value: "sum" }
+    });
+
+    measureDisplayMode = new formattingSettings.ItemDropdown({
+        name: "measureDisplayMode",
+        displayName: "Display mode",
+        items: [
+            { displayName: "Badge", value: "badge" },
+            { displayName: "Node text", value: "node" },
+            { displayName: "Both", value: "both" },
+            { displayName: "None", value: "none" }
+        ],
+        value: { displayName: "Badge", value: "badge" }
+    });
+
+    linkSizingMode = new formattingSettings.ItemDropdown({
+        name: "linkSizingMode",
+        displayName: "Link width mode",
+        items: [
+            { displayName: "Fixed", value: "fixed" },
+            { displayName: "Proportional", value: "proportional" }
+        ],
+        value: { displayName: "Fixed", value: "fixed" }
+    });
+
+    linkMinWidth = new formattingSettings.Slider({
+        name: "linkMinWidth",
+        displayName: "Min link width",
+        value: 1,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 0.5
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 10
+            }
+        }
+    });
+
+    linkMaxWidth = new formattingSettings.Slider({
+        name: "linkMaxWidth",
+        displayName: "Max link width",
+        value: 20,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 5
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 50
+            }
+        }
+    });
+
+    measureFormat = new formattingSettings.ItemDropdown({
+        name: "measureFormat",
+        displayName: "Number format",
+        items: [
+            { displayName: "Auto", value: "auto" },
+            { displayName: "None", value: "none" },
+            { displayName: "Thousands (K)", value: "thousands" },
+            { displayName: "Millions (M)", value: "millions" }
+        ],
+        value: { displayName: "Auto", value: "auto" }
+    });
+
+    measureDecimals = new formattingSettings.Slider({
+        name: "measureDecimals",
+        displayName: "Decimal places",
+        value: 0,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 0
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 4
+            }
+        }
+    });
+
+    name = "measureSettings";
+    displayName = "Measure Configuration";
+    slices = [
+        this.measureAggregation,
+        this.measureDisplayMode,
+        this.linkSizingMode,
+        this.linkMinWidth,
+        this.linkMaxWidth,
+        this.measureFormat,
+        this.measureDecimals
+    ];
+}
+
 /** ---------- COLORS ---------- */
 class ColorSettingsCard extends formattingSettings.SimpleCard {
     level0Color = new formattingSettings.ColorPicker({ name: "level0Color", displayName: "Level 0", value: { value: "#0078D4" } });
@@ -1044,6 +1154,7 @@ export class VisualFormattingSettingsModel extends formattingSettings.Model {
     colorSettings = new ColorSettingsCard();
     nodeSettings = new NodeSettingsCard();
     linkSettings = new LinkSettingsCard();
+    measureSettings = new MeasureSettingsCard();
 
-    cards = [this.stylePresets, this.displaySettings, this.colorSettings, this.nodeSettings, this.linkSettings];
+    cards = [this.stylePresets, this.displaySettings, this.colorSettings, this.nodeSettings, this.linkSettings, this.measureSettings];
 }
