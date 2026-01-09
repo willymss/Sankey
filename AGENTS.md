@@ -12,7 +12,7 @@
 - `npm run lint` — run ESLint with Power BI visuals ruleset.
 
 ## Visual Defaults & Presets
-- Initial style matches the Professional Blue preset (rounded rects, fixed blue palette, gradient links).
+- Initial style matches the Soft White preset (rounded rects, fixed blue palette, gradient links).
 - Available presets: `professionalBlue`, `vibrantSpectrum`, `neon`, `pastel`, `angularTech`, `gradientFlow`, `midnightPro`, `popArt`, `auroraFlow`, `offwhite`, `modernApp`, `gradientPill`, `outlinedGradient`, `softWhite`. High Contrast and Corporate presets were removed.
 - Colors card exposes direct level pickers only; no auto-color toggle.
 

@@ -710,13 +710,6 @@
       "displayName": "Measure Configuration",
       "displayNameKey": "Objects_MeasureSettings",
       "properties": {
-        "measureAggregation": {
-          "displayName": "Aggregation Method",
-          "displayNameKey": "MeasureSettings_Aggregation",
-          "type": {
-            "text": true
-          }
-        },
         "measureDisplayMode": {
           "displayName": "Display Mode",
           "displayNameKey": "MeasureSettings_DisplayMode",

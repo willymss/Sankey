@@ -15,6 +15,8 @@ This is a **Power BI Custom Visual** project for **StreamLinks**. The visual dis
 - Custom tooltips for the last hierarchy level
 - Advanced styling with preset layouts
 
+For contributor guidelines and development workflow, see `AGENTS.md`.
+
 ## Development Commands
 
 ### Starting Development Server
@@ -155,6 +157,31 @@ The visual uses Power BI's FormattingSettingsService for the settings pane:
 - `updateSettingsFromModel()` extracts values from FormattingSettingsModel into flat `SankeySettings` object
 - Preset defaults are loaded first, then persisted metadata properties override them
 
+**Settings Categorization (Preset Reset Behavior):**
+
+Settings are organized into three categories that determine reset behavior when switching presets:
+
+- **Category A (29 settings)**: Functional settings always preserved across preset changes
+  - Sizing: node width/height, level spacing, node spacing
+  - Badges: position, padding, font settings, count mode
+  - Measures: show measure values, measure settings
+  - Toggles: show controls, show headers, show level headers
+  - Labels: show node labels, label settings
+
+- **Category B (47 settings)**: Visual styling that resets when changing presets
+  - Colors: level colors, link colors, text colors, border colors
+  - Shapes: node shape, corner radius
+  - Fonts: font families, sizes (for nodes and headers)
+  - Borders: border styles, widths, types
+
+- **Category C (11 settings)**: Visual effects preserved only if explicitly customized
+  - Background: background color, background opacity
+  - Shadows: shadow enabled, shadow color, shadow opacity, blur, offsets
+  - Fill types: solid vs gradient fills
+  - Border types: solid vs gradient borders
+
+This categorization ensures that functional settings and explicit customizations are preserved while allowing presets to control the visual style.
+
 ### Selection and Interactivity
 
 **Selection Management:**
@@ -292,6 +319,7 @@ Every time data or settings change, Power BI calls `update(options)`:
 
 The visual accepts:
 - **group**: Hierarchy Levels (max 10) - Categorical columns defining the flow hierarchy
+- **values**: Measure (Flow Values) (max 1) - Optional measure for flow calculations
 - **tooltips**: Tooltips (max 5) - Measures shown in tooltips for last level only
 
 Data reduction limit: 30,000 rows
@@ -322,7 +350,7 @@ The visual has 14 built-in style presets that configure all visual settings at o
 - Presets are defined in `visual.ts` via `applyStylePreset()` method (visual.ts:790)
 - Base defaults come from `getDefaultSettings()` (visual.ts:353)
 - Available presets: `professionalBlue`, `vibrantSpectrum`, `neon`, `pastel`, `angularTech`, `gradientFlow`, `midnightPro`, `popArt`, `auroraFlow`, `offwhite`, `modernApp`, `gradientPill`, `outlinedGradient`, `softWhite`
-- Default preset is `softWhite`
+- Default preset is `softWhite` (as of v1.1.0; previously `professionalBlue`)
 
 **Preset Loading Flow:**
 1. `update()` loads base preset defaults via `updateSettingsFromModel()`

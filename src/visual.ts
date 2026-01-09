@@ -103,7 +103,6 @@ interface SankeySettings {
     nodeShadowOffsetY: number;
 
     // Measure settings
-    measureAggregation: string;
     measureDisplayMode: string;
     linkSizingMode: string;
     linkMinWidth: number;
@@ -177,6 +176,11 @@ export class Visual implements IVisual {
     private measureColumnMetadata: powerbi.DataViewMetadataColumn | null = null;
     private nodeToRowIndices: Map<string, number[]> = new Map();
     private currentDataView: powerbi.DataView | null = null;
+
+    // Data size thresholds
+    private static readonly MAX_NODES = 400;
+    private static readonly MAX_LINKS = 800;
+
     private readonly presetIds: string[] = [
         "professionalBlue",
         "vibrantSpectrum",
@@ -205,6 +209,12 @@ export class Visual implements IVisual {
     private lastBgClickAt: number = 0;
     private selectedNodes: Set<string> = new Set();
     private connectedNodes: Set<string> = new Set();
+    private filterSelectionActive: boolean = false;
+    private suppressSelectionCallback: boolean = false;
+    private filteredLinkCounts: Map<string, number> = new Map();
+    private filteredLinkFlows: Map<string, number> = new Map();
+    private filteredNodeMeasures: Map<string, number> = new Map();
+    private originalNodeDisplayValues: Map<string, number | undefined> = new Map();
     private focusedNodeId: string | null = null;
     private nodeElements: Map<string, SVGGElement> = new Map();
     private isHighContrastMode: boolean = false;
@@ -214,6 +224,13 @@ export class Visual implements IVisual {
     private allowInteractions: boolean = true;
     private markerIdCounter: number = 0;
     private previousPreset: string = "softWhite";
+    private previousHasMeasure: boolean = false;
+    private invalidMeasureField: string | null = null;
+    // Track Category C properties (visual effects) to detect user customization
+    private previousFillType: string = "solid";
+    private previousBorderType: string = "solid";
+    private previousBackgroundColor: string | null = null;
+    private previousShadowEnabled: boolean = false;
     private copyHandler: ((e: ClipboardEvent) => void) | null = null;
     private currentDrillLevel: number = 0;
     private maxDrillLevel: number = 0;
@@ -332,6 +349,7 @@ export class Visual implements IVisual {
 
     private handleExternalSelection(ids: ISelectionId[]): void {
         if (!this.allowInteractions) return;
+        if (this.suppressSelectionCallback) return;
         if (ids.length === 0) {
             this.resetHighlight();
             return;
@@ -347,21 +365,12 @@ export class Visual implements IVisual {
             return;
         }
 
+        const selectedByLevel = this.getSelectedValuesByLevel();
         const matches: ISelectionId[] = [];
         const rows = this.currentData.rows;
 
         for (let r = 0; r < rows.length; r++) {
-            let rowMatches = false;
-            for (const selectedId of this.selectedNodes) {
-                const selectedNode = this.nodes.get(selectedId);
-                if (selectedNode) {
-                    const v = this.normalizeValue(rows[r][selectedNode.levelIndex]);
-                    if (v === selectedNode.value) {
-                        rowMatches = true;
-                        break;
-                    }
-                }
-            }
+            const rowMatches = this.rowMatchesSelection(rows[r], selectedByLevel);
             if (rowMatches) {
                 const sel = this.rowSelectionByIndex.get(r);
                 if (sel) matches.push(sel);
@@ -369,10 +378,43 @@ export class Visual implements IVisual {
         }
 
         if (matches.length) {
-            this.selectionManager.select(matches, false);
+            this.suppressSelectionCallback = true;
+            try {
+                this.selectionManager.select(matches, false);
+            } finally {
+                this.suppressSelectionCallback = false;
+            }
         } else {
-            this.selectionManager.clear();
+            this.suppressSelectionCallback = true;
+            try {
+                this.selectionManager.clear();
+            } finally {
+                this.suppressSelectionCallback = false;
+            }
         }
+    }
+
+    private getSelectedValuesByLevel(): Map<number, Set<string>> {
+        const selectedByLevel = new Map<number, Set<string>>();
+        this.selectedNodes.forEach(id => {
+            const selectedNode = this.nodes.get(id);
+            if (!selectedNode) return;
+            if (!selectedByLevel.has(selectedNode.levelIndex)) {
+                selectedByLevel.set(selectedNode.levelIndex, new Set());
+            }
+            selectedByLevel.get(selectedNode.levelIndex)!.add(selectedNode.value);
+        });
+        return selectedByLevel;
+    }
+
+    private rowMatchesSelection(row: any[], selectedByLevel: Map<number, Set<string>>): boolean {
+        for (const [levelIndex, values] of selectedByLevel.entries()) {
+            const v = this.normalizeValue(row[levelIndex]);
+            if (!values.has(v)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private getDefaultSettings(): SankeySettings {
@@ -455,7 +497,6 @@ export class Visual implements IVisual {
             nodeShadowOffsetX: 0,
             nodeShadowOffsetY: 4,
 
-            measureAggregation: "sum",
             measureDisplayMode: "badge",
             linkSizingMode: "fixed",
             linkMinWidth: 1,
@@ -744,7 +785,7 @@ export class Visual implements IVisual {
 
             // Detect drill state and field changes
             const metadata = dataView?.metadata;
-            const categoryMetadata = metadata?.columns?.filter(c => c.roles?.['group']);
+            const categoryMetadata = metadata?.columns?.filter(c => this.isGroupColumn(c));
             const currentFieldCount = categoryMetadata?.length || 0;
             const isInFocus = (options as any).isInFocus || false;
 
@@ -767,9 +808,18 @@ export class Visual implements IVisual {
             // Extract measure data
             this.measureData = this.extractMeasureData(dataView);
             this.hasMeasure = this.measureData !== null;
-            if (this.measureData) {
-                this.measureData.aggregationMethod = this.settings.measureAggregation;
+            if (this.invalidMeasureField) {
+                this.previousHasMeasure = false;
+                this.renderError(`Measure (Flow Values) must be a measure. "${this.invalidMeasureField}" is a column.`);
+                this.events.renderingFinished(options);
+                return;
             }
+            if (this.hasMeasure && !this.previousHasMeasure) {
+                this.settings.linkSizingMode = "proportional";
+                this.syncFormattingModelWithSettings();
+                this.persistMeasureSettings({ linkSizingMode: "proportional" });
+            }
+            this.previousHasMeasure = this.hasMeasure;
             this.validateMeasureData();
 
             // Apply background color
@@ -789,6 +839,17 @@ export class Visual implements IVisual {
             if (tableData && tableData.rows.length > 0) {
                 this.currentData = tableData;
                 this.processData(tableData, dataView);
+
+                // Data size gate: check if graph exceeds safe limits
+                const nodeCount = this.nodes.size;
+                const linkCount = this.links.length;
+
+                if (nodeCount > Visual.MAX_NODES || linkCount > Visual.MAX_LINKS) {
+                    this.renderTooLargeState(nodeCount, linkCount);
+                    this.events.renderingFinished(options);
+                    return;
+                }
+
                 // Store viewport dimensions for potential re-renders
                 this.lastViewportWidth = options.viewport.width;
                 this.lastViewportHeight = options.viewport.height;
@@ -868,7 +929,6 @@ export class Visual implements IVisual {
                 this.settings.headerTitleColor = "#000000";
                 this.settings.showControls = true;
                 this.settings.showValues = true;
-                this.settings.measureAggregation = "sum";
                 this.settings.measureDisplayMode = "badge";
                 this.settings.linkSizingMode = "fixed";
                 this.settings.linkMinWidth = 1;
@@ -906,7 +966,6 @@ export class Visual implements IVisual {
                 this.settings.headerTitleColor = "#000000";
                 this.settings.showControls = true;
                 this.settings.showValues = true;
-                this.settings.measureAggregation = "sum";
                 this.settings.measureDisplayMode = "badge";
                 this.settings.linkSizingMode = "fixed";
                 this.settings.linkMinWidth = 1;
@@ -947,7 +1006,6 @@ export class Visual implements IVisual {
                 this.settings.headerCounterColor = "#ffffff";
                 this.settings.showControls = true;
                 this.settings.showValues = true;
-                this.settings.measureAggregation = "sum";
                 this.settings.measureDisplayMode = "badge";
                 this.settings.linkSizingMode = "fixed";
                 this.settings.linkMinWidth = 1;
@@ -985,7 +1043,6 @@ export class Visual implements IVisual {
                 this.settings.useCustomMarkerColors = false;
                 this.settings.showControls = true;
                 this.settings.showValues = true;
-                this.settings.measureAggregation = "sum";
                 this.settings.measureDisplayMode = "badge";
                 this.settings.linkSizingMode = "fixed";
                 this.settings.linkMinWidth = 1;
@@ -1024,7 +1081,6 @@ export class Visual implements IVisual {
                 this.settings.useCustomMarkerColors = false;
                 this.settings.showControls = true;
                 this.settings.showValues = true;
-                this.settings.measureAggregation = "sum";
                 this.settings.measureDisplayMode = "badge";
                 this.settings.linkSizingMode = "fixed";
                 this.settings.linkMinWidth = 1;
@@ -1061,7 +1117,6 @@ export class Visual implements IVisual {
                 this.settings.showValues = true;
                 this.settings.headerTitleColor = "#ffffff";
                 this.settings.headerCounterColor = "#ffffff";
-                this.settings.measureAggregation = "sum";
                 this.settings.measureDisplayMode = "badge";
                 this.settings.linkSizingMode = "fixed";
                 this.settings.linkMinWidth = 1;
@@ -1100,7 +1155,6 @@ export class Visual implements IVisual {
                 this.settings.showValues = true;
                 this.settings.headerTitleColor = "#ffffff";
                 this.settings.headerCounterColor = "#ffffff";
-                this.settings.measureAggregation = "sum";
                 this.settings.measureDisplayMode = "badge";
                 this.settings.linkSizingMode = "fixed";
                 this.settings.linkMinWidth = 1;
@@ -1137,7 +1191,6 @@ export class Visual implements IVisual {
                 this.settings.useCustomMarkerColors = false;
                 this.settings.showControls = true;
                 this.settings.showValues = true;
-                this.settings.measureAggregation = "sum";
                 this.settings.measureDisplayMode = "badge";
                 this.settings.linkSizingMode = "fixed";
                 this.settings.linkMinWidth = 1;
@@ -1207,7 +1260,6 @@ export class Visual implements IVisual {
                 this.settings.useCustomMarkerColors = false;
                 this.settings.showControls = true;
                 this.settings.showValues = true;
-                this.settings.measureAggregation = "sum";
                 this.settings.measureDisplayMode = "badge";
                 this.settings.linkSizingMode = "fixed";
                 this.settings.linkMinWidth = 1;
@@ -1249,7 +1301,6 @@ export class Visual implements IVisual {
                 this.settings.showControls = preserveShowControls;
                 this.settings.showCounters = preserveShowCounters;
                 this.settings.showValues = true;
-                this.settings.measureAggregation = "sum";
                 this.settings.measureDisplayMode = "badge";
                 this.settings.linkSizingMode = "fixed";
                 this.settings.linkMinWidth = 1;
@@ -1284,7 +1335,6 @@ export class Visual implements IVisual {
                 this.settings.badgeTextSize = 10;
                 this.settings.showControls = preserveShowControls;
                 this.settings.showCounters = preserveShowCounters;
-                this.settings.measureAggregation = "sum";
                 this.settings.measureDisplayMode = "badge";
                 this.settings.linkSizingMode = "fixed";
                 this.settings.linkMinWidth = 1;
@@ -1317,7 +1367,6 @@ export class Visual implements IVisual {
                 this.settings.nodeSpacing = 60;
                 this.settings.showControls = preserveShowControls;
                 this.settings.showCounters = preserveShowCounters;
-                this.settings.measureAggregation = "sum";
                 this.settings.measureDisplayMode = "badge";
                 this.settings.linkSizingMode = "fixed";
                 this.settings.linkMinWidth = 1;
@@ -1353,7 +1402,6 @@ export class Visual implements IVisual {
                 this.settings.nodeSpacing = 60;
                 this.settings.showControls = preserveShowControls;
                 this.settings.showCounters = preserveShowCounters;
-                this.settings.measureAggregation = "sum";
                 this.settings.measureDisplayMode = "badge";
                 this.settings.linkSizingMode = "fixed";
                 this.settings.linkMinWidth = 1;
@@ -1396,7 +1444,6 @@ export class Visual implements IVisual {
                 this.settings.nodeShadowBlur = 3;
                 this.settings.nodeShadowOffsetX = 0;
                 this.settings.nodeShadowOffsetY = 0;
-                this.settings.measureAggregation = "sum";
                 this.settings.measureDisplayMode = "badge";
                 this.settings.linkSizingMode = "fixed";
                 this.settings.linkMinWidth = 1;
@@ -1460,7 +1507,6 @@ export class Visual implements IVisual {
         const preservedShowEmptyPlaceholder = this.settings?.showEmptyPlaceholder;
 
         // Measure Settings (7)
-        const preservedMeasureAggregation = this.settings?.measureAggregation;
         const preservedMeasureDisplayMode = this.settings?.measureDisplayMode;
         const preservedLinkSizingMode = this.settings?.linkSizingMode;
         const preservedLinkMinWidth = this.settings?.linkMinWidth;
@@ -1481,20 +1527,27 @@ export class Visual implements IVisual {
         const nodeObjects = objects?.["nodeSettings"];
         const shadowObjects = objects?.["nodeShadow"] || nodeObjects;
 
+        // Compare current values against preset defaults to detect customization
+        const presetDefaults = this.getPresetDefaults(resolvedPreset);
+
         // Background (1) - preserve if explicitly customized
-        const preservedBackgroundColor = displayObjects?.["backgroundColor"] !== undefined
-            ? this.settings?.backgroundColor
-            : undefined;
+        // Check if background color was customized by comparing with preset defaults
+        const backgroundCustomized = this.previousBackgroundColor !== null &&
+            this.previousBackgroundColor !== presetDefaults.backgroundColor;
+        const preservedBackgroundColor = backgroundCustomized ? this.settings?.backgroundColor : undefined;
 
-        // Shadows (6) - preserve if ANY shadow property was customized
-        const shadowCustomized =
-            shadowObjects?.["nodeShadowEnabled"] !== undefined ||
-            shadowObjects?.["nodeShadowColor"] !== undefined ||
-            shadowObjects?.["nodeShadowOpacity"] !== undefined ||
-            shadowObjects?.["nodeShadowBlur"] !== undefined ||
-            shadowObjects?.["nodeShadowOffsetX"] !== undefined ||
-            shadowObjects?.["nodeShadowOffsetY"] !== undefined;
+        // Shadows (6) - preserve if shadow enabled state was customized
+        // Check if user explicitly enabled/disabled shadows vs preset default (computed below)
+        const shadowWasCustomized = displayObjects?.["nodeShadowEnabled"] !== undefined ||
+                                    shadowObjects?.["nodeShadowEnabled"] !== undefined ||
+                                    shadowObjects?.["nodeShadowColor"] !== undefined ||
+                                    shadowObjects?.["nodeShadowOpacity"] !== undefined ||
+                                    shadowObjects?.["nodeShadowBlur"] !== undefined ||
+                                    shadowObjects?.["nodeShadowOffsetX"] !== undefined ||
+                                    shadowObjects?.["nodeShadowOffsetY"] !== undefined;
 
+        const shadowEnabledCustomized = this.previousShadowEnabled !== presetDefaults.nodeShadowEnabled;
+        const shadowCustomized = shadowWasCustomized || shadowEnabledCustomized;
         const preservedShadowEnabled = shadowCustomized ? this.settings?.nodeShadowEnabled : undefined;
         const preservedShadowColor = shadowCustomized ? this.settings?.nodeShadowColor : undefined;
         const preservedShadowOpacity = shadowCustomized ? this.settings?.nodeShadowOpacity : undefined;
@@ -1502,22 +1555,23 @@ export class Visual implements IVisual {
         const preservedShadowOffsetX = shadowCustomized ? this.settings?.nodeShadowOffsetX : undefined;
         const preservedShadowOffsetY = shadowCustomized ? this.settings?.nodeShadowOffsetY : undefined;
 
-        // Modern Features (4) - preserve if customized
-        const preservedFillType = nodeObjects?.["fillType"] !== undefined
-            ? this.settings?.fillType
-            : undefined;
+        // Modern Features (4) - preserve if explicitly customized by user
+        const fillTypeCustomized = this.previousFillType !== presetDefaults.fillType;
+        const preservedFillType = fillTypeCustomized ? this.settings?.fillType : undefined;
+
         const preservedFillColorOverride = nodeObjects?.["fillColorOverride"] !== undefined
             ? this.settings?.fillColorOverride
             : undefined;
-        const preservedBorderType = nodeObjects?.["borderType"] !== undefined
-            ? this.settings?.borderType
-            : undefined;
+
+        const borderTypeCustomized = this.previousBorderType !== presetDefaults.borderType;
+        const preservedBorderType = borderTypeCustomized ? this.settings?.borderType : undefined;
+
         const preservedShowIcons = nodeObjects?.["showIcons"] !== undefined
             ? this.settings?.showIcons
             : undefined;
 
         // === APPLY PRESET DEFAULTS (RESETS CATEGORY B) ===
-        this.settings = this.getPresetDefaults(resolvedPreset);
+        this.settings = { ...presetDefaults, colors: [...presetDefaults.colors] };
 
         // === RESTORE CATEGORY A: FUNCTIONAL SETTINGS (29) ===
 
@@ -1587,9 +1641,6 @@ export class Visual implements IVisual {
         }
 
         // Measure Settings (7)
-        if (preservedMeasureAggregation !== undefined) {
-            this.settings.measureAggregation = preservedMeasureAggregation;
-        }
         if (preservedMeasureDisplayMode !== undefined) {
             this.settings.measureDisplayMode = preservedMeasureDisplayMode;
         }
@@ -1709,6 +1760,13 @@ export class Visual implements IVisual {
                 // Keep formatting model in sync with the new preset so pane shows correct defaults
                 this.syncFormattingModelWithSettings();
 
+                // Reset Category C tracking to new preset defaults
+                const newDefaults = this.getPresetDefaults(currentPreset);
+                this.previousFillType = newDefaults.fillType;
+                this.previousBorderType = newDefaults.borderType;
+                this.previousBackgroundColor = newDefaults.backgroundColor;
+                this.previousShadowEnabled = newDefaults.nodeShadowEnabled;
+
                 // Set flag to prevent reading individual settings on next update
                 this.justSwitchedPreset = true;
 
@@ -1723,7 +1781,9 @@ export class Visual implements IVisual {
             }
         }
 
-        const defaults = this.getPresetDefaults();
+        // Get defaults for the currently selected preset (not the default preset)
+        const currentPreset = this.getCurrentStylePresetId();
+        const defaults = this.getPresetDefaults(currentPreset);
         // Start from preset defaults each cycle to ensure resets work even when objects are cleared
         this.settings = { ...defaults, colors: [...defaults.colors] };
 
@@ -1738,56 +1798,56 @@ export class Visual implements IVisual {
         const cs = this.formattingSettings?.colorSettings;
         const ds = this.formattingSettings?.displaySettings;
 
-        // Node settings
+        // Node settings - when any node setting is modified, read ALL node properties
+        // This prevents other node settings from resetting to preset defaults
         if (ns && nodeObjects) {
             const shadowObjects = (objects?.["nodeShadow"] as any) || nodeObjects;
             const size = ns.sizeAndSpacing;
-            if (nodeObjects["nodeWidth"] !== undefined) this.settings.nodeWidth = size?.nodeWidth?.value ?? defaults.nodeWidth;
-            if (nodeObjects["nodeHeight"] !== undefined) this.settings.nodeHeight = size?.nodeHeight?.value ?? defaults.nodeHeight;
-            if (nodeObjects["levelSpacing"] !== undefined) this.settings.levelSpacing = size?.levelSpacing?.value ?? defaults.levelSpacing;
-            if (nodeObjects["nodeSpacing"] !== undefined) this.settings.nodeSpacing = size?.nodeSpacing?.value ?? defaults.nodeSpacing;
+            this.settings.nodeWidth = size?.nodeWidth?.value ?? defaults.nodeWidth;
+            this.settings.nodeHeight = size?.nodeHeight?.value ?? defaults.nodeHeight;
+            this.settings.levelSpacing = size?.levelSpacing?.value ?? defaults.levelSpacing;
+            this.settings.nodeSpacing = size?.nodeSpacing?.value ?? defaults.nodeSpacing;
 
             const shape = ns.shape as any;
-            if (nodeObjects["nodeShape"] !== undefined) this.settings.nodeShape = shape?.nodeShape?.value?.value ?? shape?.nodeShape?.value ?? defaults.nodeShape;
-            if (nodeObjects["cornerRadius"] !== undefined) this.settings.cornerRadius = shape?.cornerRadius?.value ?? defaults.cornerRadius;
-            if (nodeObjects["nodeFillOpacity"] !== undefined) this.settings.nodeFillOpacity = shape?.nodeFillOpacity?.value ?? defaults.nodeFillOpacity;
+            this.settings.nodeShape = shape?.nodeShape?.value?.value ?? shape?.nodeShape?.value ?? defaults.nodeShape;
+            this.settings.cornerRadius = shape?.cornerRadius?.value ?? defaults.cornerRadius;
+            this.settings.nodeFillOpacity = shape?.nodeFillOpacity?.value ?? defaults.nodeFillOpacity;
 
             const border = ns.border as any;
-            if (nodeObjects["nodeBorderStyle"] !== undefined) this.settings.nodeBorderStyle = border?.nodeBorderStyle?.value?.value ?? border?.nodeBorderStyle?.value ?? defaults.nodeBorderStyle;
-            if (nodeObjects["nodeBorderWidth"] !== undefined) this.settings.nodeBorderWidth = border?.nodeBorderWidth?.value ?? defaults.nodeBorderWidth;
-            if (nodeObjects["useCustomBorderColor"] !== undefined) this.settings.useCustomBorderColor = border?.useCustomBorderColor?.value ?? defaults.useCustomBorderColor;
-            if (nodeObjects["nodeBorderColor"] !== undefined) this.settings.nodeBorderColor = border?.nodeBorderColor?.value?.value ?? defaults.nodeBorderColor;
-
+            this.settings.nodeBorderStyle = border?.nodeBorderStyle?.value?.value ?? border?.nodeBorderStyle?.value ?? defaults.nodeBorderStyle;
+            this.settings.nodeBorderWidth = border?.nodeBorderWidth?.value ?? defaults.nodeBorderWidth;
+            this.settings.useCustomBorderColor = border?.useCustomBorderColor?.value ?? defaults.useCustomBorderColor;
+            this.settings.nodeBorderColor = border?.nodeBorderColor?.value?.value ?? defaults.nodeBorderColor;
 
             const shadow = (ns as any).shadow as any;
             if (shadow) {
-                if (shadowObjects["nodeShadowEnabled"] !== undefined) this.settings.nodeShadowEnabled = shadow?.nodeShadowEnabled?.value ?? defaults.nodeShadowEnabled;
-                if (shadowObjects["nodeShadowColor"] !== undefined) this.settings.nodeShadowColor = shadow?.nodeShadowColor?.value?.value ?? defaults.nodeShadowColor;
-                if (shadowObjects["nodeShadowOpacity"] !== undefined) this.settings.nodeShadowOpacity = shadow?.nodeShadowOpacity?.value ?? defaults.nodeShadowOpacity;
-                if (shadowObjects["nodeShadowBlur"] !== undefined) this.settings.nodeShadowBlur = shadow?.nodeShadowBlur?.value ?? defaults.nodeShadowBlur;
-                if (shadowObjects["nodeShadowOffsetX"] !== undefined) this.settings.nodeShadowOffsetX = shadow?.nodeShadowOffsetX?.value ?? defaults.nodeShadowOffsetX;
-                if (shadowObjects["nodeShadowOffsetY"] !== undefined) this.settings.nodeShadowOffsetY = shadow?.nodeShadowOffsetY?.value ?? defaults.nodeShadowOffsetY;
+                this.settings.nodeShadowEnabled = shadow?.nodeShadowEnabled?.value ?? defaults.nodeShadowEnabled;
+                this.settings.nodeShadowColor = shadow?.nodeShadowColor?.value?.value ?? defaults.nodeShadowColor;
+                this.settings.nodeShadowOpacity = shadow?.nodeShadowOpacity?.value ?? defaults.nodeShadowOpacity;
+                this.settings.nodeShadowBlur = shadow?.nodeShadowBlur?.value ?? defaults.nodeShadowBlur;
+                this.settings.nodeShadowOffsetX = shadow?.nodeShadowOffsetX?.value ?? defaults.nodeShadowOffsetX;
+                this.settings.nodeShadowOffsetY = shadow?.nodeShadowOffsetY?.value ?? defaults.nodeShadowOffsetY;
             }
 
             const text = ns.text as any;
-            if (nodeObjects["fontSize"] !== undefined) this.settings.fontSize = text?.fontSize?.value ?? defaults.fontSize;
-            if (nodeObjects["fontFamily"] !== undefined) this.settings.fontFamily = text?.fontFamily?.value?.value ?? text?.fontFamily?.value ?? defaults.fontFamily;
-            if (nodeObjects["textAlignment"] !== undefined) this.settings.textAlignment = text?.textAlignment?.value?.value ?? text?.textAlignment?.value ?? defaults.textAlignment;
-            if (nodeObjects["textColor"] !== undefined) this.settings.textColor = text?.textColor?.value?.value ?? defaults.textColor;
-            if (nodeObjects["wrapText"] !== undefined) this.settings.wrapText = text?.wrapText?.value ?? defaults.wrapText;
-            if (nodeObjects["maxCharsPerLine"] !== undefined) this.settings.maxCharsPerLine = text?.maxCharsPerLine?.value ?? defaults.maxCharsPerLine;
+            this.settings.fontSize = text?.fontSize?.value ?? defaults.fontSize;
+            this.settings.fontFamily = text?.fontFamily?.value?.value ?? text?.fontFamily?.value ?? defaults.fontFamily;
+            this.settings.textAlignment = text?.textAlignment?.value?.value ?? text?.textAlignment?.value ?? defaults.textAlignment;
+            this.settings.textColor = text?.textColor?.value?.value ?? defaults.textColor;
+            this.settings.wrapText = text?.wrapText?.value ?? defaults.wrapText;
+            this.settings.maxCharsPerLine = text?.maxCharsPerLine?.value ?? defaults.maxCharsPerLine;
 
             const counts = ns.connectionCounts as any;
-            if (nodeObjects["showValues"] !== undefined) this.settings.showValues = counts?.showValues?.value ?? defaults.showValues;
-            if (nodeObjects["badgeTextSize"] !== undefined) this.settings.badgeTextSize = counts?.badgeTextSize?.value ?? defaults.badgeTextSize;
-            if (nodeObjects["badgeTextColor"] !== undefined) this.settings.badgeTextColor = counts?.badgeTextColor?.value?.value ?? defaults.badgeTextColor;
-            if (nodeObjects["badgeFontFamily"] !== undefined) this.settings.badgeFontFamily = counts?.badgeFontFamily?.value?.value ?? counts?.badgeFontFamily?.value ?? defaults.badgeFontFamily;
-            if (nodeObjects["badgePosition"] !== undefined) this.settings.badgePosition = counts?.badgePosition?.value?.value ?? counts?.badgePosition?.value ?? defaults.badgePosition;
-            if (nodeObjects["countMode"] !== undefined) this.settings.countMode = counts?.countMode?.value?.value ?? counts?.countMode?.value ?? defaults.countMode;
-            if (nodeObjects["badgePaddingTop"] !== undefined) this.settings.badgePaddingTop = counts?.badgePaddingTop?.value ?? defaults.badgePaddingTop;
-            if (nodeObjects["badgePaddingRight"] !== undefined) this.settings.badgePaddingRight = counts?.badgePaddingRight?.value ?? defaults.badgePaddingRight;
-            if (nodeObjects["badgePaddingBottom"] !== undefined) this.settings.badgePaddingBottom = counts?.badgePaddingBottom?.value ?? defaults.badgePaddingBottom;
-            if (nodeObjects["badgePaddingLeft"] !== undefined) this.settings.badgePaddingLeft = counts?.badgePaddingLeft?.value ?? defaults.badgePaddingLeft;
+            this.settings.showValues = counts?.showValues?.value ?? defaults.showValues;
+            this.settings.badgeTextSize = counts?.badgeTextSize?.value ?? defaults.badgeTextSize;
+            this.settings.badgeTextColor = counts?.badgeTextColor?.value?.value ?? defaults.badgeTextColor;
+            this.settings.badgeFontFamily = counts?.badgeFontFamily?.value?.value ?? counts?.badgeFontFamily?.value ?? defaults.badgeFontFamily;
+            this.settings.badgePosition = counts?.badgePosition?.value?.value ?? counts?.badgePosition?.value ?? defaults.badgePosition;
+            this.settings.countMode = counts?.countMode?.value?.value ?? counts?.countMode?.value ?? defaults.countMode;
+            this.settings.badgePaddingTop = counts?.badgePaddingTop?.value ?? defaults.badgePaddingTop;
+            this.settings.badgePaddingRight = counts?.badgePaddingRight?.value ?? defaults.badgePaddingRight;
+            this.settings.badgePaddingBottom = counts?.badgePaddingBottom?.value ?? defaults.badgePaddingBottom;
+            this.settings.badgePaddingLeft = counts?.badgePaddingLeft?.value ?? defaults.badgePaddingLeft;
         }
 
         // Apply formatting model values even if metadata object is missing (for new properties)
@@ -1795,79 +1855,98 @@ export class Visual implements IVisual {
             this.settings.textAlignment = (ns.text.textAlignment as any).value?.value ?? (ns.text.textAlignment as any).value ?? this.settings.textAlignment;
         }
 
-        // Link settings
+        // Link settings - when any link setting is modified, read ALL link properties
+        // This prevents other link settings from resetting to preset defaults
         if (ls && linkObjects) {
             const opacity = ls.opacity;
-            if (linkObjects["lineOpacity"] !== undefined) this.settings.lineOpacity = opacity?.lineOpacity?.value ?? defaults.lineOpacity;
-            if (linkObjects["highlightOpacity"] !== undefined) this.settings.highlightOpacity = opacity?.highlightOpacity?.value ?? defaults.highlightOpacity;
+            this.settings.lineOpacity = opacity?.lineOpacity?.value ?? defaults.lineOpacity;
+            this.settings.highlightOpacity = opacity?.highlightOpacity?.value ?? defaults.highlightOpacity;
 
             const style = ls.style as any;
-            if (linkObjects["linkWidth"] !== undefined) this.settings.linkWidth = style?.linkWidth?.value ?? defaults.linkWidth;
-            if (linkObjects["linkStyle"] !== undefined) this.settings.linkStyle = style?.linkStyle?.value?.value ?? style?.linkStyle?.value ?? defaults.linkStyle;
-            if (linkObjects["linkCurveStyle"] !== undefined) this.settings.linkCurveStyle = style?.linkCurveStyle?.value?.value ?? style?.linkCurveStyle?.value ?? defaults.linkCurveStyle;
+            this.settings.linkWidth = style?.linkWidth?.value ?? defaults.linkWidth;
+            this.settings.linkStyle = style?.linkStyle?.value?.value ?? style?.linkStyle?.value ?? defaults.linkStyle;
+            this.settings.linkCurveStyle = style?.linkCurveStyle?.value?.value ?? style?.linkCurveStyle?.value ?? defaults.linkCurveStyle;
 
             const color = ls.color as any;
-            if (linkObjects["linkColorMode"] !== undefined) this.settings.linkColorMode = color?.linkColorMode?.value?.value ?? color?.linkColorMode?.value ?? defaults.linkColorMode;
-            if (linkObjects["customLinkColor"] !== undefined) this.settings.customLinkColor = color?.customLinkColor?.value?.value ?? defaults.customLinkColor;
+            this.settings.linkColorMode = color?.linkColorMode?.value?.value ?? color?.linkColorMode?.value ?? defaults.linkColorMode;
+            this.settings.customLinkColor = color?.customLinkColor?.value?.value ?? defaults.customLinkColor;
 
             const start = ls.startMarker as any;
-            if (linkObjects["showStartMarker"] !== undefined) this.settings.showStartMarker = start?.showStartMarker?.value ?? defaults.showStartMarker;
-            if (linkObjects["startMarkerType"] !== undefined) this.settings.startMarkerType = start?.startMarkerType?.value?.value ?? start?.startMarkerType?.value ?? defaults.startMarkerType;
-            if (linkObjects["startMarkerSize"] !== undefined) this.settings.startMarkerSize = start?.startMarkerSize?.value ?? defaults.startMarkerSize;
+            this.settings.showStartMarker = start?.showStartMarker?.value ?? defaults.showStartMarker;
+            this.settings.startMarkerType = start?.startMarkerType?.value?.value ?? start?.startMarkerType?.value ?? defaults.startMarkerType;
+            this.settings.startMarkerSize = start?.startMarkerSize?.value ?? defaults.startMarkerSize;
 
             const end = ls.endMarker as any;
-            if (linkObjects["showEndMarker"] !== undefined) this.settings.showEndMarker = end?.showEndMarker?.value ?? defaults.showEndMarker;
-            if (linkObjects["endMarkerType"] !== undefined) this.settings.endMarkerType = end?.endMarkerType?.value?.value ?? end?.endMarkerType?.value ?? defaults.endMarkerType;
-            if (linkObjects["endMarkerSize"] !== undefined) this.settings.endMarkerSize = end?.endMarkerSize?.value ?? defaults.endMarkerSize;
+            this.settings.showEndMarker = end?.showEndMarker?.value ?? defaults.showEndMarker;
+            this.settings.endMarkerType = end?.endMarkerType?.value?.value ?? end?.endMarkerType?.value ?? defaults.endMarkerType;
+            this.settings.endMarkerSize = end?.endMarkerSize?.value ?? defaults.endMarkerSize;
 
             const markerColors = ls.markerColors;
-            if (linkObjects["useCustomMarkerColors"] !== undefined) this.settings.useCustomMarkerColors = markerColors?.useCustomMarkerColors?.value ?? defaults.useCustomMarkerColors;
-            if (linkObjects["startMarkerColor"] !== undefined) this.settings.startMarkerColor = markerColors?.startMarkerColor?.value?.value ?? defaults.startMarkerColor;
-            if (linkObjects["endMarkerColor"] !== undefined) this.settings.endMarkerColor = markerColors?.endMarkerColor?.value?.value ?? defaults.endMarkerColor;
+            this.settings.useCustomMarkerColors = markerColors?.useCustomMarkerColors?.value ?? defaults.useCustomMarkerColors;
+            this.settings.startMarkerColor = markerColors?.startMarkerColor?.value?.value ?? defaults.startMarkerColor;
+            this.settings.endMarkerColor = markerColors?.endMarkerColor?.value?.value ?? defaults.endMarkerColor;
         }
 
-        // Color settings - always read from formatting model (includes defaults when reset)
+        // Color settings - read ONLY explicitly changed colors from metadata
+        // Keep unchanged colors at preset defaults to avoid corruption from formatting defaults
         if (cs && colorObjects) {
-            if (colorObjects["level0Color"] !== undefined) this.settings.colors[0] = cs.level0Color?.value?.value ?? this.settings.colors[0];
-            if (colorObjects["level1Color"] !== undefined) this.settings.colors[1] = cs.level1Color?.value?.value ?? this.settings.colors[1];
-            if (colorObjects["level2Color"] !== undefined) this.settings.colors[2] = cs.level2Color?.value?.value ?? this.settings.colors[2];
-            if (colorObjects["level3Color"] !== undefined) this.settings.colors[3] = cs.level3Color?.value?.value ?? this.settings.colors[3];
-            if (colorObjects["level4Color"] !== undefined) this.settings.colors[4] = cs.level4Color?.value?.value ?? this.settings.colors[4];
-            if (colorObjects["level5Color"] !== undefined) this.settings.colors[5] = cs.level5Color?.value?.value ?? this.settings.colors[5];
-            if (colorObjects["level6Color"] !== undefined) this.settings.colors[6] = cs.level6Color?.value?.value ?? this.settings.colors[6];
-            if (colorObjects["level7Color"] !== undefined) this.settings.colors[7] = cs.level7Color?.value?.value ?? this.settings.colors[7];
+            if (colorObjects["level0Color"] !== undefined) {
+                this.settings.colors[0] = cs.level0Color?.value?.value ?? defaults.colors[0];
+            }
+            if (colorObjects["level1Color"] !== undefined) {
+                this.settings.colors[1] = cs.level1Color?.value?.value ?? defaults.colors[1];
+            }
+            if (colorObjects["level2Color"] !== undefined) {
+                this.settings.colors[2] = cs.level2Color?.value?.value ?? defaults.colors[2];
+            }
+            if (colorObjects["level3Color"] !== undefined) {
+                this.settings.colors[3] = cs.level3Color?.value?.value ?? defaults.colors[3];
+            }
+            if (colorObjects["level4Color"] !== undefined) {
+                this.settings.colors[4] = cs.level4Color?.value?.value ?? defaults.colors[4];
+            }
+            if (colorObjects["level5Color"] !== undefined) {
+                this.settings.colors[5] = cs.level5Color?.value?.value ?? defaults.colors[5];
+            }
+            if (colorObjects["level6Color"] !== undefined) {
+                this.settings.colors[6] = cs.level6Color?.value?.value ?? defaults.colors[6];
+            }
+            if (colorObjects["level7Color"] !== undefined) {
+                this.settings.colors[7] = cs.level7Color?.value?.value ?? defaults.colors[7];
+            }
         }
 
-        // Display settings
+        // Display settings - when any display setting is modified, read ALL display properties
+        // This prevents other display settings from resetting to preset defaults
         if (ds && displayObjects) {
-            if (displayObjects["backgroundColor"] !== undefined) this.settings.backgroundColor = ds.backgroundColor?.value?.value ?? defaults.backgroundColor;
-            if (displayObjects["showEmptyPlaceholder"] !== undefined) this.settings.showEmptyPlaceholder = ds.showEmptyPlaceholder?.value ?? defaults.showEmptyPlaceholder;
-            if (displayObjects["showCounters"] !== undefined) this.settings.showCounters = ds.showCounters?.value ?? defaults.showCounters;
-            if (displayObjects["counterFontSize"] !== undefined) this.settings.headerCounterFontSize = ds.counterFontSize?.value ?? defaults.headerCounterFontSize;
-            if (displayObjects["counterFontFamily"] !== undefined) this.settings.headerCounterFontFamily = (ds.counterFontFamily as any)?.value?.value ?? (ds.counterFontFamily as any)?.value ?? defaults.headerCounterFontFamily;
-            if (displayObjects["counterFontWeight"] !== undefined) this.settings.headerCounterFontWeight = (ds.counterFontWeight as any)?.value?.value ?? (ds.counterFontWeight as any)?.value ?? defaults.headerCounterFontWeight;
-            if (displayObjects["counterAlignment"] !== undefined) this.settings.headerCounterAlignment = (ds.counterAlignment as any)?.value?.value ?? (ds.counterAlignment as any)?.value ?? defaults.headerCounterAlignment;
-            if (displayObjects["counterColor"] !== undefined) this.settings.headerCounterColor = ds.counterColor?.value?.value ?? defaults.headerCounterColor;
-            if (displayObjects["counterSeparator"] !== undefined) this.settings.headerCounterSeparator = ds.counterSeparator?.value ?? defaults.headerCounterSeparator;
-            if (displayObjects["headerTitleMatchNode"] !== undefined) this.settings.headerTitleMatchNode = ds.headerTitleMatchNode?.value ?? defaults.headerTitleMatchNode;
-            if (displayObjects["headerTitleColor"] !== undefined) this.settings.headerTitleColor = ds.headerTitleColor?.value?.value ?? defaults.headerTitleColor;
-            if (displayObjects["headerTitleSize"] !== undefined) this.settings.headerTitleSize = ds.headerTitleSize?.value ?? defaults.headerTitleSize;
-            if (displayObjects["headerTitleFontFamily"] !== undefined) this.settings.headerTitleFontFamily = (ds.headerTitleFontFamily as any)?.value?.value ?? (ds.headerTitleFontFamily as any)?.value ?? defaults.headerTitleFontFamily;
-            if (displayObjects["showControls"] !== undefined) this.settings.showControls = ds.showControls?.value ?? defaults.showControls;
+            this.settings.backgroundColor = ds.backgroundColor?.value?.value ?? defaults.backgroundColor;
+            this.settings.showEmptyPlaceholder = ds.showEmptyPlaceholder?.value ?? defaults.showEmptyPlaceholder;
+            this.settings.showCounters = ds.showCounters?.value ?? defaults.showCounters;
+            this.settings.headerCounterFontSize = ds.counterFontSize?.value ?? defaults.headerCounterFontSize;
+            this.settings.headerCounterFontFamily = (ds.counterFontFamily as any)?.value?.value ?? (ds.counterFontFamily as any)?.value ?? defaults.headerCounterFontFamily;
+            this.settings.headerCounterFontWeight = (ds.counterFontWeight as any)?.value?.value ?? (ds.counterFontWeight as any)?.value ?? defaults.headerCounterFontWeight;
+            this.settings.headerCounterAlignment = (ds.counterAlignment as any)?.value?.value ?? (ds.counterAlignment as any)?.value ?? defaults.headerCounterAlignment;
+            this.settings.headerCounterColor = ds.counterColor?.value?.value ?? defaults.headerCounterColor;
+            this.settings.headerCounterSeparator = ds.counterSeparator?.value ?? defaults.headerCounterSeparator;
+            this.settings.headerTitleMatchNode = ds.headerTitleMatchNode?.value ?? defaults.headerTitleMatchNode;
+            this.settings.headerTitleColor = ds.headerTitleColor?.value?.value ?? defaults.headerTitleColor;
+            this.settings.headerTitleSize = ds.headerTitleSize?.value ?? defaults.headerTitleSize;
+            this.settings.headerTitleFontFamily = (ds.headerTitleFontFamily as any)?.value?.value ?? (ds.headerTitleFontFamily as any)?.value ?? defaults.headerTitleFontFamily;
+            this.settings.showControls = ds.showControls?.value ?? defaults.showControls;
         }
 
-        // Measure configuration settings
+        // Measure configuration settings - when any measure setting is modified, read ALL measure properties
+        // This prevents other measure settings from resetting to preset defaults
         const ms = this.formattingSettings?.measureSettings;
         const measureObjects = objects?.["measureSettings"] as any;
 
         if (ms && measureObjects) {
-            if (measureObjects["measureAggregation"] !== undefined) this.settings.measureAggregation = (ms.measureAggregation as any)?.value?.value ?? (ms.measureAggregation as any)?.value ?? defaults.measureAggregation;
-            if (measureObjects["measureDisplayMode"] !== undefined) this.settings.measureDisplayMode = (ms.measureDisplayMode as any)?.value?.value ?? (ms.measureDisplayMode as any)?.value ?? defaults.measureDisplayMode;
-            if (measureObjects["linkSizingMode"] !== undefined) this.settings.linkSizingMode = (ms.linkSizingMode as any)?.value?.value ?? (ms.linkSizingMode as any)?.value ?? defaults.linkSizingMode;
-            if (measureObjects["linkMinWidth"] !== undefined) this.settings.linkMinWidth = ms.linkMinWidth?.value ?? defaults.linkMinWidth;
-            if (measureObjects["linkMaxWidth"] !== undefined) this.settings.linkMaxWidth = ms.linkMaxWidth?.value ?? defaults.linkMaxWidth;
-            if (measureObjects["measureFormat"] !== undefined) this.settings.measureFormat = (ms.measureFormat as any)?.value?.value ?? (ms.measureFormat as any)?.value ?? defaults.measureFormat;
-            if (measureObjects["measureDecimals"] !== undefined) this.settings.measureDecimals = ms.measureDecimals?.value ?? defaults.measureDecimals;
+            this.settings.measureDisplayMode = (ms.measureDisplayMode as any)?.value?.value ?? (ms.measureDisplayMode as any)?.value ?? defaults.measureDisplayMode;
+            this.settings.linkSizingMode = (ms.linkSizingMode as any)?.value?.value ?? (ms.linkSizingMode as any)?.value ?? defaults.linkSizingMode;
+            this.settings.linkMinWidth = ms.linkMinWidth?.value ?? defaults.linkMinWidth;
+            this.settings.linkMaxWidth = ms.linkMaxWidth?.value ?? defaults.linkMaxWidth;
+            this.settings.measureFormat = (ms.measureFormat as any)?.value?.value ?? (ms.measureFormat as any)?.value ?? defaults.measureFormat;
+            this.settings.measureDecimals = ms.measureDecimals?.value ?? defaults.measureDecimals;
         }
 
         // Apply formatting model values even if metadata object is missing (for new properties)
@@ -1881,6 +1960,12 @@ export class Visual implements IVisual {
             this.settings.badgeTextColor = this.highContrastColors.foreground;
             this.settings.headerTitleColor = this.highContrastColors.foreground;
         }
+
+        // Update tracked Category C properties for next update cycle
+        this.previousFillType = this.settings.fillType;
+        this.previousBorderType = this.settings.borderType;
+        this.previousBackgroundColor = this.settings.backgroundColor;
+        this.previousShadowEnabled = this.settings.nodeShadowEnabled;
     }
 
     private requestPresetResetInPowerBI(presetId: string, resetAllCards: boolean = false): void {
@@ -1936,6 +2021,31 @@ export class Visual implements IVisual {
         (this.host as any).persistProperties(changes);
     }
 
+    private persistMeasureSettings(properties: { linkSizingMode?: string }): void {
+        if (!this.host || !(this.host as any).persistProperties) {
+            return;
+        }
+
+        const updates: any = {};
+        if (properties.linkSizingMode) {
+            updates.linkSizingMode = properties.linkSizingMode;
+        }
+
+        if (Object.keys(updates).length === 0) {
+            return;
+        }
+
+        (this.host as any).persistProperties({
+            merge: [
+                {
+                    objectName: "measureSettings",
+                    selector: null,
+                    properties: updates
+                }
+            ]
+        });
+    }
+
     private syncFormattingModelWithSettings(): void {
         // Sync the formatting model (what shows in the pane) with actual settings values
         // This ensures the pane displays the correct current values after preset application
@@ -1946,6 +2056,7 @@ export class Visual implements IVisual {
         const ls = this.formattingSettings.linkSettings;
         const cs = this.formattingSettings.colorSettings;
         const ds = this.formattingSettings.displaySettings;
+        const ms = this.formattingSettings.measureSettings;
 
         // Sync node settings
         if (ns) {
@@ -2051,6 +2162,15 @@ export class Visual implements IVisual {
             ds.headerTitleSize.value = this.settings.headerTitleSize;
             ds.headerTitleFontFamily.value = { displayName: this.settings.headerTitleFontFamily, value: this.settings.headerTitleFontFamily } as any;
             ds.showControls.value = this.settings.showControls;
+        }
+
+        if (ms) {
+            ms.measureDisplayMode.value = { displayName: this.settings.measureDisplayMode, value: this.settings.measureDisplayMode } as any;
+            ms.linkSizingMode.value = { displayName: this.settings.linkSizingMode, value: this.settings.linkSizingMode } as any;
+            ms.linkMinWidth.value = this.settings.linkMinWidth;
+            ms.linkMaxWidth.value = this.settings.linkMaxWidth;
+            ms.measureFormat.value = { displayName: this.settings.measureFormat, value: this.settings.measureFormat } as any;
+            ms.measureDecimals.value = this.settings.measureDecimals;
         }
     }
 
@@ -2556,7 +2676,7 @@ export class Visual implements IVisual {
         const allGroupColumns: Array<{ index: number, name: string, metadata: any }> = [];
         for (let i = 0; i < metadata.length; i++) {
             const col = metadata[i];
-            if (col?.roles?.['group']) {
+            if (this.isGroupColumn(col)) {
                 allGroupColumns.push({
                     index: i,
                     name: col?.displayName || col?.queryName || "Column " + (i + 1),
@@ -2606,6 +2726,8 @@ export class Visual implements IVisual {
             return null;
         }
 
+        this.invalidMeasureField = null;
+        this.measureColumnMetadata = null;
         const metadata = dataView.table.columns;
         let measureColumnIndex = -1;
 
@@ -2613,6 +2735,10 @@ export class Visual implements IVisual {
         for (let i = 0; i < metadata.length; i++) {
             const col = metadata[i];
             if (col?.roles?.['values']) {
+                if (!col.isMeasure) {
+                    this.invalidMeasureField = col.displayName || col.queryName || "Value";
+                    return null;
+                }
                 measureColumnIndex = i;
                 this.measureColumnMetadata = col;
                 break;
@@ -2645,7 +2771,7 @@ export class Visual implements IVisual {
 
         return {
             columnIndex: measureColumnIndex,
-            aggregationMethod: this.settings.measureAggregation || "sum",
+            aggregationMethod: "sum",
             valuesByRowIndex: valuesByRowIndex
         };
     }
@@ -2654,14 +2780,18 @@ export class Visual implements IVisual {
         const items: VisualTooltipDataItem[] = [];
 
         // Add measure value if available
-        if (this.hasMeasure && node.measureValue !== undefined) {
-            const aggregationLabel = this.settings.measureAggregation.toUpperCase();
-            const measureName = this.measureColumnMetadata?.displayName || "Measure";
-            items.push({
-                header: node.value,
-                displayName: `${aggregationLabel} of ${measureName}`,
-                value: this.formatMeasureValue(node.measureValue)
-            });
+        if (this.hasMeasure) {
+            const filteredValue = this.filterSelectionActive ? this.filteredNodeMeasures.get(node.id) : undefined;
+            const measureValue = filteredValue !== undefined ? filteredValue : node.measureValue;
+            if (measureValue !== undefined) {
+                const aggregationLabel = "SUM";
+                const measureName = this.measureColumnMetadata?.displayName || "Measure";
+                items.push({
+                    header: node.value,
+                    displayName: `${aggregationLabel} of ${measureName}`,
+                    value: this.formatMeasureValue(measureValue)
+                });
+            }
         }
 
         // Always show connection count
@@ -2689,19 +2819,27 @@ export class Visual implements IVisual {
         const target = this.nodes.get(link.target);
 
         if (source && target) {
-            const header = `${source.value} → ${target.value}`;
+            const header = `${source.value} -> ${target.value}`;
+            const linkKey = `${link.source}->${link.target}`;
 
-            // Add measure value if available
-            if (this.hasMeasure && link.measureValue !== undefined) {
-                const aggregationLabel = this.settings.measureAggregation.toUpperCase();
-                const measureName = this.measureColumnMetadata?.displayName || "Measure";
-                items.push({
-                    header: header,
-                    displayName: `${aggregationLabel} of ${measureName}`,
-                    value: this.formatMeasureValue(link.measureValue)
-                });
+            if (this.hasMeasure) {
+                const filteredMeasure = this.filterSelectionActive ? this.filteredLinkFlows.get(linkKey) : undefined;
+                const measureValue = filteredMeasure !== undefined ? filteredMeasure : link.measureValue;
+                if (measureValue !== undefined) {
+                    const aggregationLabel = "SUM";
+                    const measureName = this.measureColumnMetadata?.displayName || "Measure";
+                    items.push({
+                        header: header,
+                        displayName: `${aggregationLabel} of ${measureName}`,
+                        value: this.formatMeasureValue(measureValue)
+                    });
+                } else {
+                    const filteredCount = this.filterSelectionActive ? this.filteredLinkCounts.get(linkKey) : undefined;
+                    items.push({ header: header, displayName: "Count", value: String(filteredCount ?? link.count) });
+                }
             } else {
-                items.push({ header: header, displayName: "Count", value: String(link.count) });
+                const filteredCount = this.filterSelectionActive ? this.filteredLinkCounts.get(linkKey) : undefined;
+                items.push({ header: header, displayName: "Count", value: String(filteredCount ?? link.count) });
             }
         }
 
@@ -2877,6 +3015,13 @@ export class Visual implements IVisual {
 
     private titleCase(str: string): string {
         return str.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    }
+
+    private isGroupColumn(column: powerbi.DataViewMetadataColumn | undefined): boolean {
+        if (!column) return false;
+        if (!column.roles?.["group"]) return false;
+        if (column.roles?.["values"] || column.roles?.["tooltips"]) return false;
+        return !column.isMeasure;
     }
 
     private processData(data: TableData, dataView: DataView): void {
@@ -3376,6 +3521,48 @@ export class Visual implements IVisual {
         this.mainGroup.appendChild(linkGroup);
     }
 
+    private refreshLinkWidths(): void {
+        const linkPaths = this.mainGroup.querySelectorAll(".links path");
+        if (linkPaths.length === 0) return;
+
+        let minFlow = Infinity;
+        let maxFlow = -Infinity;
+        if (this.settings.linkSizingMode === "proportional" && this.hasMeasure) {
+            this.links.forEach(link => {
+                const flowValue = link.flowValue || 0;
+                if (flowValue > 0) {
+                    minFlow = Math.min(minFlow, flowValue);
+                    maxFlow = Math.max(maxFlow, flowValue);
+                }
+            });
+            if (minFlow === Infinity) minFlow = 0;
+            if (maxFlow === -Infinity) maxFlow = 0;
+        }
+
+        const calculateLinkWidth = (link: SankeyLink): number => {
+            if (this.settings.linkSizingMode === "fixed" || !this.hasMeasure) {
+                return this.settings.linkWidth;
+            }
+            const flowValue = Math.abs(link.flowValue || 0);
+            if (flowValue === 0 || maxFlow === minFlow) {
+                return this.settings.linkMinWidth;
+            }
+            const normalized = (flowValue - minFlow) / (maxFlow - minFlow);
+            const width = this.settings.linkMinWidth + (normalized * (this.settings.linkMaxWidth - this.settings.linkMinWidth));
+            return Math.max(this.settings.linkMinWidth, Math.min(this.settings.linkMaxWidth, width));
+        };
+
+        linkPaths.forEach(path => {
+            const linkIndex = parseInt(path.getAttribute("data-link-index") || "", 10);
+            if (Number.isNaN(linkIndex)) return;
+            const link = this.links[linkIndex];
+            if (!link) return;
+            const width = calculateLinkWidth(link);
+            path.setAttribute("data-link-width", String(width));
+            path.setAttribute("stroke-width", String(width));
+        });
+    }
+
     private generateLinkPath(x1: number, y1: number, x2: number, y2: number): string {
         const midX = (x1 + x2) / 2;
         switch (this.settings.linkCurveStyle) {
@@ -3834,6 +4021,14 @@ export class Visual implements IVisual {
         g.appendChild(textGroup);
     }
 
+    private refreshNodeText(g: SVGGElement, node: SankeyNode): void {
+        const existing = g.querySelector(".node-text");
+        if (existing && existing.parentNode) {
+            existing.parentNode.removeChild(existing);
+        }
+        this.renderNodeText(g, node);
+    }
+
     private renderNodeBadge(g: SVGGElement, node: SankeyNode): void {
         const badgeColor = this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.foreground : (this.settings.badgeTextColor || node.color);
         const badgeBg = this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.background : "white";
@@ -4183,22 +4378,34 @@ export class Visual implements IVisual {
             this.selectedNodes.clear();
             this.selectedNodes.add(nodeId);
         }
+        this.filterSelectionActive = isCtrlClick;
+        let restoreNodeText = false;
+        if (!this.filterSelectionActive) {
+            this.filteredLinkCounts.clear();
+            this.filteredLinkFlows.clear();
+            this.filteredNodeMeasures.clear();
+            if (this.originalNodeDisplayValues.size > 0) {
+                this.nodes.forEach(node => {
+                    if (this.originalNodeDisplayValues.has(node.id)) {
+                        node.displayValue = this.originalNodeDisplayValues.get(node.id);
+                    }
+                });
+                this.originalNodeDisplayValues.clear();
+                restoreNodeText = true;
+            }
+        }
         this.lastClickedNode = nodeId;
         if (!this.currentData) return;
 
-        const filteredRows = this.currentData.rows.filter(row => {
-            for (const selectedId of this.selectedNodes) {
-                const selectedNode = this.nodes.get(selectedId);
-                if (selectedNode) {
-                    const valueAtLevel = this.normalizeValue(row[selectedNode.levelIndex]);
-                    if (valueAtLevel === selectedNode.value) return true;
-                }
+        const selectedByLevel = this.getSelectedValuesByLevel();
+        const filteredRows: any[][] = [];
+        const filteredRowIndices: number[] = [];
+        this.currentData.rows.forEach((row, rowIndex) => {
+            if (this.rowMatchesSelection(row, selectedByLevel)) {
+                filteredRows.push(row);
+                filteredRowIndices.push(rowIndex);
             }
-            return false;
         });
-
-        // Get row indices for filtered rows (needed for measure aggregation)
-        const filteredRowIndices = this.getFilteredRowIndices(filteredRows);
 
         const connected = new Set<string>();
         const filteredLinkPairs = new Set<string>();
@@ -4218,7 +4425,56 @@ export class Visual implements IVisual {
             }
         });
 
+        const filteredNodeCounts = new Map<string, number>();
+        const filteredLinkCounts = new Map<string, number>();
+        const filteredLinkFlows = new Map<string, number>();
+        const filteredNodeMeasures = new Map<string, number>();
+
+        filteredRowIndices.forEach(rowIndex => {
+            const row = this.currentData.rows[rowIndex];
+            const measureValue = this.hasMeasure && this.measureData
+                ? this.measureData.valuesByRowIndex.get(rowIndex)
+                : undefined;
+
+            columns.forEach((_, levelIndex) => {
+                const value = this.normalizeValue(row[levelIndex]);
+                if (value === '') return;
+                const nodeId = this.makeId(levelIndex, value);
+                filteredNodeCounts.set(nodeId, (filteredNodeCounts.get(nodeId) || 0) + 1);
+                if (measureValue !== undefined) {
+                    filteredNodeMeasures.set(nodeId, (filteredNodeMeasures.get(nodeId) || 0) + measureValue);
+                }
+            });
+
+            for (let i = 0; i < columns.length - 1; i++) {
+                const sourceVal = this.normalizeValue(row[i]);
+                const targetVal = this.normalizeValue(row[i + 1]);
+                if (sourceVal !== '' && targetVal !== '') {
+                    const linkKey = `${this.makeId(i, sourceVal)}->${this.makeId(i + 1, targetVal)}`;
+                    filteredLinkCounts.set(linkKey, (filteredLinkCounts.get(linkKey) || 0) + 1);
+                    if (measureValue !== undefined) {
+                        filteredLinkFlows.set(linkKey, (filteredLinkFlows.get(linkKey) || 0) + measureValue);
+                    }
+                }
+            }
+        });
+
         this.connectedNodes = connected;
+        if (this.filterSelectionActive) {
+            this.filteredLinkCounts = filteredLinkCounts;
+            this.filteredLinkFlows = filteredLinkFlows;
+            this.filteredNodeMeasures = filteredNodeMeasures;
+            if (this.originalNodeDisplayValues.size === 0) {
+                this.nodes.forEach(node => this.originalNodeDisplayValues.set(node.id, node.displayValue));
+            }
+            if (this.hasMeasure) {
+                this.nodes.forEach(node => {
+                    if (filteredNodeMeasures.has(node.id)) {
+                        node.displayValue = filteredNodeMeasures.get(node.id);
+                    }
+                });
+            }
+        }
 
         const filteredOutNeighbors = new Map<string, Set<string>>();
         const filteredInNeighbors = new Map<string, Set<string>>();
@@ -4236,6 +4492,7 @@ export class Visual implements IVisual {
             nodesByLevel.get(node.levelIndex)!.push(node);
         });
 
+        const filterConnected = this.filterSelectionActive;
         columns.forEach((_, levelIndex) => {
             const levelNodes = nodesByLevel.get(levelIndex) || [];
             levelNodes.sort((a, b) => {
@@ -4243,12 +4500,17 @@ export class Visual implements IVisual {
                 const bConnected = connected.has(b.id);
                 if (aConnected && !bConnected) return -1;
                 if (!aConnected && bConnected) return 1;
-                return b.count - a.count;
+                const aCount = filterConnected ? (filteredNodeCounts.get(a.id) || 0) : a.count;
+                const bCount = filterConnected ? (filteredNodeCounts.get(b.id) || 0) : b.count;
+                return bCount - aCount;
             });
             const x = 100 + levelIndex * this.settings.levelSpacing;
-            const totalHeight = levelNodes.length * this.settings.nodeSpacing;
-            const startY = Math.max(100, (height - totalHeight) / 2);
-            levelNodes.forEach((node, index) => { node.x = x; node.y = startY + index * this.settings.nodeSpacing; });
+            const nodesToPosition = filterConnected
+                ? levelNodes.filter(node => connected.has(node.id))
+                : levelNodes;
+            const totalHeight = nodesToPosition.length * this.settings.nodeSpacing;
+            const startY = filterConnected ? 100 : Math.max(100, (height - totalHeight) / 2);
+            nodesToPosition.forEach((node, index) => { node.x = x; node.y = startY + index * this.settings.nodeSpacing; });
         });
 
         this.mainGroup.querySelectorAll(".node").forEach(nodeEl => {
@@ -4265,6 +4527,12 @@ export class Visual implements IVisual {
         const shadowOn = this.settings.nodeShadowEnabled;
         if (shadowOn) this.ensureSoftShadowFilter();
         allNodes.forEach(node => {
+            if (filterConnected) {
+                const id = node.getAttribute("data-node-id");
+                node.setAttribute("display", id && connected.has(id) ? "" : "none");
+            } else {
+                node.setAttribute("display", "");
+            }
             const shape = node.querySelector(".node-shape");
             const texts = node.querySelectorAll("text");
             const circles = node.querySelectorAll("circle");
@@ -4276,10 +4544,61 @@ export class Visual implements IVisual {
             }
             texts.forEach(t => t.setAttribute("opacity", "0.3"));
             circles.forEach(c => c.setAttribute("opacity", "0.3"));
+            if (restoreNodeText && this.hasMeasure &&
+                (this.settings.measureDisplayMode === "node" || this.settings.measureDisplayMode === "both")) {
+                const id = node.getAttribute("data-node-id");
+                const originalNode = id ? this.nodes.get(id) : undefined;
+                if (originalNode) {
+                    this.refreshNodeText(node as SVGGElement, originalNode);
+                }
+            }
         });
 
+        if (!filterConnected) {
+            this.refreshLinkWidths();
+        }
         const allLinks = this.mainGroup.querySelectorAll(".links path");
+        let minFlow = Infinity;
+        let maxFlow = -Infinity;
+        if (filterConnected && this.settings.linkSizingMode === "proportional" && this.hasMeasure) {
+            filteredLinkFlows.forEach(flowValue => {
+                if (flowValue > 0) {
+                    minFlow = Math.min(minFlow, flowValue);
+                    maxFlow = Math.max(maxFlow, flowValue);
+                }
+            });
+            if (minFlow === Infinity) minFlow = 0;
+            if (maxFlow === -Infinity) maxFlow = 0;
+        }
+
+        const getFilteredLinkWidth = (linkKey: string): number => {
+            if (this.settings.linkSizingMode === "fixed" || !this.hasMeasure) {
+                return this.settings.linkWidth;
+            }
+            const flowValue = Math.abs(filteredLinkFlows.get(linkKey) || 0);
+            if (flowValue === 0 || maxFlow === minFlow) {
+                return this.settings.linkMinWidth;
+            }
+            const normalized = (flowValue - minFlow) / (maxFlow - minFlow);
+            const width = this.settings.linkMinWidth + (normalized * (this.settings.linkMaxWidth - this.settings.linkMinWidth));
+            return Math.max(this.settings.linkMinWidth, Math.min(this.settings.linkMaxWidth, width));
+        };
+
         allLinks.forEach(path => {
+            if (filterConnected) {
+                const source = path.getAttribute("data-source");
+                const target = path.getAttribute("data-target");
+                const linkKey = source && target ? `${source}->${target}` : "";
+                const isVisible = linkKey !== "" && filteredLinkPairs.has(linkKey);
+                path.setAttribute("display", isVisible ? "" : "none");
+                if (isVisible) {
+                    const filteredWidth = getFilteredLinkWidth(linkKey);
+                    path.setAttribute("stroke-width", String(filteredWidth));
+                    path.setAttribute("data-link-width", String(filteredWidth));
+                }
+            } else {
+                path.setAttribute("display", "");
+            }
             const storedWidth = path.getAttribute("data-link-width");
             const width = storedWidth ? parseFloat(storedWidth) : this.settings.linkWidth;
             path.setAttribute("opacity", "0.05");
@@ -4315,6 +4634,10 @@ export class Visual implements IVisual {
                         badgeText.textContent = displayValue;
                     }
                 }
+                if (filterConnected && this.hasMeasure &&
+                    (this.settings.measureDisplayMode === "node" || this.settings.measureDisplayMode === "both")) {
+                    this.refreshNodeText(node as SVGGElement, this.nodes.get(id)!);
+                }
             }
         });
 
@@ -4337,6 +4660,18 @@ export class Visual implements IVisual {
         this.lastClickedNode = null;
         this.selectedNodes.clear();
         this.connectedNodes.clear();
+        this.filterSelectionActive = false;
+        this.filteredLinkCounts.clear();
+        this.filteredLinkFlows.clear();
+        this.filteredNodeMeasures.clear();
+        if (this.originalNodeDisplayValues.size > 0) {
+            this.nodes.forEach(node => {
+                if (this.originalNodeDisplayValues.has(node.id)) {
+                    node.displayValue = this.originalNodeDisplayValues.get(node.id);
+                }
+            });
+            this.originalNodeDisplayValues.clear();
+        }
 
         if (this.currentData) {
             const height = parseFloat(this.svg.getAttribute("height") || "600");
@@ -4368,6 +4703,7 @@ export class Visual implements IVisual {
         const shadowOn = this.settings.nodeShadowEnabled;
         if (shadowOn) this.ensureSoftShadowFilter();
         allNodes.forEach(node => {
+            node.setAttribute("display", "");
             const shape = node.querySelector(".node-shape");
             const texts = node.querySelectorAll("text");
             const circles = node.querySelectorAll("circle");
@@ -4396,10 +4732,19 @@ export class Visual implements IVisual {
                     }
                 }
             }
+            if (this.hasMeasure &&
+                (this.settings.measureDisplayMode === "node" || this.settings.measureDisplayMode === "both")) {
+                const id = node.getAttribute("data-node-id");
+                const originalNode = id ? this.nodes.get(id) : undefined;
+                if (originalNode) {
+                    this.refreshNodeText(node as SVGGElement, originalNode);
+                }
+            }
         });
 
         const allLinks = this.mainGroup.querySelectorAll(".links path");
         allLinks.forEach(path => {
+            path.setAttribute("display", "");
             const storedWidth = path.getAttribute("data-link-width");
             const width = storedWidth ? parseFloat(storedWidth) : this.settings.linkWidth;
             path.setAttribute("opacity", String(this.getLinkOpacity()));
@@ -4438,6 +4783,71 @@ export class Visual implements IVisual {
         text.setAttribute("fill", this.isHighContrastMode && this.highContrastColors ? this.highContrastColors.foreground : "#666");
         text.textContent = this.localizationManager.getDisplayName("Visual_NoData") || "No data available. Please add fields to the visual.";
         this.mainGroup.appendChild(text);
+    }
+
+    private renderTooLargeState(nodeCount: number, linkCount: number): void {
+        // Clear all DOM containers (same pattern as render())
+        while (this.mainGroup.firstChild) {
+            this.mainGroup.removeChild(this.mainGroup.firstChild);
+        }
+        while (this.fixedHeader.firstChild) {
+            this.fixedHeader.removeChild(this.fixedHeader.firstChild);
+        }
+        while (this.defs.firstChild) {
+            this.defs.removeChild(this.defs.firstChild);
+        }
+
+        // Clear node elements map
+        this.nodeElements.clear();
+
+        // Calculate SVG center
+        const svgWidth = this.svg.clientWidth || 600;
+        const svgHeight = this.svg.clientHeight || 400;
+        const centerX = svgWidth / 2;
+        const centerY = svgHeight / 2;
+
+        // Create warning container group
+        const warningGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        warningGroup.setAttribute("class", "too-large-state");
+
+        // Title text
+        const titleText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        titleText.setAttribute("x", centerX.toString());
+        titleText.setAttribute("y", (centerY - 40).toString());
+        titleText.setAttribute("text-anchor", "middle");
+        titleText.setAttribute("class", "too-large-title");
+        titleText.textContent = "Too much data to render";
+        warningGroup.appendChild(titleText);
+
+        // Body text - line 1
+        const bodyText1 = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        bodyText1.setAttribute("x", centerX.toString());
+        bodyText1.setAttribute("y", (centerY + 10).toString());
+        bodyText1.setAttribute("text-anchor", "middle");
+        bodyText1.setAttribute("class", "too-large-body");
+        bodyText1.textContent = `This visual is optimized for exploration. Your selection generates ${nodeCount} nodes and ${linkCount} links,`;
+        warningGroup.appendChild(bodyText1);
+
+        // Body text - line 2
+        const bodyText2 = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        bodyText2.setAttribute("x", centerX.toString());
+        bodyText2.setAttribute("y", (centerY + 30).toString());
+        bodyText2.setAttribute("text-anchor", "middle");
+        bodyText2.setAttribute("class", "too-large-body");
+        bodyText2.textContent = `which exceeds the safe limit (${Visual.MAX_NODES} nodes / ${Visual.MAX_LINKS} links).`;
+        warningGroup.appendChild(bodyText2);
+
+        // Body text - line 3 (instruction)
+        const bodyText3 = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        bodyText3.setAttribute("x", centerX.toString());
+        bodyText3.setAttribute("y", (centerY + 60).toString());
+        bodyText3.setAttribute("text-anchor", "middle");
+        bodyText3.setAttribute("class", "too-large-instruction");
+        bodyText3.textContent = "Please filter the visual (e.g., reduce hierarchy values, apply slicers) for better performance.";
+        warningGroup.appendChild(bodyText3);
+
+        // Add to main group
+        this.mainGroup.appendChild(warningGroup);
     }
 
     private renderError(message: string): void {

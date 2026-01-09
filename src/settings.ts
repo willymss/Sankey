@@ -851,19 +851,6 @@ class LinkSettingsCard extends formattingSettings.CompositeCard {
 
 /** ---------- MEASURE SETTINGS ---------- */
 class MeasureSettingsCard extends formattingSettings.SimpleCard {
-    measureAggregation = new formattingSettings.ItemDropdown({
-        name: "measureAggregation",
-        displayName: "Aggregation method",
-        items: [
-            { displayName: "Sum", value: "sum" },
-            { displayName: "Average", value: "average" },
-            { displayName: "Count", value: "count" },
-            { displayName: "Minimum", value: "min" },
-            { displayName: "Maximum", value: "max" }
-        ],
-        value: { displayName: "Sum", value: "sum" }
-    });
-
     measureDisplayMode = new formattingSettings.ItemDropdown({
         name: "measureDisplayMode",
         displayName: "Display mode",
@@ -949,7 +936,6 @@ class MeasureSettingsCard extends formattingSettings.SimpleCard {
     name = "measureSettings";
     displayName = "Measure Configuration";
     slices = [
-        this.measureAggregation,
         this.measureDisplayMode,
         this.linkSizingMode,
         this.linkMinWidth,
